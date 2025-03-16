@@ -52,11 +52,19 @@ class UserFixtures extends Fixture
         $userSaver3->setPassword($this->passwordHasher->hashPassword($userSaver3, 'users3'));
         $userSaver3->setRoles([User::ROLE_SAVER]);
 
+        $userAdmin = new User();
+        $userAdmin->setEmail('support@projects.com');
+        $userAdmin->setName('Support');
+        $userAdmin->setCreatedAt(new \DateTimeImmutable());
+        $userAdmin->setPassword($this->passwordHasher->hashPassword($userAdmin, 'user_support'));
+        $userAdmin->setRoles([User::ROLE_ADMIN]);
+
         $manager->persist($userCompany1);
         $manager->persist($userCompany2);
         $manager->persist($userSaver1);
         $manager->persist($userSaver2);
         $manager->persist($userSaver3);
+        $manager->persist($userAdmin);
 
         $manager->flush();
     }

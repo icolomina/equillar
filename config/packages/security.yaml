@@ -5,7 +5,11 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users_in_memory: { memory: null }
-        app_user_provider:
+        login_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+        api_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
@@ -13,18 +17,23 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+        api_login:
+            pattern: '^/do-login'
             lazy: true
-            provider: app_user_provider
-            logout:
-                path: /logout
-                target: get_landing_page
-            form_login:
-                login_path: app_login
-                check_path: app_login
-                default_target_path: get_root_page
+            provider: login_user_provider
+            json_login:
+                check_path: post_api_login
+        api:
+           lazy: true
+           provider: api_user_provider
+           pattern: ^/api/v1
+           custom_authenticators:
+                - App\Security\Authenticator\JwtTokenAuthenticator
 
-          
+           
+
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_USER, ROLE_COMPANY]
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
@@ -32,7 +41,7 @@ security:
          - { path: ^/login, roles: PUBLIC_ACCESS}
          - { path: ^/post-login, roles: PUBLIC_ACCESS}
          - { path: ^/register, roles: PUBLIC_ACCESS}
-         - { path: ^/api, roles: [ROLE_FINANCIAL_ENTITY, ROLE_SAVER] }
+         - { path: ^/api, roles: [ROLE_COMPANY, ROLE_USER] }
          - { path: ^/pages, roles: [ROLE_FINANCIAL_ENTITY, ROLE_SAVER] }
 
 when@test:

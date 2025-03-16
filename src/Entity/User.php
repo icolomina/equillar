@@ -14,8 +14,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface,PasswordAuthenticatedUserInterface
 {
 
-    const ROLE_FINANCIAL_ENTITY = 'ROLE_FINANCIAL_ENTITY';
-    const ROLE_SAVER = 'ROLE_SAVER';
+    const ROLE_FINANCIAL_ENTITY = 'ROLE_COMPANY';
+    const ROLE_SAVER = 'ROLE_USER';
+    const ROLE_ADMIN = 'ROLE_ADMIN';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -43,9 +44,16 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: UserContract::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $contracts;
 
+    /**
+     * @var Collection<int, UserWallet>
+     */
+    #[ORM\OneToMany(targetEntity: UserWallet::class, mappedBy: 'usr', orphanRemoval: true)]
+    private Collection $userWallets;
+
     public function __construct()
     {
         $this->contracts = new ArrayCollection();
+        $this->userWallets = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -128,6 +136,11 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         return in_array(self::ROLE_SAVER, $this->getRoles());
     }
 
+    public function isAdmin(): bool
+    {
+        return in_array(self::ROLE_ADMIN, $this->getRoles());
+    }
+
     /**
      * @return Collection<int, UserContract>
      */
@@ -152,6 +165,36 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($contract->getUser() === $this) {
                 $contract->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserWallet>
+     */
+    public function getUserWallets(): Collection
+    {
+        return $this->userWallets;
+    }
+
+    public function addUserWallet(UserWallet $userWallet): static
+    {
+        if (!$this->userWallets->contains($userWallet)) {
+            $this->userWallets->add($userWallet);
+            $userWallet->setUsr($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserWallet(UserWallet $userWallet): static
+    {
+        if ($this->userWallets->removeElement($userWallet)) {
+            // set the owning side to null (unless already changed)
+            if ($userWallet->getUsr() === $this) {
+                $userWallet->setUsr(null);
             }
         }
 

@@ -17,10 +17,6 @@ class UserContract
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Contract $contract = null;
-
     #[ORM\Column]
     private ?float $balance = null;
 
@@ -52,18 +48,6 @@ class UserContract
     public function setUser(?User $user): static
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function getContract(): ?Contract
-    {
-        return $this->contract;
-    }
-
-    public function setContract(?Contract $contract): static
-    {
-        $this->contract = $contract;
 
         return $this;
     }

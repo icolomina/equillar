@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
+use App\Domain\Token\Model\TokenInterface;
 use App\Repository\TokenRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TokenRepository::class)]
-class Token
+class Token implements TokenInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -14,32 +15,32 @@ class Token
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $name = null;
+    private string $name;
 
     #[ORM\Column(length: 5)]
-    private ?string $code = null;
+    private string $code;
 
     #[ORM\Column(length: 255)]
-    private ?string $address = null;
+    private string $address;
 
     #[ORM\Column]
-    private ?bool $enabled = null;
+    private bool $enabled;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column]
-    private ?int $decimals = null;
+    private int $decimals;
 
     #[ORM\Column]
-    private ?string $issuer = null;
+    private string $issuer;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -51,7 +52,7 @@ class Token
         return $this;
     }
 
-    public function getCode(): ?string
+    public function getCode(): string
     {
         return $this->code;
     }
@@ -63,7 +64,7 @@ class Token
         return $this;
     }
 
-    public function getAddress(): ?string
+    public function getAddress(): string
     {
         return $this->address;
     }
@@ -75,7 +76,7 @@ class Token
         return $this;
     }
 
-    public function isEnabled(): ?bool
+    public function isEnabled(): bool
     {
         return $this->enabled;
     }
@@ -87,7 +88,7 @@ class Token
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -99,7 +100,7 @@ class Token
         return $this;
     }
 
-    public function getDecimals(): ?int
+    public function getDecimals(): int
     {
         return $this->decimals;
     }
@@ -111,7 +112,7 @@ class Token
         return $this;
     }
 
-    public function getIssuer(): ?string
+    public function getIssuer(): string
     {
         return $this->issuer;
     }

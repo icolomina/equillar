@@ -5,8 +5,9 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
   kernel.secret: '%env(APP_SECRET)%'
-  wasm: '%kernel.project_dir%/wasm/paid_account.wasm'
+  wasm: '%kernel.project_dir%/wasm/investment.wasm'
   wasm_token: '%kernel.project_dir%/wasm/soroban_token_contract.wasm'
+  investment_files_path: '%kernel.project_dir%/data/investment/projects'
 
 services:
     # default configuration for services in *this* file
@@ -16,6 +17,16 @@ services:
         bind:
             $wasmFile: '%wasm%'
             $wasmTokenFile: '%wasm_token%'
+            $stellarSecret: '%env(STELLAR_SECRET)%'
+            $securityTokenKey: '%env(SECURITY_TOKEN_KEY)%'
+            $webserverEndpoint: '%env(WEBSERVER_ENDPOINT)%'
+            $investmentFilesPath: '%investment_files_path%'
+            $wasmId: '%env(SOROBAN_CONTRACT_WASM_ID)%'
+            $tokenName: '%env(SOROBAN_TOKEN_NAME)%'
+            $tokenSymbol: '%env(SOROBAN_TOKEN_SYMBOL)%'
+            $tokenDecimals: '%env(SOROBAN_TOKEN_DECIMALS)%'
+            $tokenIssuer: '%env(SOROBAN_TOKEN_ISSUER)%'
+           #     $sorobanNetwork: '%env(SOROBAN_NETWORK)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

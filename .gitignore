@@ -12,3 +12,4 @@ yarn-error.log
 /var/logs/*
 /package-lock.json
 /composer.lock
+/data/test/keypair.test.txt

@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Domain\Token\Model\TokenInterface;
 use App\Repository\TokenRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 
 #[ORM\Entity(repositoryClass: TokenRepository::class)]
-class Token implements TokenInterface
+class Token 
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -34,6 +34,15 @@ class Token implements TokenInterface
 
     #[ORM\Column]
     private string $issuer;
+
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $locale = null;
+
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $referencedCurrency = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $type = null;
 
     public function getId(): ?int
     {
@@ -120,6 +129,42 @@ class Token implements TokenInterface
     public function setIssuer(?string $issuer): static
     {
         $this->issuer = $issuer;
+
+        return $this;
+    }
+
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(string $locale): static
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getReferencedCurrency(): ?string
+    {
+        return $this->referencedCurrency;
+    }
+
+    public function setReferencedCurrency(?string $referencedCurrency): static
+    {
+        $this->referencedCurrency = $referencedCurrency;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }

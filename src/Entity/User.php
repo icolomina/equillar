@@ -2,16 +2,19 @@
 
 namespace App\Entity;
 
+use App\Entity\Contract\UserContract;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User implements UserInterface,PasswordAuthenticatedUserInterface
+class User implements UserInterface,PasswordAuthenticatedUserInterface,EquatableInterface
 {
 
     const ROLE_FINANCIAL_ENTITY = 'ROLE_COMPANY';
@@ -21,7 +24,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?string $id = null;
 
     #[ORM\Column(length: 150)]
     private ?string $email = null;
@@ -41,7 +44,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, UserContract>
      */
-    #[ORM\OneToMany(targetEntity: UserContract::class, mappedBy: 'user', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: UserContract::class, mappedBy: 'usr', orphanRemoval: true)]
     private Collection $contracts;
 
     /**
@@ -114,6 +117,15 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         return $this->roles;
     }
 
+    public function getUserRoleType(): string
+    {
+        return match(true) {
+            $this->isAdmin() => 'Administrator',
+            $this->isSaver() => 'Investor',
+            default => 'Company'
+        };
+    }
+
     public function eraseCredentials(): void
     {
         
@@ -153,7 +165,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
     {
         if (!$this->contracts->contains($contract)) {
             $this->contracts->add($contract);
-            $contract->setUser($this);
+            $contract->setUsr($this);
         }
 
         return $this;
@@ -163,8 +175,8 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
     {
         if ($this->contracts->removeElement($contract)) {
             // set the owning side to null (unless already changed)
-            if ($contract->getUser() === $this) {
-                $contract->setUser(null);
+            if ($contract->getUsr() === $this) {
+                $contract->setUsr(null);
             }
         }
 
@@ -199,5 +211,10 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function isEqualTo(UserInterface $user): bool
+    {
+        return $user->getRoles() === $this->getRoles() && $user->getUserIdentifier() === $this->getUserIdentifier();
     }
 }

@@ -63,6 +63,11 @@ Encore
 
     // uncomment if you use TypeScript
     .enableTypeScriptLoader()
+    .copyFiles({
+        from: './node_modules/pdfjs-dist/build',
+        to: 'pdf/[name].[ext]', // This will put it in a 'pdf' subfolder in your public assets
+        pattern: /pdf\.worker\.min\.mjs/
+    })
 
     // uncomment if you use React
     // uncomment to get integrity="..." attributes on your script & link tags

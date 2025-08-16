@@ -5,13 +5,13 @@ namespace App\Application\Security\Token;
 use App\Domain\Security\TokenPayloadBuilder;
 use App\Entity\User;
 use Firebase\JWT\JWT;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class TokenEncoder
 {
     public function __construct(
         private readonly TokenPayloadBuilder $tokenPayloadBuilder,
-        private readonly SerializerInterface $serializer,
+        private readonly NormalizerInterface $serializer,
         private readonly string $securityTokenKey
     ){}
 

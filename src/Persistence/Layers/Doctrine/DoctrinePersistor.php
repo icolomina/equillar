@@ -34,4 +34,17 @@ class DoctrinePersistor implements PersistorInterface
     {
         $this->em->flush();
     }
+
+    public function refresh(object $object): void
+    {
+        $this->em->refresh($object);
+    }
+
+    /**
+     * @return EntityManagerInterface
+     */
+    public function getLayerManager(): mixed
+    {
+        return $this->em;
+    }
 }

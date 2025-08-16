@@ -2,65 +2,81 @@
 
 namespace App\Application\UserContract\Transformer;
 
-use App\Domain\UserContract\Service\ClaimableDateCalculator;
-use App\Domain\UserContract\Service\InterestsCalculator;
-use App\Entity\Investment\ContractInvestment;
-use App\Entity\Investment\UserContractInvestment;
-use App\Entity\User;
+use App\Application\Token\Transformer\TokenEntityTransformer;
+use App\Domain\Contract\ContractReturnType;
+use App\Entity\Contract\Contract;
+use App\Entity\Contract\UserContract;
 use App\Entity\UserWallet;
 use App\Presentation\Contract\DTO\Input\CreateUserContractDtoInput;
 use App\Presentation\UserContract\DTO\Output\UserContractDtoOutput;
+use App\Domain\UserContract\UserContractPaymentCalendarItem;
 
 readonly class UserContractEntityTransformer
 {
     public function __construct(
-        private ClaimableDateCalculator $claimableDateCalculator,
-        private InterestsCalculator $interestsCalculator
+        private readonly TokenEntityTransformer $tokenEntityTransformer
     ){}
 
-    public function fromEntityToOutputDto(UserContractInvestment $userContractInvestment): UserContractDtoOutput
+    /**
+     * @param UserContractPaymentCalendarItem[] $calendar
+     */
+    public function fromEntityToOutputDto(UserContract $userContract, array $calendar = []): UserContractDtoOutput
     {
+        $claimableDate = ($userContract->getClaimableTs() > 0) ? date('Y-m-d H:i', $userContract->getClaimableTs()) : 'Unknown yet';
+        $tokenContract   = $this->tokenEntityTransformer->fromEntityToContractTokenOutputDto($userContract->getContract()->getToken());
 
-        $claimableDate = $this->claimableDateCalculator->getClaimableDate(null, $userContractInvestment->getContract()->getClaimMonths());
-        
         return new UserContractDtoOutput(
-            $userContractInvestment->getId(),
-            $userContractInvestment->getContract()->getIssuer()->getName(),
-            $userContractInvestment->getContract()->getLabel(),
-            $userContractInvestment->getContract()->getAddress(),
-            $userContractInvestment->getContract()->getToken()->getName() . ' - ' . $userContractInvestment->getContract()->getToken()->getCode(),
-            $userContractInvestment->getContract()->getRate(),
-            $userContractInvestment->getCreatedAt()->format('Y-m-d H:i'),
+            (string)$userContract->getId(),
+            $userContract->getContract()->getIssuer()->getName(),
+            $userContract->getContract()->getLabel(),
+            $userContract->getContract()->getAddress(),
+            $tokenContract,
+            $userContract->getContract()->getRate(),
+            $userContract->getCreatedAt()->format('Y-m-d H:i'),
             $claimableDate,
-            $userContractInvestment->getBalance(),
-            $userContractInvestment->getInterests(),
-            $userContractInvestment->getTotal(),
-            $userContractInvestment->getHash()
+            $userContract->getBalance(),
+            $userContract->getInterests(),
+            $userContract->getCommission(),
+            $userContract->getTotal(),
+            $userContract->getHash(),
+            $userContract->getStatus(),
+            ContractReturnType::tryFrom($userContract->getContract()->getReturnType())->getReadableName(),
+            $calendar
         );
     }
 
     /**
-     * @return UserContractInvestment[]
+     * @return UserContractDtoOutput[]
      */
     public function fromEntitiesToOutputDtos(array $userContracts): array
     {
         return array_map(
-            fn(UserContractInvestment $userContract) => $this->fromEntityToOutputDto($userContract),
+            fn(UserContract $userContract) => $this->fromEntityToOutputDto($userContract),
             $userContracts
         );
     }
 
-    public function fromCreateUserContractInvestmentDtoToEntity(CreateUserContractDtoInput $createUserContractDtoInput, ContractInvestment $contract, UserWallet $userWallet): UserContractInvestment
+    public function fromCreateUserContractInvestmentDtoToEntity(CreateUserContractDtoInput $createUserContractDtoInput, Contract $contract, UserWallet $userWallet): UserContract
     {
-        $userContract = new UserContractInvestment();
+        $userContract = new UserContract();
         $userContract->setUsr($userWallet->getUsr());
         $userContract->setContract($contract);
-        $userContract->setBalance($createUserContractDtoInput->deposited);
+        $userContract->setBalance((float)$createUserContractDtoInput->deposited);
         $userContract->setHash($createUserContractDtoInput->hash);
         $userContract->setCreatedAt(new \DateTimeImmutable());
         $userContract->setUserWallet($userWallet);
+        $userContract->setStatus($createUserContractDtoInput->status);
+        $userContract->setClaimableTs(0);
 
         return $userContract;
+    }
+
+    public function updateUserContractWithNewClaim(UserContract $userContract, \DateTimeImmutable $transferredAt): void
+    {
+        $currentTotalCharged = $userContract->getTotalCharged() ?? 0;
+
+        $userContract->setLastPaymentReceivedAt($transferredAt);
+        $userContract->setTotalCharged($currentTotalCharged + $userContract->getRegularPayment());
     }
     
 }

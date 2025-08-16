@@ -1,10 +1,13 @@
-import { useState } from 'react';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios from 'axios';
+import { useContext } from 'react';
+import { BackendContext } from '../context/BackendContext';
 
 export const useAuth = () => {
   
-    const login = async (username: string, password: string, endpoint: string) => {
-      return axios.post('https://127.0.0.1:8000/do-login', { username: username, password: password }, {
+    const ctx = useContext(BackendContext);
+
+    const login = async (username: string, password: string) => {
+      return axios.post(ctx.webserverEndpoint + '/do-login', { username: username, password: password }, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -28,13 +31,21 @@ export const useAuth = () => {
       const role = localStorage.getItem('role');
       return role === 'ROLE_COMPANY' ;
     }
+
+    const getUserData = () => {
+      return {
+        name: localStorage.getItem('name'),
+        role_type: localStorage.getItem('role_type')
+      }
+    }
   
     return {
       login,
       logout,
       isAuthenticathed,
       isAdmin,
-      isCompany
+      isCompany,
+      getUserData
     }
   };
 

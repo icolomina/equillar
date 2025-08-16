@@ -12,9 +12,9 @@ class TokenPayloadBuilder
         return new TokenPayload(
             'https://x.app',
             'AUTHENTICATHED_USERS',
-            $now->getTimestamp(),
-            $now->getTimestamp(),
-            $plus1hour->getTimestamp(),
+            (string)$now->getTimestamp(),
+            (string)$now->getTimestamp(),
+            (string)$plus1hour->getTimestamp(),
             $userIdentifier
         );
     }

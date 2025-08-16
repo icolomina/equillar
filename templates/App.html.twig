@@ -15,6 +15,11 @@
         {% endblock %}
     </head>
     <body>
-        <div {{ react_component('App') }} ></div>
+        <div {{ react_component('App', { 
+            sorobanNetworkPassphrase: sorobanNetworkPassphrase,
+            sorobanRpcUrl: sorobanRpcUrl,
+            webserverEndpoint: webserverEndpoint
+            }) 
+        }} ></div>
     </body>
 </html>

@@ -5,12 +5,12 @@ namespace App\Application\Security\Token;
 use App\Domain\Security\TokenPayload;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class TokenDecoder
 {
     public function __construct(
-        private readonly SerializerInterface $serializer,
+        private readonly DenormalizerInterface $serializer,
         private readonly string $securityTokenKey
     ){}
 

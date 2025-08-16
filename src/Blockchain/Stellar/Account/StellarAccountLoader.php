@@ -2,7 +2,8 @@
 
 namespace App\Blockchain\Stellar\Account;
 
-use App\Stellar\Networks;
+use App\Application\SystemWallet\Service\RetrieveSystemWalletService;
+use App\Domain\Crypt\Service\CryptedValueEncryptor;
 use Soneso\StellarSDK\Crypto\KeyPair;
 use Soneso\StellarSDK\Responses\Account\AccountResponse;
 use Soneso\StellarSDK\StellarSDK;
@@ -12,21 +13,28 @@ use Symfony\Component\DependencyInjection\Attribute\Lazy;
 class StellarAccountLoader
 {
     private ?KeyPair $keyPair = null;
+    private ?StellarSDK $sdk = null;
     private ?AccountResponse $account  = null;
 
     public function __construct(
-        private readonly string $stellarSecret
-    ){
-        $this->load(Networks::TESTNET);
+        private readonly RetrieveSystemWalletService $retrieveSystemWalletService,
+        private readonly CryptedValueEncryptor $cryptedValueEncryptor
+    ){ 
+        $this->load();
     }
 
-    public function load(Networks $network): void
+    public function load(): void
     {
-        $this->keyPair = KeyPair::fromSeed($this->stellarSecret);
-        $this->account = ($network === Networks::TESTNET) 
-            ? StellarSDK::getTestNetInstance()->requestAccount($this->keyPair->getAccountId())
-            : StellarSDK::getPublicNetInstance()->requestAccount($this->keyPair->getAccountId())
+        $systemWalletData = $this->retrieveSystemWalletService->retrieve();
+        $secret           = $this->cryptedValueEncryptor->getSecret($systemWalletData->cryptedValue);
+
+        $this->keyPair = KeyPair::fromSeed($secret);
+        $this->sdk     = ($systemWalletData->isTest) 
+            ? StellarSDK::getTestNetInstance() 
+            : StellarSDK::getPublicNetInstance()
         ;
+
+        $this->account = $this->sdk->requestAccount($this->keyPair->getAccountId());
     }
 
     public function getKeyPair(): KeyPair
@@ -37,5 +45,10 @@ class StellarAccountLoader
     public function getAccount(): AccountResponse
     {
         return $this->account;
+    }
+
+    public function getSdk(): StellarSDK
+    {
+        return $this->sdk;
     }
 }

@@ -3,16 +3,16 @@
 namespace App\Application\UserContract\Service;
 
 use App\Application\UserContract\Transformer\UserContractEntityTransformer;
-use App\Entity\Investment\UserContractInvestment;
+use App\Entity\Contract\UserContract;
 use App\Entity\User;
-use App\Persistence\Investment\UserContract\UserContractInvestmentStorageInterface;
+use App\Persistence\UserContract\UserContractStorageInterface;
 use App\Presentation\UserContract\DTO\Output\UserContractDtoOutput;
 
-class GetUserContractsInvestmentService
+class GetUserContractsService
 {
 
     public function __construct(
-        private readonly UserContractInvestmentStorageInterface $userContractInvestmentStorage,
+        private readonly UserContractStorageInterface $userContractInvestmentStorage,
         private readonly UserContractEntityTransformer $userContractInvestmentEntityTransformer
     ){}
 
@@ -22,7 +22,7 @@ class GetUserContractsInvestmentService
         return $this->userContractInvestmentEntityTransformer->fromEntitiesToOutputDtos($userContracts);
     }
 
-    public function getUserContract(UserContractInvestment $userContract): UserContractDtoOutput
+    public function getUserContract(UserContract $userContract): UserContractDtoOutput
     {
         return $this->userContractInvestmentEntityTransformer->fromEntityToOutputDto($userContract);
     }

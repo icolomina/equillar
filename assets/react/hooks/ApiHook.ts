@@ -1,7 +1,8 @@
-import { useMutation, UseMutationResult, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { sprintf } from "sprintf-js";
+import { BackendContext } from "../context/BackendContext";
 
 type Headers = {
     [key: string]: string|number
@@ -31,13 +32,10 @@ function prepareHeaders(httpMethod: HttpMethod, isFile: boolean): Headers {
     return headers;
 }
 
-function getBaseUrl(): string {
-    return window.location.origin;
-}
-
 export const useApi = () => {
 
     const navigate = useNavigate();
+    const ctx = useContext(BackendContext);
 
     useEffect(() => {
         const responseInterceptor = axios.interceptors.response.use(
@@ -55,9 +53,24 @@ export const useApi = () => {
         };
     }, [navigate]);
 
-    const callGet = <T extends object, R>(path: string, queryParams: T): Promise<AxiosResponse<R>|AxiosError> => {
-        const headers: Headers = prepareHeaders(HttpMethod.GET, false);
-        return axios.get(getBaseUrl() + path, {
+    const callGetDownloadFile = <T extends object, R>(path: string, queryParams: T, extraHeaders: object = {}): Promise<AxiosResponse<R>|AxiosError> => {
+        let headers: Headers = prepareHeaders(HttpMethod.GET, false);
+        if(Object.keys(extraHeaders).length > 0) {
+            headers = { ...headers, ...extraHeaders as Headers };
+        }
+        return axios.get(ctx.webserverEndpoint + path, {
+            params: queryParams,
+            headers: headers,
+            responseType: 'blob'
+        });
+    }
+
+    const callGet = <T extends object, R>(path: string, queryParams: T, extraHeaders: object = {}): Promise<AxiosResponse<R>|AxiosError> => {
+        let headers: Headers = prepareHeaders(HttpMethod.GET, false);
+        if(Object.keys(extraHeaders).length > 0) {
+            headers = { ...headers, ...extraHeaders as Headers };
+        }
+        return axios.get(ctx.webserverEndpoint + path, {
             params: queryParams,
             headers: headers
         });
@@ -65,39 +78,27 @@ export const useApi = () => {
 
     const callPost = <T extends object, R>(path: string, payload: T, isFile: boolean = false): Promise<AxiosResponse<R>|AxiosError> => {
         const headers: Headers = prepareHeaders(HttpMethod.POST, isFile);
-        return axios.post(getBaseUrl() + path, payload, {
+        return axios.post(ctx.webserverEndpoint + path, payload, {
             headers: headers
         });
     };
 
     const callPatch = <T extends object, R>(path: string, payload: T): Promise<AxiosResponse<R>|AxiosError> => {
         const headers: Headers = prepareHeaders(HttpMethod.PATCH, false);
-        return axios.patch(getBaseUrl() + path, payload, {
+        return axios.patch(ctx.webserverEndpoint + path, payload, {
             headers: headers
         });
     };
 
-    const useGetQuery = <T extends object, R>(path: string, queryParams: T, options?: UseQueryOptions<R, AxiosError>) => {
-        return useQuery<R, AxiosError>({
-            queryKey: [path, queryParams],
-            queryFn: async(): Promise<R> => {
-                const response: AxiosResponse<R>|AxiosError = await callGet<T, R>(path, queryParams);
-                if(!axios.isAxiosError(response)) {
-                    return response.data;
-                }
-
-                throw new Error(response.message);
-            },
-            ... options
-        });
-    };
-
-    //const usePostMutation = 
+    const buildUrl = (path: string, params: any[]) => {
+        return sprintf(path, params);
+    }
 
     return {
         callGet,
         callPost,
         callPatch,
-        useGetQuery
+        callGetDownloadFile,
+        buildUrl
     };
 }

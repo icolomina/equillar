@@ -14,7 +14,7 @@ class ContractTransaction
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $contractAddress = null;
 
     #[ORM\Column(length: 100)]
@@ -96,7 +96,7 @@ class ContractTransaction
         return $this->trxHash;
     }
 
-    public function setTrxHash(string $trxHash): static
+    public function setTrxHash(?string $trxHash): static
     {
         $this->trxHash = $trxHash;
 

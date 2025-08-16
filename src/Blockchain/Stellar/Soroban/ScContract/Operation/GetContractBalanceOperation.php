@@ -4,7 +4,7 @@ namespace App\Blockchain\Stellar\Soroban\ScContract\Operation;
 
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\Builder\GetContractBalanceOperationBuilder;
 use App\Blockchain\Stellar\Soroban\Transaction\ProcessTransactionService;
-use App\Entity\Investment\ContractInvestment;
+use App\Entity\Contract\Contract;
 use Soneso\StellarSDK\Soroban\Responses\GetTransactionResponse;
 
 class GetContractBalanceOperation
@@ -14,7 +14,7 @@ class GetContractBalanceOperation
         private readonly ProcessTransactionService $processTransactionService
     ){}
 
-    public function getContractBalance(ContractInvestment $contract): GetTransactionResponse
+    public function getContractBalance(Contract $contract): GetTransactionResponse
     {
         $invokeContractHostFunction = $this->getContractBalanceOperationBuilder->build($contract);
         return $this->processTransactionService->sendTransaction($invokeContractHostFunction, true);

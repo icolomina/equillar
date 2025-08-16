@@ -2,9 +2,10 @@
 
 namespace App\Command\Contract\Investment;
 
-use App\Application\Contract\Service\GetContractBalanceService;
-use App\Persistence\Investment\Contract\ContractInvestmentBalanceStorageInterface;
-use App\Persistence\Investment\Contract\ContractInvestmentStorageInterface;
+use App\Application\Contract\Service\Blockchain\ContractBalanceGetAndUpdateService;
+use App\Application\Contract\Service\Blockchain\Event\ContractBalanceGetAndUpdateFromEventsService;
+use App\Application\Contract\Service\Blockchain\Event\GetContractBalanceUpdatedEventsService;
+use App\Persistence\Contract\ContractStorageInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,9 +19,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CheckContractInvestmentBalanceCommand extends Command
 {
     public function __construct(
-        private readonly ContractInvestmentStorageInterface $contractInvestmentStorage,
-        private readonly GetContractBalanceService $getContractBalanceService,
-        private readonly ContractInvestmentBalanceStorageInterface $contractInvestmentBalanceStorage
+        private readonly ContractStorageInterface $contractStorage,
+        private readonly ContractBalanceGetAndUpdateService $getContractBalanceService,
+        private readonly ContractBalanceGetAndUpdateFromEventsService $contractBalanceGetAndUpdateFromEventsService
     ){
         parent::__construct();
     }
@@ -28,31 +29,26 @@ class CheckContractInvestmentBalanceCommand extends Command
     public function configure(): void
     {
         $this
-            ->addOption('cid', null, InputOption::VALUE_OPTIONAL, 'Contract Investment Id')
+            ->addOption('cid', null, InputOption::VALUE_REQUIRED, 'Contract Investment Id')
+            ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'Checking type')
+            ->addOption('ledger', null, InputOption::VALUE_OPTIONAL, 'Start ledger')
         ;
 
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
-        $cid = $input->getOption('cid');
-        if($cid) {
-            $contractInvestment = $this->contractInvestmentStorage->getContractById($cid);
-            $contracts = ($contractInvestment) ? [$contractInvestment] : [];
-        }
-        else {
-            $contracts = $this->contractInvestmentStorage->getInitializedContracts();
-        }
+        $io   = new SymfonyStyle($input, $output);
+        $cid  = $input->getOption('cid');
+        $type = $input->getOption('type');
 
-        if(empty($contracts)) {
-            $io->writeln('There are no contracts to check');
-            return Command::SUCCESS;
-        }
+        $contract = $this->contractStorage->getContractById($cid);
+        ($type === 'RPC')
+            ? $this->getContractBalanceService->getContractBalance($contract)
+            : $this->contractBalanceGetAndUpdateFromEventsService->getContractBalanceEvents($contract, $input->getOption('ledger'))
+        ;
 
-        $this->getContractBalanceService->getContractBalance($contractInvestment);
-        $lastCheckedBalance = $this->contractInvestmentBalanceStorage->getLastBalanceByContractInvestment($contractInvestment);
-
+        $io->writeln('Contract Balance updated');
         return Command::SUCCESS;
     }
 }

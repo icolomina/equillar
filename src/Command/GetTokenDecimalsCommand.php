@@ -18,13 +18,12 @@ class GetTokenDecimalsCommand extends Command
 {
     public function __construct(
         private readonly TokenStorageInterface $tokenStorage,
-        private readonly GetTokenDecimalsOperation $getTokenDecimalsOperation,
-        private readonly TokenNormalizer $tokenNormalizer
+        private readonly GetTokenDecimalsOperation $getTokenDecimalsOperation
     ){
         parent::__construct();
     }
 
-    public function configure()
+    public function configure(): void
     {
         $this
             ->addArgument('token', InputArgument::REQUIRED, 'Token')
@@ -34,17 +33,10 @@ class GetTokenDecimalsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $i128 = $this->tokenNormalizer->normalizeTokenValue(623952.14365, 7);
-
-        $output->writeln('parte baja: ' . $i128->getLo());
-        $output->writeln('parte alta: ' . $i128->getHi());
-        $output->writeln('Valor original: ' . $i128->reverse());
-        $output->writeln('Valor original nativo: ' . $i128->toPhp(7));
-
-        return Command::SUCCESS;
-
         $token    = $this->tokenStorage->getOneByCode($input->getArgument('token'));
         $decimals = $this->getTokenDecimalsOperation->getTokenDecimals($token);
+
+        $output->writeln(sprintf('Decimals for token %s: %s', $token->getCode(), $decimals ));
 
         return Command::SUCCESS;
     }

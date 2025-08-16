@@ -1,18 +1,37 @@
-version: '3'
-
 networks:
-  soroban-crowdfactoring:
+  soroban-equillar:
     external: true
 
 services:
   database:
     image: postgres
-    container_name: crowdfactoring-db
+    container_name: equillar-db
+    volumes:
+      - ./:/var/www/equillar
     ports:
       - "5497:5432"
     environment:
-      POSTGRES_DB: sbcrowdf
-      POSTGRES_PASSWORD: sbcrowdf
-      POSTGRES_USER: sbcrowdf
+      POSTGRES_DB: equillar
+      POSTGRES_PASSWORD: equillar
+      POSTGRES_USER: equillar
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U equillar"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
-      - soroban-crowdfactoring
+      - soroban-equillar
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: equillar-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/var/www/equillar:cached
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - soroban-equillar

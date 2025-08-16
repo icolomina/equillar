@@ -13,3 +13,15 @@ yarn-error.log
 /package-lock.json
 /composer.lock
 /data/test/keypair.test.txt
+/data/investment/*
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
+
+/.env
+/.env.test
+
+.phpunit.result.cache
+
+/config/secrets/*

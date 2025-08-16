@@ -13,7 +13,6 @@ use Soneso\StellarSDK\Soroban\Requests\SimulateTransactionRequest;
 use Soneso\StellarSDK\Soroban\Responses\GetTransactionResponse;
 use Soneso\StellarSDK\Soroban\Responses\SendTransactionResponse;
 use Soneso\StellarSDK\Soroban\Responses\SimulateTransactionResponse;
-use Soneso\StellarSDK\Soroban\SorobanAuthorizationEntry;
 use Soneso\StellarSDK\Soroban\SorobanServer;
 use Soneso\StellarSDK\Transaction;
 use Soneso\StellarSDK\TransactionBuilder;
@@ -23,7 +22,7 @@ use Symfony\Component\DependencyInjection\Attribute\Lazy;
 class ProcessTransactionService
 {
     const int MAX_ITERATIONS = 10;
-    const int DEFAULT_WAITING_SLEEP = 1;
+    const int DEFAULT_WAITING_SLEEP = 1; // in seconds
 
     private SorobanServer $server;
 
@@ -36,7 +35,7 @@ class ProcessTransactionService
 
     public function sendTransaction(AbstractOperation $operation, bool $addAuth = false, ?KeyPair $invoker = null): ?GetTransactionResponse
     {
-        $this->stellarAccountLoader->load($this->serverLoaderService->getNetwork());
+        $this->stellarAccountLoader->load();
 
         $transaction = (new TransactionBuilder($this->stellarAccountLoader->getAccount()))->addOperation($operation)->build();
 
@@ -92,19 +91,19 @@ class ProcessTransactionService
     {
         if($invoker) {
             $auth = $simulateTransactionResponse->getSorobanAuth();
-            $latestLedgerResponse = $this->server->getLatestLedger();
-            foreach ($auth as $a) {
-                if ($a instanceof  SorobanAuthorizationEntry) {
+            if(!empty($auth)){
+                $latestLedgerResponse = $this->server->getLatestLedger();
+                foreach ($auth as $a) {
                     $a->credentials->addressCredentials->signatureExpirationLedger = $latestLedgerResponse->sequence + 10;
                     $a->sign($invoker, $this->serverLoaderService->getSorobanNetwork());
                 }
-            }
 
-            $transaction->setSorobanAuth($auth);
+                $transaction->setSorobanAuth($auth);
+                return;
+            }
         }
-        else{
-            $transaction->setSorobanAuth($simulateTransactionResponse->getSorobanAuth());
-        }
+        
+        $transaction->setSorobanAuth($simulateTransactionResponse->getSorobanAuth());
     }
     
 }

@@ -2,35 +2,37 @@
 
 namespace App\Application\Contract\Transformer;
 
+use App\Application\Token\Transformer\TokenEntityTransformer;
+use App\Domain\Contract\ContractReturnType;
 use App\Domain\Contract\ContractStatus;
-use App\Entity\Contract;
 use App\Presentation\Contract\DTO\Output\ContractDtoOutput;
 use App\Domain\DateFormats;
-use App\Entity\Investment\ContractInvestment;
-use App\Entity\Investment\ContractInvestmentBalance;
+use App\Entity\Contract\Contract;
+use App\Entity\Contract\ContractBalance;
 use App\Entity\Token;
 use App\Entity\User;
 use App\Presentation\Contract\DTO\Input\CreateContractDto;
-use App\Presentation\Contract\DTO\Output\ContractInvestmentBalanceDtoOutput;
 use Soneso\StellarSDK\Crypto\StrKey;
 
 class ContractEntityTransformer
 {
-    public function fromEntityToOutputDto(ContractInvestment $contract, ?ContractInvestmentBalance $contractBalance = null): ContractDtoOutput
-    {
-        $contractBalanceDtoOutput = ($contractBalance) 
-            ? new ContractInvestmentBalanceDtoOutput($contractBalance->getAvailable(), $contractBalance->getReserveFund(), $contractBalance->getComission())
-            : new ContractInvestmentBalanceDtoOutput(0, 0, 0)
-        ;
+    public function __construct(
+        private readonly ContractBalanceEntityTransformer $contractBalanceEntityTransformer,
+        private readonly TokenEntityTransformer $tokenEntityTransformer,
+    ){}
 
-        $contractAddress = $contract->getAddress() ? StrKey::encodeContractIdHex($contract->getAddress()) : null;
+    public function fromEntityToOutputDto(Contract $contract, ?ContractBalance $contractBalance = null): ContractDtoOutput
+    {
+        $returnType      = ContractReturnType::tryFrom($contract->getReturnType())?->getReadableName();
+        $contractAddress = ($contract->getAddress()) ? StrKey::encodeContractIdHex($contract->getAddress()) : null;
+
+        $contractBalanceDtoOutput = $this->contractBalanceEntityTransformer->fromEntityToOutputDto($contractBalance, $contract, true);
+        $tokenContractDtoOutput   = $this->tokenEntityTransformer->fromEntityToContractTokenOutputDto($contract->getToken());
 
         return new ContractDtoOutput(
-            $contract->getId(),
+            (string)$contract->getId(),
             $contractAddress,
-            $contract->getToken()->getName(),
-            $contract->getToken()->getDecimals(),
-            $contract->getToken()->getCode(),
+            $tokenContractDtoOutput,
             $contract->getRate(),
             $contract->getCreatedAt()->format(DateFormats::OUTPUT_DATE_FORMAT->value),
             $contract->getInitializedAt()?->format(DateFormats::OUTPUT_DATE_FORMAT->value),
@@ -43,7 +45,11 @@ class ContractEntityTransformer
             $contract->getShortDescription(),
             $contractBalanceDtoOutput,
             $contract->getStatus(),
-            $contract->getGoal()
+            $contract->getGoal(),
+            $contract->getMinPerInvestment(),
+            $returnType,
+            $contract->getReturnMonths(),
+            $contract->getProjectAddress()
         );
     }
 
@@ -57,7 +63,7 @@ class ContractEntityTransformer
 
     public function fromCreateInvestmentContractInputDtoToEntity(CreateContractDto $createContractDto, User $user, Token $token, string $filename): Contract
     {
-        $contract = new ContractInvestment();
+        $contract = new Contract();
         $contract->setCreatedAt(new \DateTimeImmutable());
         $contract->setIssuer($user);
         $contract->setRate((float)$createContractDto->rate);
@@ -71,7 +77,65 @@ class ContractEntityTransformer
         $contract->setFundsReached(false);
         $contract->setGoal((float)$createContractDto->goal);
         $contract->setShortDescription($createContractDto->shortDescription);
+        $contract->setMinPerInvestment((float)$createContractDto->minPerInvestment);
+        $contract->setReturnMonths((int)$createContractDto->returnMonths);
+        $contract->setReturnType((int)$createContractDto->returnType);
+        $contract->setProjectAddress($createContractDto->projectAddress);
 
         return $contract;
+    }
+
+    public function updateContractWithNewData(Contract $contract, CreateContractDto $createContractDto, User $user, Token $token, ?string $filename): void
+    {
+        $contract->setIssuer($user);
+        $contract->setRate((float)$createContractDto->rate);
+        $contract->setToken($token);
+        $contract->setClaimMonths((int)$createContractDto->claimMonths);
+        $contract->setLabel($createContractDto->label);
+        $contract->setDescription($createContractDto->description);
+        $contract->setGoal((float)$createContractDto->goal);
+        $contract->setShortDescription($createContractDto->shortDescription);
+        $contract->setMinPerInvestment((float)$createContractDto->minPerInvestment);
+        $contract->setReturnMonths((int)$createContractDto->returnMonths);
+        $contract->setReturnType((int)$createContractDto->returnType);
+        $contract->setProjectAddress($createContractDto->projectAddress);
+
+        if($filename) {
+            $contract->setFilename($filename);
+        }
+    }
+
+    public function updateContractAsBlocked(Contract $contract): void
+    {
+        $contract->setStatus(ContractStatus::BLOCKED->name);
+    }
+
+    public function updateContractAsFundsReached(Contract $contract): void
+    {
+        $contract->setStatus(ContractStatus::FUNDS_REACHED->name);
+    }
+
+    public function updateContractAsActive(Contract $contract, string $address): void
+    {
+        $contract->setStatus(ContractStatus::ACTIVE->name);
+        $contract->setAddress($address);
+        $contract->setInitialized(true);
+        $contract->setInitializedAt(new \DateTimeImmutable());
+    }
+
+    public function updateContractAsDeploymentFailed(Contract $contract): void
+    {
+        $contract->setStatus(ContractStatus::DEPLOYMENT_FAILED->name);
+    }
+
+    public function updateContractAsApproved(Contract $contract): void
+    {
+        $contract->setStatus(ContractStatus::APPROVED->name);
+        $contract->setApprovedAt(new \DateTimeImmutable());
+    }
+
+    public function updateContractAsRejected(Contract $contract): void
+    {
+        $contract->setStatus(ContractStatus::REJECTED->name);
     }
 }

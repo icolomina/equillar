@@ -2,6 +2,8 @@
 
 namespace App\Presentation\UserContract\DTO\Output;
 
+use App\Presentation\Token\DTO\Output\TokenContractDtoOutput;
+
 class UserContractDtoOutput 
 {
     public function __construct(
@@ -9,34 +11,17 @@ class UserContractDtoOutput
         public readonly string $contractIssuer,
         public readonly string $contractLabel,
         public readonly string $contractAddress,
-        public readonly string $token,
+        public readonly TokenContractDtoOutput $tokenContract,
         public readonly float  $rate,
         public readonly string $createdAt,
         public readonly string $withdrawalDate,
-        public readonly string $deposited,
-        public readonly string $interest,
-        public readonly string $total,
-        public readonly ?string $hash
+        public readonly float $deposited,
+        public readonly ?float $interest,
+        public readonly ?float $commission,
+        public readonly ?float $total,
+        public readonly ?string $hash,
+        public readonly ?string $status,
+        public readonly string $paymentType,
+        public readonly array $paymentsCalendar
     ){}
-
-    /*public static function fromEntity(UserContract $userContract): self
-    {
-        $claimMonths    = $userContract->getContract()->getClaimMonths();
-        $withdrawalDate = (new \DateTime())->add(\DateInterval::createFromDateString("+ {$claimMonths} months"))->format('Y-m-d');
-
-        return new self(
-            $userContract->getId(),
-            $userContract->getContract()->getIssuer()->getName(),
-            $userContract->getContract()->getLabel(),
-            $userContract->getContract()->getAddress(),
-            $userContract->getContract()->getToken()->getName() . ' - ' . $userContract->getContract()->getToken()->getCode(),
-            $userContract->getContract()->getRate(),
-            $userContract->getCreatedAt()->format('Y-m-d H:i'),
-            $withdrawalDate,
-            $userContract->getBalance(),
-            $userContract->getInterests(),
-            $userContract->getTotal(),
-            $userContract->getHash()
-        );
-    }*/
 }

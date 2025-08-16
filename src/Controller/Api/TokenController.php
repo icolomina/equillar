@@ -13,9 +13,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_COMPANY")'))]
 class TokenController extends AbstractController
 {
-    #[Route('', name: 'api_get_tokens', methods: ['GET'])]
+    #[Route('/get-available-tokens', name: 'api_get_available_tokens', methods: ['GET'])]
     public function getTokens(GetTokensService $getTokensService): JsonResponse
     {
         return $this->json($getTokensService->getTokens());
     }
 }
+
+

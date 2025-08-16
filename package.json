@@ -6,6 +6,9 @@
     "@symfony/stimulus-bridge": "^3.2.0",
     "@symfony/ux-react": "file:vendor/symfony/ux-react/assets",
     "@symfony/webpack-encore": "github:symfony/webpack-encore",
+    "@types/sprintf-js": "^1.1.4",
+    "@types/webpack-env": "^1.18.8",
+    "file-loader": "^6.2.0",
     "react": "^18.0",
     "react-dom": "^18.0",
     "ts-loader": "^9.5.1",
@@ -19,10 +22,11 @@
     "build": "encore production --progress"
   },
   "dependencies": {
+    "@creit.tech/stellar-wallets-kit": "^1.7.3",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.1.1",
-    "@mui/icons-material": "^6.4.0",
+    "@mui/icons-material": "^6.4.12",
     "@mui/material": "^6.4.0",
     "@stellar/freighter-api": "^2.0.0",
     "@stellar/stellar-sdk": "^12.1.0",
@@ -34,6 +38,8 @@
     "bignumber.js": "^9.1.2",
     "core-js": "^3.37.1",
     "prop-types": "^15.8.1",
+    "react-hook-form": "^7.59.0",
+    "react-pdf": "^9.2.1",
     "react-router-dom": "^7.1.0",
     "sprintf-js": "^1.1.3"
   }

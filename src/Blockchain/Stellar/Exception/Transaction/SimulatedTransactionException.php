@@ -11,7 +11,7 @@ class SimulatedTransactionException extends \RuntimeException implements Transac
     public function __construct(SimulateTransactionResponse $simulateTransactionResponse)
     {
         $this->simulateTransactionResponse = $simulateTransactionResponse;
-        $message = sprintf('Soroban Simulated transaction failed: ' . $simulateTransactionResponse->resultError ?? $simulateTransactionResponse->getError());
+        $message = sprintf('Soroban Simulated transaction failed: %s' , $this->getError());
         parent::__construct($message);
     }
 
@@ -32,12 +32,16 @@ class SimulatedTransactionException extends \RuntimeException implements Transac
 
     public function getError(): string
     {
-        return $this->simulateTransactionResponse->resultError ?? $this->simulateTransactionResponse->getError()?->message ?? 'Unknown Error';
+        return match(true) {
+            $this->simulateTransactionResponse->resultError => $this->simulateTransactionResponse->resultError,
+            $this->simulateTransactionResponse->getError() && $this->simulateTransactionResponse->getError()->message => $this->simulateTransactionResponse->getError()->message,
+            default => 'Unknown error'
+        };
     }
 
     public function getFailureLedger(): int
     {
-        return $this->simulateTransactionResponse->getLatestLedger() ?? strtotime('now');
+        return $this->simulateTransactionResponse->getLatestLedger();
     }
 
     public function getHash(): ?string

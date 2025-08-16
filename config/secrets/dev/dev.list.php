@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'APP_SECRET' => null,
     'SECURITY_TOKEN_KEY' => null,
-    'STELLAR_SECRET' => null,
+    'URI_SIGNER_KEY' => null,
 ];

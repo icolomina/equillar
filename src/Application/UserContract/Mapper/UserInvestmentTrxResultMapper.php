@@ -2,46 +2,42 @@
 
 namespace App\Application\UserContract\Mapper;
 
-use App\Domain\Contract\Investment\UserContractInvestmentStatus;
 use App\Domain\I128;
-use App\Domain\Utils\Math\I128Handler;
-use App\Entity\Investment\UserContractInvestment;
+use App\Domain\UserContract\UserContractStatus;
+use App\Entity\Contract\UserContract;
 
 class UserInvestmentTrxResultMapper
 {
-    public function __construct(
-        private readonly I128Handler $i128Handler
-    ){}
-
-    public function mapToEntity(array $trxResult, UserContractInvestment $userContractInvestment): void
+    public function mapToEntity(array $trxResult, UserContract $userContract): void
     {
-        $decimals  = $userContractInvestment->getContract()->getToken()->getDecimals();
+        $decimals  = $userContract->getContract()->getToken()->getDecimals();
 
         foreach($trxResult as $key => $value) {
             $result = match($key) {
-                'accumulated_interests', 'deposited', 'total' => I128::fromLoAndHi($value->getLo(), $value->getHi())->toPhp($decimals),
-                'claimable_ts' => new \DateTimeImmutable(date('Y-m-d H:i:s', $value)),
+                'accumulated_interests', 'deposited', 'total', 'paid', 'regular_payment','commission'  => I128::fromLoAndHi($value->getLo(), $value->getHi())->toPhp($decimals),
+                'claimable_ts' => $value,
                 'last_transfer_ts' => ($value > 0) ? new \DateTimeImmutable(date('Y-m-d H:i:s', $value)) : null,
-                'paid', 'regular_payment' => I128::fromLoAndHi($value->getLo(), $value->getHi())->toPhp($decimals),
-                'status' => UserContractInvestmentStatus::tryFrom($value)?->name ?? UserContractInvestmentStatus::UNKNOWN->name,
+                'status' => (UserContractStatus::tryFrom($value) ?? UserContractStatus::UNKNOWN)->name,
                 default => null
             };
 
-            $this->setValueToEntity($userContractInvestment, $key, $result);
+            $this->setValueToEntity($userContract, $key, $result);
         }
     }
 
-    private function setValueToEntity(UserContractInvestment $userContractInvestment, string $key, mixed $value): void
+    private function setValueToEntity(UserContract $userContract, string $key, mixed $value): void
     {
-        $currentTotalCharged = $userContractInvestment->getTotalCharged() ?? 0; 
+        $currentTotalCharged = $userContract->getTotalCharged() ?? 0; 
         match($key) {
-            'accumulated_interests' => $userContractInvestment->setInterests($value), 
-            'deposited' => $userContractInvestment->setBalance($value), 
-            'total' => $userContractInvestment->setTotal($value),
-            'claimable_ts' => $userContractInvestment->setClaimableAt($value),
-            'last_transfer_ts' => $userContractInvestment->setLastPaymentReceivedAt($value),
-            'paid' => $userContractInvestment->setTotalCharged($currentTotalCharged + $value), 
-            'status' => $userContractInvestment->setStatus($value),
+            'accumulated_interests' => $userContract->setInterests($value), 
+            'commission' => $userContract->setCommission($value),
+            'deposited' => $userContract->setBalance($value), 
+            'total' => $userContract->setTotal($value),
+            'claimable_ts' => $userContract->setClaimableTs($value),
+            'last_transfer_ts' => $userContract->setLastPaymentReceivedAt($value),
+            'paid' => $userContract->setTotalCharged($currentTotalCharged + $value), 
+            'status' => $userContract->setStatus($value),
+            'regular_payment' => $userContract->setRegularPayment($value),
             default => null
         };
     }

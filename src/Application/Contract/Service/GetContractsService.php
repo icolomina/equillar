@@ -3,20 +3,18 @@
 namespace App\Application\Contract\Service;
 
 use App\Application\Contract\Transformer\ContractEntityTransformer;
-use App\Domain\Contract\Service\AvailableContractsInvestmentFilter;
 use App\Entity\User;
-use App\Persistence\Investment\Contract\ContractInvestmentBalanceStorageInterface;
-use App\Persistence\Investment\Contract\ContractInvestmentStorageInterface;
+use App\Persistence\Contract\ContractBalanceStorageInterface;
+use App\Persistence\Contract\ContractStorageInterface;
 use App\Presentation\Contract\DTO\Output\ContractDtoOutput;
 
 class GetContractsService
 {
 
     public function __construct(
-        private readonly ContractInvestmentStorageInterface $contractInvestmentStorage,
+        private readonly ContractStorageInterface $contractStorage,
         private readonly ContractEntityTransformer $contractEntityTransformer,
-        private readonly AvailableContractsInvestmentFilter $availableContractsInvestmentFilter,
-        private readonly ContractInvestmentBalanceStorageInterface $contractInvestmentBalanceStorage
+        private readonly ContractBalanceStorageInterface $contractBalanceStorage
     ){}
 
     /**
@@ -25,24 +23,28 @@ class GetContractsService
     public function getContracts(User $user): array
     {
         $contracts = ($user->isAdmin()) 
-            ? $this->contractInvestmentStorage->getAllContracts() 
-            : $this->contractInvestmentStorage->getContractsByIssuer($user)
+            ? $this->contractStorage->getAllContracts() 
+            : $this->contractStorage->getContractsByIssuer($user)
         ;
         
-        return $this->contractEntityTransformer->fromEntitiesToOutputDtos($contracts);
+        $contractsOutput = [];
+        foreach($contracts as $contract){
+            $lastBalance = ($contract->getContractBalances()->isEmpty()) ? null : $contract->getContractBalances()->first();
+            $contractsOutput[] = $this->contractEntityTransformer->fromEntityToOutputDto($contract, $lastBalance);
+        }
+
+        
+        return $contractsOutput;
     } 
 
     public function getAvailableContracts(User $user): array
     {
-        $contracts = $this->contractInvestmentStorage->getInitializedContracts();
-        $userContracts = $user->getContracts();
+        $contracts = $this->contractStorage->getInitializedContracts();
 
         $contractsOutput = [];
         foreach($contracts as $contract){
-            if($this->availableContractsInvestmentFilter->isAvailableContractInvestment($contract, $userContracts->toArray())){
-                $contractInvestmentBalance = $this->contractInvestmentBalanceStorage->getLastBalanceByContractInvestment($contract);
-                $contractsOutput[] = $this->contractEntityTransformer->fromEntityToOutputDto($contract, $contractInvestmentBalance);
-            }
+            $contractInvestmentBalance = $this->contractBalanceStorage->getLastBalanceByContract($contract);
+            $contractsOutput[] = $this->contractEntityTransformer->fromEntityToOutputDto($contract, $contractInvestmentBalance);
         }
 
         return $contractsOutput;

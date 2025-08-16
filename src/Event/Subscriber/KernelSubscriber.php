@@ -5,20 +5,12 @@ namespace App\Event\Subscriber;
 use Firebase\JWT\ExpiredException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 class KernelSubscriber implements EventSubscriberInterface{
-
-    public function __construct(
-        private readonly RouterInterface $router
-    ){}
 
     public static function getSubscribedEvents(): array
     {

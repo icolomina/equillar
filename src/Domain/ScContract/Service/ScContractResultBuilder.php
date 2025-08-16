@@ -6,18 +6,28 @@ use App\Blockchain\Stellar\Exception\Transaction\ContractCallFunctionResultExcep
 use Soneso\StellarSDK\Soroban\Responses\GetTransactionResponse;
 use Soneso\StellarSDK\Xdr\XdrSCError;
 use Soneso\StellarSDK\Xdr\XdrSCMapEntry;
+use Soneso\StellarSDK\Xdr\XdrSCVal;
 use Soneso\StellarSDK\Xdr\XdrSCValType;
 
 class ScContractResultBuilder
 {
-    public function getResultData(GetTransactionResponse $transactionResponse): mixed
+    public function getResultDataFromTransactionResponse(GetTransactionResponse $transactionResponse): mixed
     {
         $xdrResult = $transactionResponse->getResultValue();
-        
+        return $this->getValueFromXdrResult($xdrResult, $transactionResponse->getTxHash());
+    }
+
+    public function getResultDataFromXdrResult(XdrSCVal $xdrSCVal, string $trxHash): mixed
+    {
+        return $this->getValueFromXdrResult($xdrSCVal, $trxHash);
+    }
+
+    private function getValueFromXdrResult(XdrSCVal $xdrResult, string $hash): mixed
+    {
         return match($xdrResult->type->value) {
             XdrSCValType::SCV_VOID => null,
             XdrSCValType::SCV_BOOL => $xdrResult->getB(),
-            XdrSCValType::SCV_ERROR => $this->processFunctionCallError($xdrResult->getError(), $transactionResponse->getTxHash()),
+            XdrSCValType::SCV_ERROR => $this->processFunctionCallError($xdrResult->getError(), $hash),
             XdrSCValType::SCV_I128 => $xdrResult->getI128(),
             XdrSCValType::SCV_MAP => $this->generateForMap($xdrResult->getMap()),
             XdrSCValType::SCV_U32 => $xdrResult->getU32(),
@@ -28,7 +38,13 @@ class ScContractResultBuilder
 
     private function processFunctionCallError(XdrSCError $xdrSCError, string $trxHash): never
     {
-        throw new ContractCallFunctionResultException($xdrSCError->getCode()->getValue(), $xdrSCError->getType()->getValue(), $trxHash);
+        $errorCodeConstants = array_flip((new \ReflectionClass($xdrSCError->getCode()))->getConstants());
+        $errorTypeConstants = array_flip((new \ReflectionClass($xdrSCError->getType()))->getConstants());
+        throw new ContractCallFunctionResultException(
+            $errorCodeConstants[$xdrSCError->getCode()->getValue()] ?? 'Unknown Code', 
+            $errorTypeConstants[$xdrSCError->getType()->getValue()] ?? 'Unknown Type', 
+            $trxHash
+        );
     }
 
     /**

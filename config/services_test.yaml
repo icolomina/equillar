@@ -1,0 +1,25 @@
+imports:
+  - { resource: services.yaml }
+
+services:
+
+  _defaults:
+    public: true
+
+  test.App\Application\Contract\Transformer\ContractTransactionEntityTransformer: '@App\Application\Contract\Transformer\ContractTransactionEntityTransformer'
+  test.App\Application\Contract\Transformer\ContractEntityTransformer: '@App\Application\Contract\Transformer\ContractEntityTransformer'
+  test.App\Domain\ScContract\Service\ScContractResultBuilder: '@App\Domain\ScContract\Service\ScContractResultBuilder'
+  test.App\Persistence\PersistorInterface: '@App\Persistence\PersistorInterface'
+  test.App\Application\UserContract\Mapper\UserInvestmentTrxResultMapper: '@App\Application\UserContract\Mapper\UserInvestmentTrxResultMapper'
+  test.App\Persistence\Token\TokenStorageInterface: '@App\Persistence\Token\TokenStorageInterface'
+  test.App\Persistence\Contract\ContractStorageInterface: '@App\Persistence\Contract\ContractStorageInterface'
+  test.App\Persistence\UserContract\UserContractStorageInterface: '@App\Persistence\UserContract\UserContractStorageInterface'
+  test.App\Persistence\UserContract\UserContractPaymentStorageInterface: '@App\Persistence\UserContract\UserContractPaymentStorageInterface'
+  test.App\Application\UserContract\Transformer\UserContractEntityTransformer: '@App\Application\UserContract\Transformer\UserContractEntityTransformer'
+  test.App\Application\UserContract\Transformer\UserContractPaymentEntityTransformer: '@App\Application\UserContract\Transformer\UserContractPaymentEntityTransformer'
+  test.App\Application\Contract\Mapper\GetContractBalanceMapper: '@App\Application\Contract\Mapper\GetContractBalanceMapper'
+  test.App\Application\Contract\Transformer\ContractBalanceEntityTransformer: '@App\Application\Contract\Transformer\ContractBalanceEntityTransformer'
+
+  test.App\Persistence\Contract\ContractBalanceStorageInterface: '@App\Persistence\Contract\ContractBalanceStorageInterface'
+  test.App\Application\Contract\Transformer\ContractWithdrawalApprovalEntityTransformer: '@App\Application\Contract\Transformer\ContractWithdrawalApprovalEntityTransformer'
+  test.App\Persistence\Contract\ContractWithdrawalApprovalStorageInterface: '@App\Persistence\Contract\ContractWithdrawalApprovalStorageInterface'

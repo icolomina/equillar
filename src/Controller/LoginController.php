@@ -2,39 +2,15 @@
 
 namespace App\Controller;
 
-use App\Api\User\RegisterUserService;
 use App\Application\Security\Token\TokenEncoder;
 use App\Entity\User;
-use App\Presentation\User\DTO\Input\RegisterUserDtoInput;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class LoginController extends AbstractController
 {
-    #[Route('/register-user-data', name: 'api_register_user', methods: ['POST'])]
-    public function postRegisterUserData(#[MapRequestPayload] RegisterUserDtoInput $registerUserDtoInput, RegisterUserService $registerUserService): JsonResponse
-    {
-        $registerUserService->registerUser($registerUserDtoInput);
-        return new JsonResponse(null, 204);
-    }
-
-    #[Route('/register', name: 'get_register_page', methods: ['GET'])]
-    public function getRegisterPage(): Response
-    {
-        return $this->render('register.html.twig');
-    }
-
-    #[Route('/login', name: 'get_api_login', methods: ['GET'])]
-    public function getLogin(string $webserverEndpoint): Response 
-    {
-        return $this->render('SignIn.html.twig', ['webserverEndpoint' => $webserverEndpoint]);
-    }
-
     #[Route('/do-login', name: 'post_api_login', methods: ['POST'])]
     public function postLogin(#[CurrentUser] ?User $user, TokenEncoder $tokenEncoder): Response
     {
@@ -47,7 +23,9 @@ class LoginController extends AbstractController
         return $this->json([
             'user'  => $user->getUserIdentifier(),
             'token' => $tokenEncoder->encode($user),
-            'role' => $user->getRoles()[0]
+            'role' => $user->getRoles()[0],
+            'name' => $user->getName(),
+            'role_type' => $user->getUserRoleType()
         ]);
     }
 

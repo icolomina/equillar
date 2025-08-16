@@ -2,8 +2,8 @@
 
 namespace App\Command\Contract\Investment;
 
-use App\Application\UserContract\Service\ProcessUserInvestmentTransactionService;
-use App\Persistence\Investment\UserContract\UserContractInvestmentStorageInterface;
+use App\Application\UserContract\Service\ProcessUserContractService;
+use App\Persistence\UserContract\UserContractStorageInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,8 +16,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CheckUserInvestmentTransactionCommand extends Command
 {
     public function __construct(
-        private readonly UserContractInvestmentStorageInterface $userContractInvestmentStorage,
-        private readonly ProcessUserInvestmentTransactionService $processUserInvestmentTransactionService
+        private readonly UserContractStorageInterface $userContractStorage,
+        private readonly ProcessUserContractService $processUserContractService
     ){
         parent::__construct();
     }
@@ -25,16 +25,16 @@ class CheckUserInvestmentTransactionCommand extends Command
     public function configure(): void
     {
         $this
-            ->addOption('user_investment_id', null, InputOption::VALUE_REQUIRED, 'User Investment Id')
+            ->addOption('user_contract_id', null, InputOption::VALUE_REQUIRED, 'User Contract Id')
         ;
 
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $userInvestmentId = $input->getOption('user_investment_id');
-        $userInvestment   = $this->userContractInvestmentStorage->getById($userInvestmentId);
-        $this->processUserInvestmentTransactionService->processUserInvestmentTransaction($userInvestment);
+        $userContractId = $input->getOption('user_contract_id');
+        $userContract   = $this->userContractStorage->getById($userContractId);
+        $this->processUserContractService->processUserContractTransaction($userContract);
         
         return Command::SUCCESS;
 

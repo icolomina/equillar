@@ -4,9 +4,9 @@ namespace App\Domain\UserContract\Service;
 
 class TotalChargedCalculator
 {
-    public function calculateTotalCharged(?float $currentTotalCharged, string $amountClaimed): float
+    public function calculateTotalCharged(?float $currentTotalCharged, float $amountClaimed): float
     {
         $currentTotalCharged = $currentTotalCharged ?? 0;
-        return (float)$amountClaimed + $currentTotalCharged;
+        return $amountClaimed + $currentTotalCharged;
     }
 }

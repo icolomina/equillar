@@ -21,12 +21,10 @@ class GetTokenDecimalsOperation
         $transactionResponse = $this->processTransactionService->sendTransaction($invokeContractHostFunction);
         $resultValue = $transactionResponse->getResultValue();
 
-       // $this->registerTransactionService->registerContractTransaction($token->getAddress(), 'Token', 'mint', $transactionResponse);
-
         if($resultValue->getError()) {
             throw new \RuntimeException('Unable to check balance for address: ' . $resultValue->getError()->getCode()->getValue());
         }
 
-        return $this->scContractResultBuilder->getResultData($transactionResponse);
+        return $this->scContractResultBuilder->getResultDataFromTransactionResponse($transactionResponse);
     }
 }

@@ -11,7 +11,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name : 'app:contract:encode'
+    name : 'app:contract:encode',
+    description: 'Encode a contract id'
 )]
 class EncodeContractCommand extends Command
 {

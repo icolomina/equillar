@@ -1,5 +1,5 @@
 
-[![CI](https://github.com/icolomina/equillar/actions/workflows/ci.yml/badge.svg)](https://github.com/icolomina/equillar/actions/workflows/ci.yml) [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+[![CI](https://github.com/icolomina/equillar/actions/workflows/ci.yml/badge.svg)](https://github.com/icolomina/equillar/actions/workflows/ci.yml) [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0) [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/icolomina/equillar?include_prereleases)](https://github.com/icolomina/equillar/releases)
 
 # Equillar
 

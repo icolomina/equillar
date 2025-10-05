@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      database:
+        image: postgres
+        env:
+          POSTGRES_DB: equillar
+          POSTGRES_USER: changeme
+          POSTGRES_PASSWORD: changeme
+        ports:
+          - 5497:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: >
+            mbstring, intl, xml, curl, gmp, gd, pgsql, bcmath, zip, fpm
+          coverage: xdebug
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Copy .env.dist to .env
+        run: cp .env.dist .env
+
+      - name: Export database environment variables
+        run: |
+          echo "POSTGRES_USER=changeme" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=changeme" >> $GITHUB_ENV
+
+      - name: Create database
+        run: php bin/console doctrine:database:create --if-not-exists --no-interaction
+
+      - name: Load fixtures
+        run: php bin/console doctrine:fixtures:load --no-interaction --purge-with-truncate
+
+      - name: Run PHPStan (level 5)
+        run: vendor/bin/phpstan analyse --level=5
+
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit

@@ -1,4 +1,8 @@
 
+[![CI](https://github.com/icolomina/equillar/actions/workflows/ci.yml/badge.svg)](https://github.com/icolomina/equillar/actions/workflows/ci.yml)
+
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+
 # Equillar
 
 Equillar is an open-source fintech application that enables companies and institutions to publish projects seeking funding, and allows investors to contribute capital using stablecoins issued on the [Stellar](https://stellar.org/) blockchain using [Soroban](https://stellar.org/soroban) contracts. 

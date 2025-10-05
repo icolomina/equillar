@@ -19,7 +19,7 @@ jobs:
         ports:
           - 5497:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U changeme"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 5
@@ -45,6 +45,7 @@ jobs:
         run: |
           echo "POSTGRES_USER=changeme" >> $GITHUB_ENV
           echo "POSTGRES_PASSWORD=changeme" >> $GITHUB_ENV
+          echo "DATABASE_URL=postgresql://changeme:changeme@localhost:5497/equillar?serverVersion=16&charset=utf8" >> $GITHUB_ENV
 
       - name: Create database
         run: php bin/console doctrine:database:create --if-not-exists --no-interaction

@@ -61,3 +61,5 @@ jobs:
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit
+        env:
+          SYMFONY_DEPRECATIONS_HELPER: 'disabled'

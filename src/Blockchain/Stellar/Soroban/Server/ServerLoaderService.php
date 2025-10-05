@@ -1,5 +1,10 @@
 <?php
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+*/
 namespace App\Blockchain\Stellar\Soroban\Server;
 
 use App\Application\SystemWallet\Service\RetrieveSystemWalletService;
@@ -10,12 +15,13 @@ use Soneso\StellarSDK\Soroban\SorobanServer;
 class ServerLoaderService
 {
     public function __construct(
-        private readonly RetrieveSystemWalletService $retrieveSystemWalletService
-    ){}
+        private readonly RetrieveSystemWalletService $retrieveSystemWalletService,
+    ) {
+    }
 
     public function getServer(): SorobanServer
     {
-        $systemWalletData  = $this->retrieveSystemWalletService->retrieve();
+        $systemWalletData = $this->retrieveSystemWalletService->retrieve();
 
         $server = new SorobanServer($systemWalletData->url);
         $healthResponse = $server->getHealth();
@@ -27,17 +33,19 @@ class ServerLoaderService
     }
 
     public function getSorobanNetwork(): Network
-    {       
-        $systemWalletData  = $this->retrieveSystemWalletService->retrieve();
-        return ($systemWalletData->isTest) 
+    {
+        $systemWalletData = $this->retrieveSystemWalletService->retrieve();
+
+        return ($systemWalletData->isTest)
             ? Network::testnet()
             : Network::public()
         ;
     }
 
-    public function getSorobanRpcUrl(): string 
+    public function getSorobanRpcUrl(): string
     {
-        $systemWalletData  = $this->retrieveSystemWalletService->retrieve();
+        $systemWalletData = $this->retrieveSystemWalletService->retrieve();
+
         return $systemWalletData->url;
     }
 }

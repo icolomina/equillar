@@ -2,17 +2,17 @@
 
 namespace App\Application\Contract\Service\Blockchain;
 
-use App\Application\Contract\Transformer\ContractBalanceEntityTransformer;
-use App\Application\Contract\Transformer\ContractTransactionEntityTransformer;
 use App\Application\Contract\Mapper\GetContractBalanceMapper;
+use App\Application\Contract\Transformer\ContractBalanceEntityTransformer;
 use App\Application\Contract\Transformer\ContractEntityTransformer;
+use App\Application\Contract\Transformer\ContractTransactionEntityTransformer;
 use App\Blockchain\Stellar\Exception\Transaction\TransactionExceptionInterface;
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\GetContractBalanceOperation;
 use App\Domain\Contract\ContractFunctions;
-use App\Domain\ScContract\Service\ScContractResultBuilder;
-use App\Persistence\PersistorInterface;
 use App\Domain\Contract\ContractNames;
+use App\Domain\ScContract\Service\ScContractResultBuilder;
 use App\Entity\Contract\Contract;
+use App\Persistence\PersistorInterface;
 
 class ContractBalanceGetAndUpdateService
 {
@@ -23,15 +23,16 @@ class ContractBalanceGetAndUpdateService
         private readonly ContractBalanceEntityTransformer $contractBalanceEntityTransformer,
         private readonly ContractEntityTransformer $contractEntityTransformer,
         private readonly ContractTransactionEntityTransformer $contractTransactionEntityTransformer,
-        private readonly PersistorInterface $persistor
-    ){}
+        private readonly PersistorInterface $persistor,
+    ) {
+    }
 
     public function getContractBalance(Contract $contract)
     {
         $contractTransaction = null;
         $contractBalance = null;
 
-        try{
+        try {
             $transactionResponse = $this->getContractBalanceOperation->getContractBalance($contract);
             $trxResult = $this->scContractResultBuilder->getResultDataFromTransactionResponse($transactionResponse);
             $contractBalance = $this->contractBalanceEntityTransformer->fromContractInvestmentToBalance($contract);
@@ -49,14 +50,13 @@ class ContractBalanceGetAndUpdateService
             $this->contractBalanceEntityTransformer->updateContractBalanceAsConfirmed($contractBalance, $contractTransaction);
             $this->persistor->persist([$contractTransaction, $contractBalance]);
 
-            if($contractBalance->getFundsReceived() >= $contract->getGoal()) {
+            if ($contractBalance->getFundsReceived() >= $contract->getGoal()) {
                 $this->contractEntityTransformer->updateContractAsFundsReached($contract);
                 $this->persistor->persist($contract);
             }
 
             $this->persistor->flush();
-        }
-        catch(TransactionExceptionInterface $ex){
+        } catch (TransactionExceptionInterface $ex) {
             $contractTransaction = $this->contractTransactionEntityTransformer->fromFailedTransaction(
                 $contract->getAddress(),
                 ContractNames::INVESTMENT->value,
@@ -68,6 +68,6 @@ class ContractBalanceGetAndUpdateService
 
             $this->contractBalanceEntityTransformer->updateContractBalanceAsFailed($contractBalance, $contractTransaction);
             $this->persistor->persistAndFlush([$contractTransaction, $contractBalance]);
-        } 
+        }
     }
 }

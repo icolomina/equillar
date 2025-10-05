@@ -1,4 +1,9 @@
 <?php
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 
 namespace App\Entity;
 
@@ -7,19 +12,17 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User implements UserInterface,PasswordAuthenticatedUserInterface,EquatableInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, EquatableInterface
 {
-
-    const ROLE_FINANCIAL_ENTITY = 'ROLE_COMPANY';
-    const ROLE_SAVER = 'ROLE_USER';
-    const ROLE_ADMIN = 'ROLE_ADMIN';
+    public const ROLE_FINANCIAL_ENTITY = 'ROLE_COMPANY';
+    public const ROLE_SAVER = 'ROLE_USER';
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -119,16 +122,15 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface,Equatable
 
     public function getUserRoleType(): string
     {
-        return match(true) {
+        return match (true) {
             $this->isAdmin() => 'Administrator',
             $this->isSaver() => 'Investor',
-            default => 'Company'
+            default => 'Company',
         };
     }
 
     public function eraseCredentials(): void
     {
-        
     }
 
     public function getUserIdentifier(): string
@@ -146,6 +148,11 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface,Equatable
     public function isSaver(): bool
     {
         return in_array(self::ROLE_SAVER, $this->getRoles());
+    }
+
+    public function isCompany(): bool
+    {
+        return in_array(self::ROLE_FINANCIAL_ENTITY, $this->getRoles());
     }
 
     public function isAdmin(): bool
@@ -215,6 +222,6 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface,Equatable
 
     public function isEqualTo(UserInterface $user): bool
     {
-        return $user->getRoles() === $this->getRoles() && $user->getUserIdentifier() === $this->getUserIdentifier();
+        return $user->getUserIdentifier() === $this->getUserIdentifier();
     }
 }

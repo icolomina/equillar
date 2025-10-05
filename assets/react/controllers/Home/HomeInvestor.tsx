@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { Fragment } from "react";
 import { useApi } from "../../hooks/ApiHook";
 import { GetAvailableContractsPath } from "../../services/Api/Investment/ApiRoutes";
@@ -78,14 +84,14 @@ export default function HomeInvestor() {
         <Grid2 container spacing={4}>
           <Grid2 size={12}>
             <Typography variant="h4" gutterBottom>
-              Listado de proyectos disponibles
+              Available projects list
             </Typography>
           </Grid2>
           {query.data.map((ac: ContractOutput) => (
             <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={ac.id}> {/* md={3} para 12/3 = 4 tarjetas por fila */}
 
               <ProjectForInvesting>
-                <CardMedia component="img" alt={ac.label} image="https://127.0.0.1:8000/images/medtech.jpg" />
+                <CardMedia component="img" alt={ac.label} image={ac.imageUrl} />
                 <CardContent>
                   <Box>
                   <Typography variant="h6" gutterBottom fontWeight="bold">{ac.label}</Typography>

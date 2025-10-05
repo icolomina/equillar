@@ -17,19 +17,23 @@ class CreateContractWithdrawalRequestService
         private readonly ContractWithdrawalRequestEntityTransformer $contractWithdrawalRequestEntityTransformer,
         private readonly UrlSigner $urlSigner,
         private readonly PersistorInterface $persistorInterface,
-        private readonly RouterInterface $router
-    ){}
+        private readonly RouterInterface $router,
+    ) {
+    }
 
     public function createContractWithdrawalRequest(Contract $contract, User $user, ContractRequestWithdrawalDtoInput $contractRequestWithdrawalDtoInput): ContractWithdrawalRequestDtoOutput
     {
-        $requestWithdrawal    = $this->contractWithdrawalRequestEntityTransformer->fromRequestWithdrawalDtoToEntity(
-            $contract, 
+        $requestWithdrawal = $this->contractWithdrawalRequestEntityTransformer->fromRequestWithdrawalDtoToEntity(
+            $contract,
             $user,
             $contractRequestWithdrawalDtoInput
         );
 
         $this->persistorInterface->persistAndFlush($requestWithdrawal);
 
+        /**
+         * Generate signed URL for confirming the withdrawal request. This is not in use right now but will be used in the email sent to the user in next versions.
+         */
         $requestWithdrawalUrl = $this->urlSigner->signUrl($this->router->generate('em_get_confirm_withdrawal', ['id' => $requestWithdrawal->getId()], RouterInterface::ABSOLUTE_URL));
         $requestWithdrawal->setConfirmUrl($requestWithdrawalUrl);
         $this->persistorInterface->persistAndFlush($requestWithdrawal);

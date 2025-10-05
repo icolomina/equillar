@@ -1,4 +1,8 @@
 <?php
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace App\Application\UserContract\Service;
 
@@ -7,11 +11,11 @@ use App\Application\UserContract\Mapper\UserInvestmentTrxResultMapper;
 use App\Blockchain\Stellar\Exception\Transaction\GetTransactionException;
 use App\Blockchain\Stellar\Soroban\Transaction\ProcessTransactionService;
 use App\Domain\Contract\ContractFunctions;
-use App\Domain\ScContract\Service\ScContractResultBuilder;
-use App\Persistence\PersistorInterface;
 use App\Domain\Contract\ContractNames;
+use App\Domain\ScContract\Service\ScContractResultBuilder;
 use App\Entity\Contract\UserContract;
 use App\Message\CheckContractBalanceMessage;
+use App\Persistence\PersistorInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProcessUserContractService
@@ -22,14 +26,15 @@ class ProcessUserContractService
         private readonly ScContractResultBuilder $scContractResultBuilder,
         private readonly PersistorInterface $persistor,
         private readonly UserInvestmentTrxResultMapper $userInvestmentTrxResultMapper,
-        private readonly MessageBusInterface $bus
-    ){}
+        private readonly MessageBusInterface $bus,
+    ) {
+    }
 
     public function processUserContractTransaction(UserContract $userContract): void
     {
         $contractTransaction = null;
 
-        try{
+        try {
             $transactionResponse = $this->processTransactionService->waitForTransaction($userContract->getHash());
             $trxResult = $this->scContractResultBuilder->getResultDataFromTransactionResponse($transactionResponse);
             $this->userInvestmentTrxResultMapper->mapToEntity($trxResult, $userContract);
@@ -43,8 +48,7 @@ class ProcessUserContractService
             );
 
             $this->bus->dispatch(new CheckContractBalanceMessage($userContract->getContract()->getId(), $transactionResponse->getLedger()));
-        }
-        catch(GetTransactionException $ex){
+        } catch (GetTransactionException $ex) {
             $userContract->setStatus($ex->getStatus());
             $contractTransaction = $this->contractTransactionEntityTransformer->fromFailedTransaction(
                 $userContract->getContract()->getAddress(),
@@ -54,10 +58,8 @@ class ProcessUserContractService
                 $ex->getHash(),
                 $ex->getFailureLedger()
             );
-        }
-        finally {
-            $this->persistor->persistAndFlush([$userContract, $contractTransaction]); 
+        } finally {
+            $this->persistor->persistAndFlush([$userContract, $contractTransaction]);
         }
     }
 }
-    

@@ -11,8 +11,9 @@ class GetUserContractPaymentsService
 {
     public function __construct(
         private readonly UserContractPaymentStorageInterface $userContractPaymentStorage,
-        private readonly UserContractPaymentEntityTransformer $userContractPaymentEntityTransformer
-    ){}
+        private readonly UserContractPaymentEntityTransformer $userContractPaymentEntityTransformer,
+    ) {
+    }
 
     /**
      * @return UserContractPaymentDtoOutput[]
@@ -20,6 +21,7 @@ class GetUserContractPaymentsService
     public function getUserContractPayments(User $user): array
     {
         $userContractPayments = $this->userContractPaymentStorage->getByUser($user);
+
         return $this->userContractPaymentEntityTransformer->fromEntitiesToOutputDtos($userContractPayments);
     }
 }

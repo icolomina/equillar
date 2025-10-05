@@ -23,16 +23,17 @@ class ContractCheckPaymentAvailabilityService
         private readonly ContractEntityTransformer $contractEntityTransformer,
         private readonly ScContractResultBuilder $scContractResultBuilder,
         private readonly I128Handler $i128Handler,
-        private readonly PersistorInterface $persistor
-    ){}
+        private readonly PersistorInterface $persistor,
+    ) {
+    }
 
     public function checkContractAvailability(ContractPaymentAvailability $contractPaymentAvailability): void
     {
         $contractTransaction = null;
-        
-        try{
-            $trxResponse   = $this->checkContractPaymentAvailabilityOperation->checkContractPaymentAvailability($contractPaymentAvailability);
-            $trxResult     = $this->scContractResultBuilder->getResultDataFromTransactionResponse($trxResponse);
+
+        try {
+            $trxResponse = $this->checkContractPaymentAvailabilityOperation->checkContractPaymentAvailability($contractPaymentAvailability);
+            $trxResult = $this->scContractResultBuilder->getResultDataFromTransactionResponse($trxResponse);
             $requiredFunds = $this->i128Handler->fromI128ToPhpFloat($trxResult->getLo(), $trxResult->getHi(), $contractPaymentAvailability->getContract()->getToken()->getDecimals());
 
             $contractTransaction = $this->contractTransactionEntityTransformer->fromSuccessfulTransaction(
@@ -46,15 +47,14 @@ class ContractCheckPaymentAvailabilityService
 
             $this->contractPaymentAvailabilityTransformer->updateContractPaymentAvalabilityAsProcessed($contractPaymentAvailability, $contractTransaction, $requiredFunds);
             $this->persistor->persist([$contractTransaction, $contractPaymentAvailability]);
-            if($requiredFunds > 0) {
+            if ($requiredFunds > 0) {
                 $contract = $contractPaymentAvailability->getContract();
                 $this->contractEntityTransformer->updateContractAsBlocked($contract);
                 $this->persistor->persist($contract);
             }
 
             $this->persistor->flush();
-        }
-        catch(TransactionExceptionInterface $ex) {
+        } catch (TransactionExceptionInterface $ex) {
             $contractTransaction = $this->contractTransactionEntityTransformer->fromFailedTransaction(
                 $contractPaymentAvailability->getContract()->getAddress(),
                 ContractNames::INVESTMENT->value,

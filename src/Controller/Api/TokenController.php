@@ -19,5 +19,3 @@ class TokenController extends AbstractController
         return $this->json($getTokensService->getTokens());
     }
 }
-
-

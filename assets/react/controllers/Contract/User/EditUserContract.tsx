@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../../../hooks/ApiHook";
 import { useApiRoutes } from "../../../hooks/ApiRoutesHook";
@@ -5,12 +11,9 @@ import { useParams } from "react-router-dom";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { UserContractInvestment } from "../../../model/user";
 import { Fragment } from "react/jsx-runtime";
-import { Backdrop, Box, Card, CardContent, Chip, CircularProgress, Divider, Grid2, List, ListItem, ListItemIcon, ListItemText, Pagination, Typography } from "@mui/material";
+import { Backdrop, Box, Card, CardContent, CircularProgress, Divider, Grid2, Typography } from "@mui/material";
 import { formatCurrencyFromValueAndTokenContract } from "../../../utils/currency";
 
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import { useEffect, useState } from "react";
 import UserContractPaymentsCalendar from "./Payments/UserContractPaymentsCalendar";
 
 export default function EditUserContract() {

@@ -1,4 +1,10 @@
-import { Box, Grid2, Paper, Link as MUILink } from "@mui/material";
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { Box, Grid2, Paper } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/AuthHook";
 import Menu from "./Menu/Menu";
@@ -29,8 +35,8 @@ export default function Layout(props: any) {
                 <Grid2 size={{ xs: 12, sm: 2 }}>
                     <Box component="section" sx={{ mt: 2 }}>
                         <Paper sx={{ width: '100%', p: 2 }}>
-                            { (isCompany() || isAdmin()) ? (
-                                <Menu handleLogout={handleLogout} items={companyMenuItems}/>
+                            {(isCompany() || isAdmin()) ? (
+                                <Menu handleLogout={handleLogout} items={companyMenuItems} />
                             ) : (
                                 <Menu handleLogout={handleLogout} items={inversorMenuItems} />
                             )}

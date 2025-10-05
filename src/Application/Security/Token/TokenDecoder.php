@@ -11,8 +11,9 @@ class TokenDecoder
 {
     public function __construct(
         private readonly DenormalizerInterface $serializer,
-        private readonly string $securityTokenKey
-    ){}
+        private readonly string $securityTokenKey,
+    ) {
+    }
 
     public function decode(string $token): TokenPayload
     {
@@ -22,6 +23,7 @@ class TokenDecoder
          * @var TokenPayload $tokenPayload
          */
         $tokenPayload = $this->serializer->denormalize($decoded, TokenPayload::class);
+
         return $tokenPayload;
     }
 }

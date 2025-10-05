@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { Box, Button, Divider, Grid2, Paper, TextField, Typography } from "@mui/material";
 import { useApi } from "../../../hooks/ApiHook";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { currenciesForSelector } from "../../../model/form";
 import { ContractOutput, returnTypes } from "../../../model/contract";
 import { useEffect, useState } from "react";
-import { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 export interface FormValues {
     id?:  string|number;
@@ -22,6 +28,7 @@ export interface FormValues {
     returnMonths: number,
     minPerInvestment: number,
     file?: FileList;
+    image?: FileList;
 };
 
 interface CreateOrEditContractProps {
@@ -57,6 +64,7 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
             returnMonths: 12,
             minPerInvestment: 10,
             file: undefined as any,
+            image: undefined as any
         },
     });
 
@@ -72,6 +80,7 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
     }, [contract, reset]);
 
     const fileSelected: FileList = watch('file');
+    const imageSelected: FileList = watch('image');
 
     const onSubmit = (formData: FormValues) => {
 
@@ -97,40 +106,54 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
             formSendData.append('file', formData.file[0]);
         }
         
+        if(formData.image?.length > 0){
+            formSendData.append('image', formData.image[0]);
+        }
 
         const promise = (!contractId)
             ? callPost(routes.createContract, formSendData, true)
             : callPost(routes.modifyContract(contractId), formSendData, true)
         ;
 
-        promise.then(
-            (result: AxiosResponse<ContractOutput>) => {
-                return navigate('/app/project/' + result.data.id + '/view');
-            }
-        )
-    }
+        promise
+            .then(
+                (result: AxiosResponse<ContractOutput>) => {
+                    return navigate('/app/project/' + result.data.id + '/view');
+                }
+            )
+            .catch((error: AxiosError) => {
+                if(error.response.status === 422) {
+                    const validationErrors = error.response.data;
+                    Object.keys(validationErrors).forEach((field: any) => {
+                        setError(validationErrors[field]['label'], { type: 'server', message: validationErrors[field]['msg'] });
+                    });
+                } 
+            })
+        }
 
     return (
         <Box sx={{ flexGrow: 1, p: 3, maxWidth: 1200, margin: 'auto' }}>
-            <Typography variant="h4" gutterBottom align="center">
+            { !contractId ? ( <Typography variant="h4" gutterBottom align="center">
                 Create new project
-            </Typography>
+            </Typography> ) : (
+                <Typography variant="h4" gutterBottom align="center">
+                    Edit project {contract.label}
+                </Typography>
+            ) }
             <Divider sx={{ mb: 4 }} />
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid2 container spacing={4}>
-                    {/* Columna Izquierda */}
                     <Grid2 size={{ xs: 12, md: 6 }}>
                         <Paper sx={{
                             p: 4,
                             height: '100%',
-                            border: '1px solid', // Borde para mayor distinción
+                            border: '1px solid', 
                             borderColor: 'grey.300',
-                            boxShadow: 'none' // Eliminamos la sombra para un estilo más plano
+                            boxShadow: 'none' 
                         }}>
-                            {/* Sección: Información General */}
                             <Typography variant="h5" sx={{ mb: 2, color: 'primary.main' }}>
-                                Información General
+                                General information
                             </Typography>
                             <Grid2 container spacing={3} sx={{ mb: 4 }}>
                                 <Grid2 size={{ xs: 12, md: 6 }}>
@@ -199,10 +222,8 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
                                     </TextField>
                                 </Grid2>
                             </Grid2>
-
-                            {/* Sección: Información Financiera */}
                             <Typography variant="h5" sx={{ mb: 2, color: 'primary.main' }}>
-                                Información Financiera
+                                Financial information
                             </Typography>
                             <Grid2 container spacing={3} sx={{ mb: 4 }}>
                                 <Grid2 size={{ xs: 12, md: 6 }}>
@@ -284,7 +305,6 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
 
                             <Divider sx={{ my: 3 }} />
 
-                            {/* Sección de Archivo del Proyecto */}
                             <Grid2 container>
                                 <Grid2 size={12}>
                                     <Typography variant="h6" sx={{ mb: 1 }}>
@@ -294,6 +314,7 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
                                         type="file"
                                         id="file-upload"
                                         style={{ display: 'none' }}
+                                        accept="application/pdf"
                                         {...register('file')}
                                     />
                                     <label htmlFor="file-upload">
@@ -313,12 +334,40 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
                                     )}
                                 </Grid2>
                             </Grid2>
+
+                            <Grid2 container>
+                                <Grid2 size={12}>
+                                    <Typography variant="h6" sx={{ mb: 1 }}>
+                                        Project image
+                                    </Typography>
+                                    <input
+                                        type="file"
+                                        id="image-upload"
+                                        style={{ display: 'none' }}
+                                        accept="image/png, image/jpeg, image/jpg"
+                                        {...register('image')}
+                                    />
+                                    <label htmlFor="image-upload">
+                                        <Button variant="outlined" component="span">
+                                            Select image
+                                        </Button>
+                                    </label>
+                                    {imageSelected && imageSelected.length > 0 && (
+                                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                            Image selected: **{imageSelected[0].name}**
+                                        </Typography>
+                                    )}
+                                    {errors.file && (
+                                        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                                            {errors.file.message}
+                                        </Typography>
+                                    )}
+                                </Grid2>
+                            </Grid2>
                         </Paper>
                     </Grid2>
 
-                    {/* Columna Derecha */}
                     <Grid2 size={{ xs: 12, md: 6 }}>
-                        {/* Sección: Descripción y Detalles */}
                         <Paper sx={{
                             p: 4,
                             height: '100%',
@@ -327,7 +376,7 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
                             boxShadow: 'none'
                         }}>
                             <Typography variant="h5" sx={{ mb: 2, color: 'primary.main' }}>
-                                Descripción y Detalles
+                                Description and details
                             </Typography>
                             <Grid2 container spacing={3}>
                                 <Grid2 size={12}>
@@ -365,7 +414,6 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
 
                 <Divider sx={{ my: 4 }} />
 
-                {/* Botón de Envío */}
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                     <Button
                         variant="contained"

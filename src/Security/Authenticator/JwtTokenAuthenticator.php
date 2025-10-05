@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 namespace App\Security\Authenticator;
 
 use App\Application\Security\Token\TokenDecoder;
@@ -19,8 +24,8 @@ class JwtTokenAuthenticator extends AbstractAuthenticator
 {
     public function __construct(
         private readonly TokenExtractor $tokenExtractor,
-        private readonly TokenDecoder $tokenDecoder
-    ){}
+        private readonly TokenDecoder $tokenDecoder,
+    ) {}
 
     public function supports(Request $request): ?bool
     {
@@ -34,8 +39,8 @@ class JwtTokenAuthenticator extends AbstractAuthenticator
             throw new CustomUserMessageAuthenticationException('No API token provided');
         }
 
-        
         $userData = $this->tokenDecoder->decode($token);
+
         return new SelfValidatingPassport(new UserBadge($userData->uuid));
     }
 
@@ -47,7 +52,7 @@ class JwtTokenAuthenticator extends AbstractAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         $data = [
-            'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
+            'message' => strtr($exception->getMessageKey(), $exception->getMessageData()),
         ];
 
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);

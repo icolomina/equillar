@@ -1,16 +1,23 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Presentation\Contract\DTO\Output;
+
 
 readonly class ContractReserveFundContributionDtoOutput
 {
     public function __construct(
-        public int    $id,
+        public int $id,
         public string $contractLabel,
-        public float  $amount,
+        public float $amount,
         public string $status,
         public string $createdAt,
-        public string $receivedAt,
-        public string $transferredAt
-    ){}
+        public ?string $receivedAt,
+        public ?string $transferredAt,
+    ) {
+    }
 }

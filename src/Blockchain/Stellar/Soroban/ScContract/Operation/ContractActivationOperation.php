@@ -1,5 +1,9 @@
 <?php
-
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Blockchain\Stellar\Soroban\ScContract\Operation;
 
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\Builder\ContractActivationOperationBuilder;
@@ -13,8 +17,9 @@ class ContractActivationOperation
     public function __construct(
         private readonly ContractActivationOperationBuilder $contractActivationOperationBuilder,
         private readonly ContractCodeStorageInterface $contractCodeStorage,
-        private readonly ProcessTransactionService $processTransactionService
-    ){}
+        private readonly ProcessTransactionService $processTransactionService,
+    ) {
+    }
 
     public function activateContract(Contract $contract): GetTransactionResponse
     {
@@ -22,6 +27,7 @@ class ContractActivationOperation
         $operation = $this->contractActivationOperationBuilder->build($contract, $lastDeployedContractCode->getWasmId());
 
         $transactionResponse = $this->processTransactionService->sendTransaction($operation, true);
+
         return $transactionResponse;
     }
 }

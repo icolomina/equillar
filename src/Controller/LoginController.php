@@ -16,16 +16,16 @@ class LoginController extends AbstractController
     {
         if (null === $user) {
             return $this->json([
-              'message' => 'missing credentials',
+                'message' => 'missing credentials',
             ], Response::HTTP_UNAUTHORIZED);
         }
 
         return $this->json([
-            'user'  => $user->getUserIdentifier(),
+            'user' => $user->getUserIdentifier(),
             'token' => $tokenEncoder->encode($user),
             'role' => $user->getRoles()[0],
             'name' => $user->getName(),
-            'role_type' => $user->getUserRoleType()
+            'role_type' => $user->getUserRoleType(),
         ]);
     }
 

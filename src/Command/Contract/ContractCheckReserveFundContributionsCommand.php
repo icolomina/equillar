@@ -1,5 +1,9 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 namespace App\Command\Contract;
 
 use App\Application\Contract\Service\Blockchain\ContractReserveFundContributionTransferService;
@@ -28,8 +32,8 @@ class ContractCheckReserveFundContributionsCommand extends Command
         private readonly ContractReserveFundContributionStorageInterface $contractReserveFundContributionStorage,
         private readonly TokenNormalizer $tokenNormalizer,
         private readonly ReceiveReserveFundContributionService $receiveReserveFundContributionService,
-        private readonly ContractReserveFundContributionTransferService $contractReserveFundContributionTransferService
-    ){
+        private readonly ContractReserveFundContributionTransferService $contractReserveFundContributionTransferService,
+    ) {
         parent::__construct();
     }
 
@@ -38,7 +42,6 @@ class ContractCheckReserveFundContributionsCommand extends Command
         $this
             ->addOption('id', null, InputOption::VALUE_OPTIONAL, 'Contribution ID', null)
         ;
-
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
@@ -57,42 +60,36 @@ class ContractCheckReserveFundContributionsCommand extends Command
             ->execute()
         ;
 
-        foreach($operationsResponse->getOperations() as $payment) {
-
-            if($payment->isTransactionSuccessful() && $payment instanceof PaymentOperationResponse) {
+        foreach ($operationsResponse->getOperations() as $payment) {
+            if ($payment->isTransactionSuccessful() && $payment instanceof PaymentOperationResponse) {
                 $transaction = $payment->getTransaction();
-                $memo        = $transaction->getMemo();
-                
-                if($memo->getType() === Memo::MEMO_TYPE_TEXT) {
+                $memo = $transaction->getMemo();
+
+                if (Memo::MEMO_TYPE_TEXT === $memo->getType()) {
                     $decodedId = $this->contractReserveFundContributonIdEncoder->decodeId($memo->getValue());
 
-                    if($contributonId && $decodedId !== $contributonId) {
-
-                        $io->writeln(sprintf('Looking for contribution id %s but %s retrieved. Continue ...', $contributonId, $decodedId ));
+                    if ($contributonId && $decodedId !== $contributonId) {
+                        $io->writeln(sprintf('Looking for contribution id %s but %s retrieved. Continue ...', $contributonId, $decodedId));
                         continue;
                     }
 
                     $contractReserveFundContribution = $this->contractReserveFundContributionStorage->getByUuidAndStatus($decodedId, 'CREATED');
                     $tokenDecimals = $contractReserveFundContribution->getContract()->getToken()->getDecimals();
                     $normalizedAmount = $this->tokenNormalizer->normalizeTokenValue($contractReserveFundContribution->getAmount(), $tokenDecimals);
-                    if( (float)$payment->getAmount() >= (float)$normalizedAmount->toPhp($tokenDecimals)){
-
+                    if ((float) $payment->getAmount() >= (float) $normalizedAmount->toPhp($tokenDecimals)) {
                         $io->writeln(sprintf('Processing Received payment: Total: %s - Contract: %s', $payment->getAmount(), $contractReserveFundContribution->getContract()->getLabel()));
                         $this->receiveReserveFundContributionService->setReserveFundContributionAsReceived($contractReserveFundContribution);
                         $this->contractReserveFundContributionTransferService->processReserveFundContribution($contractReserveFundContribution);
                         $io->writeln(sprintf('Received payment processed: Total: %s - Contract: %s', $payment->getAmount(), $contractReserveFundContribution->getContract()->getLabel()));
                         $io->writeln(' -------------------------------------------------------------------------------------------- ');
-                    }
-                    else {
+                    } else {
                         $io->writeln(sprintf('Payment received %s is lower than expected %s', $payment->getAmount(), $normalizedAmount->toPhp($tokenDecimals)));
                     }
+                } else {
+                    $io->writeln(sprintf('Transaction %s memo type is invalid. Required %s but got %s', $payment->getTransactionHash(), Memo::MEMO_TYPE_TEXT, $memo->getType()));
                 }
-                else {
-                    $io->writeln(sprintf('Transaction %s memo type is invalid. Required %s but got %s', $payment->getTransactionHash(), Memo::MEMO_TYPE_TEXT, $memo->getType() ));
-                }
-            }
-            else {
-                $io->writeln(sprintf('Transaction %s is not successful or is not a payment transaction', $payment->getTransactionHash() ));
+            } else {
+                $io->writeln(sprintf('Transaction %s is not successful or is not a payment transaction', $payment->getTransactionHash()));
             }
         }
 

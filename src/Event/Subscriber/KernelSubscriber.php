@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Event\Subscriber;
 
 use Firebase\JWT\ExpiredException;
@@ -10,8 +15,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
-class KernelSubscriber implements EventSubscriberInterface{
-
+class KernelSubscriber implements EventSubscriberInterface
+{
     public static function getSubscribedEvents(): array
     {
         return [
@@ -19,28 +24,28 @@ class KernelSubscriber implements EventSubscriberInterface{
         ];
     }
 
-    public function onException(ExceptionEvent $event): void 
+    public function onException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
-        
-        if($exception->getPrevious() instanceof ValidationFailedException) {
+
+        if ($exception->getPrevious() instanceof ValidationFailedException) {
             $event->setResponse(new JsonResponse($this->getErrors($exception->getPrevious()), 422));
         }
 
-        if($exception instanceof ValidationFailedException) {
+        if ($exception instanceof ValidationFailedException) {
             $event->setResponse(new JsonResponse($this->getErrors($exception), 422));
         }
 
-        if($exception instanceof ExpiredException) {
+        if ($exception instanceof ExpiredException) {
             $event->setThrowable(new AuthenticationException($exception->getMessage()));
-        } 
+        }
     }
 
-    private function getErrors(ValidationFailedException $exception): array 
+    private function getErrors(ValidationFailedException $exception): array
     {
         $errors = [];
         $violations = $exception->getViolations();
-        foreach($violations as $violation) {
+        foreach ($violations as $violation) {
             $errors[] = ['label' => $violation->getPropertyPath(), 'msg' => $violation->getMessage()];
         }
 

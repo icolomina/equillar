@@ -10,12 +10,14 @@ class UserContractEditService
 {
     public function __construct(
         private readonly UserContractPaymentsCalendarService $userContractPaymentsCalendarService,
-        private readonly UserContractEntityTransformer $userContractEntityTransformer
-    ){}  
+        private readonly UserContractEntityTransformer $userContractEntityTransformer,
+    ) {
+    }
 
     public function editUserContract(UserContract $userContract): UserContractDtoOutput
     {
         $calendar = $this->userContractPaymentsCalendarService->generatePaymentsCalendar($userContract);
+
         return $this->userContractEntityTransformer->fromEntityToOutputDto($userContract, $calendar->getCalendar());
     }
 }

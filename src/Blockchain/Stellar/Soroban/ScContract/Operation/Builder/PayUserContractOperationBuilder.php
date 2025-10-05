@@ -1,5 +1,9 @@
 <?php
-
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Blockchain\Stellar\Soroban\ScContract\Operation\Builder;
 
 use App\Domain\Contract\ContractFunctions;
@@ -16,9 +20,10 @@ class PayUserContractOperationBuilder
     {
         $invokeContractHostFunction = new InvokeContractHostFunction($userContract->getContract()->getAddress(), ContractFunctions::process_investor_payment->name, [
             Address::fromAccountId($userContract->getUserWallet()->getAddress())->toXdrSCVal(),
-            XdrSCVal::forU64($userContract->getClaimableTs())
+            XdrSCVal::forU64($userContract->getClaimableTs()),
         ]);
         $builder = new InvokeHostFunctionOperationBuilder($invokeContractHostFunction);
+
         return $builder->build();
     }
 }

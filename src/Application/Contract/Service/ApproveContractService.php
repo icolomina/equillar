@@ -1,4 +1,8 @@
 <?php
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace App\Application\Contract\Service;
 
@@ -11,8 +15,9 @@ class ApproveContractService
 {
     public function __construct(
         private readonly ContractEntityTransformer $contractEntityTransformer,
-        private readonly PersistorInterface $persistor
-    ){}
+        private readonly PersistorInterface $persistor,
+    ) {
+    }
 
     public function approveContract(Contract $contract): ContractDtoOutput
     {
@@ -20,6 +25,5 @@ class ApproveContractService
         $this->persistor->persistAndFlush($contract);
 
         return $this->contractEntityTransformer->fromEntityToOutputDto($contract);
-
     }
 }

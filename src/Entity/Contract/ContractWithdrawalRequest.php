@@ -1,12 +1,17 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Entity\Contract;
+
 
 use App\Entity\User;
 use App\Repository\Contract\ContractWithdrawalRequestRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 
 #[ORM\Entity(repositoryClass: ContractWithdrawalRequestRepository::class)]
 class ContractWithdrawalRequest

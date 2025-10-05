@@ -13,12 +13,14 @@ class RetrieveSystemWalletService
 {
     public function __construct(
         private readonly SystemWalletStorageInterface $systemWalletStorage,
-        private readonly SerializerInterface $serializer
-    ){}
+        private readonly SerializerInterface $serializer,
+    ) {
+    }
 
     public function retrieve(): SystemWalletData
     {
         $cache = new FilesystemAdapter();
+
         return $cache->get('system.default_wallet', function (ItemInterface $item): SystemWalletData {
             $item->expiresAfter(3600);
             $defaultWallet = $this->systemWalletStorage->getDefaultWallet();
@@ -36,7 +38,6 @@ class RetrieveSystemWalletService
                 $defaultWallet->getBlockchainNetwork()->isTest(),
                 $cryptedValue
             );
-});
+        });
     }
-
 }

@@ -1,6 +1,12 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Entity\Contract;
+
 
 use App\Entity\ContractTransaction;
 use App\Repository\Contract\ContractBalanceRepository;
@@ -9,8 +15,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ContractBalanceRepository::class)]
 class ContractBalance
 {
-
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -52,6 +56,9 @@ class ContractBalance
 
     #[ORM\Column(nullable: true)]
     private ?float $projectWithdrawals = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $availableToReserveMovements = null;
 
     public function getId(): ?int
     {
@@ -198,6 +205,18 @@ class ContractBalance
     public function setProjectWithdrawals(float $projectWithdrawals): static
     {
         $this->projectWithdrawals = $projectWithdrawals;
+
+        return $this;
+    }
+
+    public function getAvailableToReserveMovements(): ?float
+    {
+        return $this->availableToReserveMovements;
+    }
+
+    public function setAvailableToReserveMovements(?float $availableToReserveMovements): static
+    {
+        $this->availableToReserveMovements = $availableToReserveMovements;
 
         return $this;
     }

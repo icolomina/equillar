@@ -10,15 +10,16 @@ use App\Presentation\UserContract\DTO\Output\UserContractDtoOutput;
 
 class GetUserContractsService
 {
-
     public function __construct(
         private readonly UserContractStorageInterface $userContractInvestmentStorage,
-        private readonly UserContractEntityTransformer $userContractInvestmentEntityTransformer
-    ){}
+        private readonly UserContractEntityTransformer $userContractInvestmentEntityTransformer,
+    ) {
+    }
 
     public function getUserContracts(User $user): array
     {
         $userContracts = $this->userContractInvestmentStorage->getByUser($user);
+
         return $this->userContractInvestmentEntityTransformer->fromEntitiesToOutputDtos($userContracts);
     }
 

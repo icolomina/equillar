@@ -8,17 +8,32 @@ use App\Entity\ContractTransaction;
 
 class ContractInvestmentsPauseResumeTransformer
 {
-    public function fromContractStoppedInvestments(Contract $contract, ContractTransaction $contractTransaction, float $currentFunds, string $reason): ContractInvestmentsPauseResume
+    public function fromContractSuccessfulPausedOrResumedInvestments(Contract $contract, ContractTransaction $contractTransaction, float $currentFunds, string $reason, string $type): ContractInvestmentsPauseResume
+    {
+        $contractInvestmentsPauseResume = $this->fromContractPausedOrResumedInvestments($contract, $contractTransaction, $currentFunds, $reason, $type);
+        $contractInvestmentsPauseResume->setStatus('SUCCESS');
+
+        return $contractInvestmentsPauseResume;
+    }
+
+    public function fromContractFailurePausedOrResumedInvestments(Contract $contract, ContractTransaction $contractTransaction, float $currentFunds, string $reason, string $type): ContractInvestmentsPauseResume
+    {
+        $contractInvestmentsPauseResume = $this->fromContractPausedOrResumedInvestments($contract, $contractTransaction, $currentFunds, $reason, $type);
+        $contractInvestmentsPauseResume->setStatus('FAILED');
+
+        return $contractInvestmentsPauseResume;
+    }
+
+    private function fromContractPausedOrResumedInvestments(Contract $contract, ContractTransaction $contractTransaction, float $currentFunds, string $reason, string $type): ContractInvestmentsPauseResume
     {
         $contractInvestmentsPauseResume = new ContractInvestmentsPauseResume();
-        $contractInvestmentsPauseResume->setContract($contract) ;
+        $contractInvestmentsPauseResume->setContract($contract);
         $contractInvestmentsPauseResume->setDate(new \DateTimeImmutable());
         $contractInvestmentsPauseResume->setCurrentFunds($currentFunds);
         $contractInvestmentsPauseResume->setReason($reason);
-        $contractInvestmentsPauseResume->setType('STOP');
+        $contractInvestmentsPauseResume->setType($type);
         $contractInvestmentsPauseResume->setContractTransaction($contractTransaction);
 
-        return $contractInvestmentsPauseResume;
-
+        return $contractInvestmentsPauseResume;   
     }
 }

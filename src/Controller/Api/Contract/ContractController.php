@@ -2,39 +2,53 @@
 
 namespace App\Controller\Api\Contract;
 
+use App\Presentation\Contract\DTO\Input\ContractMoveBalanceToTheReserveInputDto;
 use App\Application\Contract\Service\ApproveContractService;
 use App\Application\Contract\Service\Blockchain\ContractActivationService;
+use App\Application\Contract\Service\Blockchain\ContractMoveFundsToTheReserveService;
+use App\Application\Contract\Service\Blockchain\ContractReserveFundContributionCheckService;
+use App\Application\Contract\Service\Blockchain\ContractReserveFundContributionTransferService;
+use App\Application\Contract\Service\Blockchain\ContractStopOrRestartInvestmentsService;
 use App\Application\Contract\Service\Blockchain\ContractWithdrawalApprovalService;
-use App\Application\Contract\Service\EditContractService;
-use App\Application\Contract\Service\GetContractsService;
+use App\Application\Contract\Service\Blockchain\CreateContractBalanceMovementService;
 use App\Application\Contract\Service\CreateContractService;
 use App\Application\Contract\Service\CreateContractWithdrawalRequestService;
 use App\Application\Contract\Service\CreateReserveFundContributionService;
+use App\Application\Contract\Service\EditContractService;
+use App\Application\Contract\Service\GetContractBalanceMovementsService;
 use App\Application\Contract\Service\GetContractDocumentService;
 use App\Application\Contract\Service\GetContractReserveFundContributionsService;
+use App\Application\Contract\Service\GetContractsService;
 use App\Application\Contract\Service\GetContractWithdrawalRequestsService;
 use App\Application\Contract\Service\ModifyContractService;
+use App\Application\Contract\Transformer\ContractBalanceMovementTransformer;
+use App\Application\Contract\Transformer\ContractReserveFundContributionTransformer;
 use App\Application\Token\Service\GetTokenBalanceService;
 use App\Entity\Contract\Contract;
+use App\Entity\Contract\ContractBalanceMovement;
+use App\Entity\Contract\ContractReserveFundContribution;
 use App\Entity\Contract\ContractWithdrawalRequest;
 use App\Entity\User;
-use App\Message\StopContractInvestmentsMessage;
 use App\Presentation\Contract\DTO\Input\ContractRequestWithdrawalDtoInput;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-
 use App\Presentation\Contract\DTO\Input\CreateContractDto;
 use App\Presentation\Contract\DTO\Input\CreateContractReserveFundContributionDtoInput;
 use App\Presentation\Contract\DTO\Input\StopContractInvestmentsDtoInput;
 use App\Presentation\Contract\DTO\Output\GetAddressTokenBalanceOutput;
+use App\Security\Authorization\Voter\Contract\ContractBalanceMovementVoter;
+use App\Security\Authorization\Voter\Contract\ContractReserveFundContributionVoter;
+use App\Security\Authorization\Voter\Contract\ContractVoter;
+use App\Security\Authorization\Voter\Contract\ContractWithdrawalRequestVoter;
+use App\Domain\Contract\ContractPauseOrResumeTypes;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Attribute\MapUploadedFile;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -42,13 +56,13 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class ContractController extends AbstractController
 {
     #[Route('/get-issuer-contracts', name: 'get_issuer_contracts', methods: ['GET'])]
-    #[IsGranted('ROLE_COMPANY')]
     public function getIssuerContractsAction(GetContractsService $getContractsService): JsonResponse
     {
         /**
          * @var User $user
          */
         $user = $this->getUser();
+
         return $this->json($getContractsService->getContracts($user));
     }
 
@@ -59,56 +73,68 @@ class ContractController extends AbstractController
          * @var User $user
          */
         $user = $this->getUser();
+
         return $this->json($getContractsService->getAvailableContracts($user));
     }
 
     #[Route('/create-contract', name: 'post_create_contract', methods: ['POST'])]
-    #[IsGranted('ROLE_COMPANY')]
+    #[IsGranted(new Expression('is_granted("ROLE_COMPANY") or is_granted("ROLE_ADMIN")'))]
     public function createContractAction(
-        #[MapRequestPayload] CreateContractDto $createContractDto, 
+        #[MapRequestPayload] CreateContractDto $createContractDto,
         #[MapUploadedFile([
             new NotBlank(message: 'You must upload a valid Project file'),
-            new File(extensions:['pdf'], extensionsMessage: 'Please upload a valid PDF')
-        ])] UploadedFile $file, CreateContractService $createContractService): JsonResponse
+            new File(extensions: ['pdf'], extensionsMessage: 'Please upload a valid PDF'),
+        ])] UploadedFile $file, 
+        #[MapUploadedFile([
+            new NotBlank(message: 'You must upload a valid Project image'),
+            new File(extensions: ['jpg', 'png'], extensionsMessage: 'Please upload a valid image (jpg, png)'),
+        ])] UploadedFile $image, 
+        CreateContractService $createContractService): JsonResponse
     {
         /**
          * @var User $user
          */
         $user = $this->getUser();
-        return $this->json($createContractService->createContract($createContractDto, $file, $user));
+
+        return $this->json($createContractService->createContract($createContractDto, $file, $image, $user));
     }
 
     #[Route('/{id}/edit-contract', name: 'get_edit_contract', methods: ['GET'])]
     public function editContractAction(Contract $contract, EditContractService $editContractService): JsonResponse
     {
+        $this->denyAccessUnlessGranted(ContractVoter::EDIT_CONTRACT, $contract);
         return $this->json($editContractService->editContract($contract));
     }
 
-     #[Route('/{id}/modify-contract', name: 'patch_modify_contract', methods: ['POST'])]
-    public function modifyContractAction(Contract $contract, #[MapRequestPayload] CreateContractDto $createContractDto, 
+    #[Route('/{id}/modify-contract', name: 'patch_modify_contract', methods: ['POST'])]
+    public function modifyContractAction(Contract $contract, #[MapRequestPayload] CreateContractDto $createContractDto,
         #[MapUploadedFile([
-            new File(extensions:['pdf'], extensionsMessage: 'Please upload a valid PDF')
+            new File(extensions: ['pdf'], extensionsMessage: 'Please upload a valid PDF'),
         ])] UploadedFile|array $file, ModifyContractService $modifyContractService): JsonResponse
     {
+        $this->denyAccessUnlessGranted(ContractVoter::MODIFY_CONTRACT, $contract);
+
         /**
          * @var User $user
          */
-        $user   = $this->getUser();;
+        $user = $this->getUser();
+
         return $this->json($modifyContractService->modifyContract($contract, $createContractDto, $file, $user));
     }
 
     #[Route('/{id}/approve-contract', name: 'patch_approve_contract', methods: ['PATCH'])]
-    #[IsGranted('ROLE_COMPANY')]
     public function approveContractAction(Contract $contract, ApproveContractService $approveContractService): JsonResponse
     {
+        $this->denyAccessUnlessGranted(ContractVoter::APPROVE_CONTRACT, $contract);
+
         $approveContractService->approveContract($contract);
         return new JsonResponse(null, 204);
     }
 
     #[Route('/{id}/initalize-contract', name: 'patch_initialize_contract', methods: ['PATCH'])]
-    #[IsGranted('ROLE_COMPANY')]
     public function initializeContract(Contract $contract, ContractActivationService $contractActivationService): JsonResponse
     {
+        $this->denyAccessUnlessGranted(ContractVoter::ACTIVATE_CONTRACT, $contract);
         $contractActivationService->activateContract($contract);
         return new JsonResponse(null, 204);
     }
@@ -116,29 +142,33 @@ class ContractController extends AbstractController
     #[Route('/{id}/get-contract-document', name: 'get_contract_document', methods: ['GET'])]
     public function getContractDocument(Contract $contract, GetContractDocumentService $getContractDocumentService): Response
     {
+        $this->denyAccessUnlessGranted(ContractVoter::EDIT_CONTRACT_DOCUMENT, $contract);
         return $getContractDocumentService->generateDownloadResponseFromContract($contract);
     }
 
     #[Route('/get-request-withdrawals', name: 'get_contract_request_withdrawals', methods: ['GET'])]
-    #[IsGranted('ROLE_COMPANY')]
+    #[IsGranted(new Expression('is_granted("ROLE_COMPANY") or is_granted("ROLE_ADMIN")'))]
     public function getWithdrawalRequests(GetContractWithdrawalRequestsService $getContractWithdrawalRequestsService): JsonResponse
     {
         /**
          * @var User $user
          */
         $user = $this->getUser();
+
         return new JsonResponse($getContractWithdrawalRequestsService->getContractRequestWithdrawals($user));
     }
 
     #[Route('/{id}/request-withdrawal', name: 'post_request_withdrawal', methods: ['POST'])]
-    #[IsGranted('ROLE_COMPANY')]
     public function requestWithdrawal(Contract $contract, #[MapRequestPayload] ContractRequestWithdrawalDtoInput $contractRequestWithdrawalDtoInput,
         CreateContractWithdrawalRequestService $createContractWithdrawalRequestService): JsonResponse
     {
+        $this->denyAccessUnlessGranted(ContractVoter::REQUEST_OPERATION, $contract);
+
         /**
          * @var User $user
          */
         $user = $this->getUser();
+
         return $this->json($createContractWithdrawalRequestService->createContractWithdrawalRequest($contract, $user, $contractRequestWithdrawalDtoInput));
     }
 
@@ -146,50 +176,122 @@ class ContractController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function approveRequestedWithdrawal(ContractWithdrawalRequest $contractWithdrawalRequest, ContractWithdrawalApprovalService $contractWithdrawalApprovalService): JsonResponse
     {
+        $this->denyAccessUnlessGranted(ContractWithdrawalRequestVoter::APPROVE_WITHDRAWAL_REQUEST, $contractWithdrawalRequest);
         $contractWithdrawalApprovalService->processProjectWithdrawal($contractWithdrawalRequest);
+
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/requested-withdrawal/{id}/reject', name: 'patch_reject_requested_withdrawal', methods: ['PATCH'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function rejectRequestedWithdrawal(ContractWithdrawalRequest $contractWithdrawalRequest, MessageBusInterface $bus): JsonResponse
+    public function rejectRequestedWithdrawal(ContractWithdrawalRequest $contractWithdrawalRequest): JsonResponse
     {
-        //$bus->dispatch(new ApproveRequestWithdrawalMessage($contractWithdrawalRequest->getId()));
+        $this->denyAccessUnlessGranted(ContractWithdrawalRequestVoter::REJECT_WITHDRAWAL_REQUEST, $contractWithdrawalRequest);
         return new JsonResponse(null, Response::HTTP_ACCEPTED);
     }
 
-    #[Route('/{id}/stop-deposits', name: 'patch_stop_deposits', methods: ['PATCH'])]
-    #[IsGranted('ROLE_COMPANY')]
-    public function stopDeposits(Contract $contract, #[MapRequestPayload] StopContractInvestmentsDtoInput $stopContractInvestmentsDtoInput, MessageBusInterface $bus): JsonResponse
+    #[Route('/{id}/pause-deposits', name: 'patch_pause_deposits', methods: ['PATCH'])]
+    public function stopDeposits(Contract $contract, #[MapRequestPayload] StopContractInvestmentsDtoInput $stopContractInvestmentsDtoInput, 
+    ContractStopOrRestartInvestmentsService $contractStopOrRestartInvestmentsService): JsonResponse
     {
-        $bus->dispatch(new StopContractInvestmentsMessage($contract->getId(), $stopContractInvestmentsDtoInput->reason));
+        $this->denyAccessUnlessGranted(ContractVoter::PAUSE_CONTRACT, $contract);
+        $contractStopOrRestartInvestmentsService->stopOrRestartInvestments($contract, ContractPauseOrResumeTypes::PAUSE->name, $stopContractInvestmentsDtoInput->reason);
+
         return new JsonResponse(null, Response::HTTP_ACCEPTED);
     }
-    
+
+    #[Route('/{id}/resume-deposits', name: 'patch_resume_deposits', methods: ['PATCH'])]
+    public function restartDeposits(Contract $contract, #[MapRequestPayload] StopContractInvestmentsDtoInput $stopContractInvestmentsDtoInput, 
+    ContractStopOrRestartInvestmentsService $contractStopOrRestartInvestmentsService): JsonResponse
+    {
+        $this->denyAccessUnlessGranted(ContractVoter::RESUME_CONTRACT, $contract);
+        $contractStopOrRestartInvestmentsService->stopOrRestartInvestments($contract, ContractPauseOrResumeTypes::RESUME->name, $stopContractInvestmentsDtoInput->reason);
+
+        return new JsonResponse(null, Response::HTTP_ACCEPTED);
+    }
+
     #[Route('/{id}/get-contract-token-balance', name: 'api_get_contract_token_balance', methods: ['GET'])]
     public function getTokenBalance(Contract $contract, #[MapQueryParameter] string $address, GetTokenBalanceService $getTokenBalanceService): JsonResponse
-    {   
-        $output = new GetAddressTokenBalanceOutput((string)$getTokenBalanceService->getContractTokenBalance($contract, $address));
+    {
+        $this->denyAccessUnlessGranted(ContractVoter::REQUEST_OPERATION, $contract);
+        $output = new GetAddressTokenBalanceOutput((string) $getTokenBalanceService->getContractTokenBalance($contract, $address));
+
         return $this->json($output);
     }
 
     #[Route('/get-reserve-fund-contributions', name: 'api_get_reserve_fund_contributions', methods: ['GET'])]
+    #[IsGranted(new Expression('is_granted("ROLE_COMPANY") or is_granted("ROLE_ADMIN")'))]
     public function getReserveFundContributions(GetContractReserveFundContributionsService $getContractReserveFundContributionsService): JsonResponse
     {
         /**
          * @var User $user
          */
         $user = $this->getUser();
+
         return $this->json($getContractReserveFundContributionsService->getReserveFundContributions($user));
     }
 
     #[Route('/{id}/request-reserve-fund-contribution', name: 'api_post_request_reserve_fund_contribution', methods: ['POST'])]
-    public function requestContractReserveContribution(Contract $contract, #[MapRequestPayload] CreateContractReserveFundContributionDtoInput $createContractReserveFundContributionDtoInput, CreateReserveFundContributionService $createReserveFundContributionService): JsonResponse
+    public function requestContractReserveContribution(Contract $contract, #[MapRequestPayload] CreateContractReserveFundContributionDtoInput $createContractReserveFundContributionDtoInput,
+        CreateReserveFundContributionService $createReserveFundContributionService): JsonResponse
+    {
+        $this->denyAccessUnlessGranted(ContractVoter::REQUEST_OPERATION, $contract);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+
+        return $this->json($createReserveFundContributionService->createReserveFundContribution($contract, $createContractReserveFundContributionDtoInput, $user));
+    }
+
+    #[Route('/reserve-fund-contribution/{id}/check', name: 'api_patch_check_reserve_fund_contribution', methods: ['PATCH'])]
+    public function checkContractReserveFundContribution(ContractReserveFundContribution $contractReserveFundContribution, ContractReserveFundContributionCheckService $contractReserveFundContributionCheckService): JsonResponse
+    {
+        $this->denyAccessUnlessGranted(ContractReserveFundContributionVoter::CHECK_RESERVE_FUND_CONTRIBUTION, $contractReserveFundContribution);
+        return $this->json($contractReserveFundContributionCheckService->check($contractReserveFundContribution));
+    }
+
+    #[Route('/reserve-fund-contribution/{id}/transfer', name: 'api_patch_transfer_reserve_fund_contribution', methods: ['PATCH'])]
+    public function transferContractReserveFundContribution(ContractReserveFundContribution $contractReserveFundContribution, ContractReserveFundContributionTransferService $contractReserveFundContributionTransferService,
+        ContractReserveFundContributionTransformer $contractReserveFundContributionTransformer): JsonResponse
+    {
+        $this->denyAccessUnlessGranted(ContractReserveFundContributionVoter::TRANSFER_RECEIVE_FUND_CONTRIBUTION, $contractReserveFundContribution);
+        $contractReserveFundContributionTransferService->processReserveFundContribution($contractReserveFundContribution);
+        return $this->json($contractReserveFundContributionTransformer->fromEntityToReserveFundContributionTransferOutputDto($contractReserveFundContribution));
+    }
+
+    #[Route('/{id}/request-available-to-reserve-fund-movement', name: 'api_post_available_to_reserve_fund_movement', methods: ['POST'])]
+    public function requestAvailabeToReserveFundBalanceMovement(Contract $contract, #[MapRequestPayload] ContractMoveBalanceToTheReserveInputDto $contractMoveBalanceToTheReserveInputDto,
+        CreateContractBalanceMovementService $createContractBalanceMovementService): JsonResponse
+    {
+        $this->denyAccessUnlessGranted(ContractVoter::REQUEST_OPERATION, $contract);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        return $this->json($createContractBalanceMovementService->createBalanceMovementFromAvailableToReserve($contract, $user, $contractMoveBalanceToTheReserveInputDto));
+    }
+
+    #[Route('/available-to-reserve-fund-movement/{id}/move', name: 'api_patch_move_available_to_reserve_fund_movement', methods: ['PATCH'])]
+    public function moveAvailableToReserveFundMovement(ContractBalanceMovement $contractBalanceMovement, ContractMoveFundsToTheReserveService $contractMoveFundsToTheReserveService,
+        ContractBalanceMovementTransformer $contractBalanceMovementTransformer): JsonResponse
+    {
+        $this->denyAccessUnlessGranted(ContractBalanceMovementVoter::PERFORM_BALANCE_MOVEMENT, $contractBalanceMovement);
+        $contractMoveFundsToTheReserveService->moveAvailableFundsToTheReserve($contractBalanceMovement);
+
+        return $this->json($contractBalanceMovementTransformer->fromEntityToMovedToTheReserveFundOutputDto($contractBalanceMovement));
+    }
+
+    #[Route('/get-contract-balance-movements', name: 'api_get_contract_balance_movements', methods: ['GET'])]
+    #[IsGranted(new Expression('is_granted("ROLE_COMPANY") or is_granted("ROLE_ADMIN")'))]
+    public function getContractBalanceMovements(GetContractBalanceMovementsService $getContractBalanceMovementsService): JsonResponse
     {
         /**
          * @var User $user
          */
         $user = $this->getUser();
-        return $this->json($createReserveFundContributionService->createReserveFundContribution($contract, $createContractReserveFundContributionDtoInput, $user));
-    }
+        return $this->json($getContractBalanceMovementsService->getContractBalanceMovements($user));
+    }   
 }

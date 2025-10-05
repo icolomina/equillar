@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Repository\Contract;
 
 use App\Entity\Contract\Contract;
@@ -52,6 +57,7 @@ class ContractWithdrawalRequestRepository extends ServiceEntityRepository
     public function sumApprovedWithdrawalsAmountByContract(Contract $contract): int|float|null
     {
         $qb = $this->createQueryBuilder('cwr');
+
         return $qb
             ->select('SUM(cwr.requestedAmount) as amount')
             ->innerJoin('cwr.withdrawalApproval', 'cwa')

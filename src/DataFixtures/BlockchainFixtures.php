@@ -28,6 +28,5 @@ class BlockchainFixtures extends Fixture
         $manager->persist($blockchain);
         $manager->persist($blockchainNetwork);
         $manager->flush();
-        
     }
 }

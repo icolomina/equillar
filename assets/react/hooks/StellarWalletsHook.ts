@@ -1,4 +1,10 @@
-import { allowAllModules, FREIGHTER_ID, FreighterModule, ISupportedWallet, StellarWalletsKit, WalletNetwork, xBullModule } from "@creit.tech/stellar-wallets-kit";
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { allowAllModules, FREIGHTER_ID, StellarWalletsKit, WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 import { useState } from "react";
 
 export interface Wallet {

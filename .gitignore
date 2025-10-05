@@ -2,6 +2,7 @@
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
 /public/build/
+/public/images/projects/
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
@@ -12,8 +13,7 @@ yarn-error.log
 /var/logs/*
 /package-lock.json
 /composer.lock
-/data/test/keypair.test.txt
-/data/investment/*
+/data/
 
 ###> phpstan/phpstan ###
 phpstan.neon
@@ -23,5 +23,31 @@ phpstan.neon
 /.env.test
 
 .phpunit.result.cache
+.php-cs-fixer.cache
 
-/config/secrets/*
+/config/secrets/
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+# System files and IDEs
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+
+# Test coverage and reports
+/coverage/
+/coverage-final.json
+/coverage-summary.json
+/nyc_output/
+
+# Temporary files and logs
+*.pid
+*.log
+
+# Storybook (if used)
+/storybook-static/

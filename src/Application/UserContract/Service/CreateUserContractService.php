@@ -5,14 +5,13 @@ namespace App\Application\UserContract\Service;
 use App\Application\User\Transformer\UserWalletEntityTransformer;
 use App\Application\UserContract\Transformer\UserContractEntityTransformer;
 use App\Entity\User;
-use App\Message\CheckUserContractMessage;
 use App\Persistence\Contract\ContractStorageInterface;
 use App\Persistence\PersistorInterface;
 use App\Persistence\User\UserWalletStorageInterface;
 use App\Presentation\Contract\DTO\Input\CreateUserContractDtoInput;
 use App\Presentation\UserContract\DTO\Output\UserContractDtoOutput;
 use Soneso\StellarSDK\Crypto\StrKey;
-use Symfony\Component\Messenger\MessageBusInterface;
+use App\Application\UserContract\Service\ProcessUserContractService;
 
 class CreateUserContractService
 {
@@ -22,7 +21,7 @@ class CreateUserContractService
         private readonly UserContractEntityTransformer $userContractEntityTransformer,
         private readonly UserWalletStorageInterface $userWalletStorage,
         private readonly UserWalletEntityTransformer $userWalletEntityTransformer,
-        private readonly MessageBusInterface $bus,
+        private readonly ProcessUserContractService $processUserContractService,
         private readonly PersistorInterface $persistor
     ) {}
 
@@ -40,7 +39,7 @@ class CreateUserContractService
         $this->persistor->persist($userContract);
         $this->persistor->flush();
 
-        $this->bus->dispatch(new CheckUserContractMessage($userContract->getId()));
+        $this->processUserContractService->processUserContractTransaction($userContract);
         return $this->userContractEntityTransformer->fromEntityToOutputDto($userContract);
     }
 }

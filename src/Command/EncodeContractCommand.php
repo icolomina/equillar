@@ -1,5 +1,9 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 namespace App\Command;
 
 use Soneso\StellarSDK\Crypto\StrKey;
@@ -16,7 +20,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class EncodeContractCommand extends Command
 {
-    public function __construct(?string $name = null){
+    public function __construct(?string $name = null)
+    {
         parent::__construct($name);
     }
 
@@ -26,7 +31,6 @@ class EncodeContractCommand extends Command
             ->addArgument('address', InputArgument::REQUIRED, 'The address to encode / decode')
             ->addOption('decode', null, InputOption::VALUE_NONE, 'Decode Address ?')
         ;
-
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
@@ -36,7 +40,8 @@ class EncodeContractCommand extends Command
             : StrKey::encodeContractIdHex($input->getArgument('address'))
         ;
 
-        $output->writeln('Result: ' . $value);
+        $output->writeln('Result: '.$value);
+
         return Command::SUCCESS;
     }
 }

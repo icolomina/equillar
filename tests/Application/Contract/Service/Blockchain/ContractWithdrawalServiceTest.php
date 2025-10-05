@@ -58,7 +58,6 @@ class ContractWithdrawalServiceTest extends KernelTestCase
         $contractWithdrawalServiceStub = $this->getMockBuilder(ContractWithdrawalApprovalService::class)
             ->setConstructorArgs([
                 $contractWithdrawalOperatonStub,
-                $this->container->get('test.App\Domain\ScContract\Service\ScContractResultBuilder'),
                 $this->container->get('test.App\Application\Contract\Transformer\ContractTransactionEntityTransformer'),
                 $this->container->get('test.App\Application\Contract\Transformer\ContractWithdrawalApprovalEntityTransformer'),
                 $this->persistor,
@@ -83,11 +82,8 @@ class ContractWithdrawalServiceTest extends KernelTestCase
             ->setConstructorArgs([new XdrSCValType(XdrSCValType::SCV_BOOL)])
             ->getMock()
         ;
-        
-        $xdrBoolResultMock->method('getB')->willReturn(true);
 
         $transactionResponseStub = $this->getMockBuilder(GetTransactionResponse::class)->disableOriginalConstructor()->getMock();
-        $transactionResponseStub->expects($this->once())->method('getResultValue')->willReturn($xdrBoolResultMock);
         $transactionResponseStub->expects($this->atLeastOnce())->method('getTxHash')->willReturn('886996787366366355553');
         $transactionResponseStub->expects($this->atLeastOnce())->method('getLedger')->willReturn(15986662548);
         

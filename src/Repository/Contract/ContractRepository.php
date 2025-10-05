@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Repository\Contract;
 
 use App\Entity\Contract\Contract;
@@ -27,7 +32,7 @@ class ContractRepository extends ServiceEntityRepository
     {
         $joinBalance = sprintf('cb.id = (SELECT MAX(cb2.id) FROM %s cb2 WHERE cb2.contract = c)', ContractBalance::class);
         $joinWithdrawalRequest = sprintf(
-            'cwr.id = (SELECT MAX(cwr2.id) FROM %s cwr2 WHERE cwr2.contract = c and cwr2.status <> :rejected_status and cwr2.status <> :approved_status)', 
+            'cwr.id = (SELECT MAX(cwr2.id) FROM %s cwr2 WHERE cwr2.contract = c and cwr2.status <> :rejected_status and cwr2.status <> :approved_status)',
             ContractWithdrawalRequest::class
         );
 
@@ -43,6 +48,7 @@ class ContractRepository extends ServiceEntityRepository
         ;
 
         $query = $qb->getQuery();
+
         return $query->getResult();
     }
 
@@ -50,7 +56,7 @@ class ContractRepository extends ServiceEntityRepository
     {
         $joinBalance = sprintf('cb.id = (SELECT MAX(cb2.id) FROM %s cb2 WHERE cb2.contract = c)', ContractBalance::class);
         $joinWithdrawalRequest = sprintf(
-            'cwr.id = (SELECT MAX(cwr2.id) FROM %s cwr2 WHERE cwr2.contract = c and cwr2.status <> :rejected_status and cwr2.status <> :approved_status)', 
+            'cwr.id = (SELECT MAX(cwr2.id) FROM %s cwr2 WHERE cwr2.contract = c and cwr2.status <> :rejected_status and cwr2.status <> :approved_status)',
             ContractWithdrawalRequest::class
         );
 
@@ -64,6 +70,7 @@ class ContractRepository extends ServiceEntityRepository
         ;
 
         $query = $qb->getQuery();
+
         return $query->getResult();
     }
 }

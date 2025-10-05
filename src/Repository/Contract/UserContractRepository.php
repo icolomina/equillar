@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Repository\Contract;
 
 use App\Domain\UserContract\UserContractStatus;
@@ -22,6 +27,7 @@ class UserContractRepository extends ServiceEntityRepository
     public function findClaimableCandidates(\DateTimeImmutable $claimableFrom, \DateTimeImmutable $lastPaymentFrom): Query
     {
         $qb = $this->createQueryBuilder('uc');
+
         return $qb
             ->innerJoin('uc.contract', 'c')
             ->andWhere($qb->expr()->lte('uc.claimableTs', ':claimableFrom'))
@@ -43,13 +49,14 @@ class UserContractRepository extends ServiceEntityRepository
     public function findUserPortfolioContracts(User $user): array
     {
         $qb = $this->createQueryBuilder('uc');
+
         return $qb
             ->andWhere($qb->expr()->eq('uc.usr', ':user'))
             ->andWhere($qb->expr()->neq('uc.status', ':status'))
             ->setParameter('user', $user)
             ->setParameter('status', UserContractStatus::FINISHED->name)
             ->getQuery()
-            ->getResult() 
+            ->getResult()
         ;
     }
 }

@@ -1,5 +1,9 @@
 <?php
-
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Domain;
 
 class I128
@@ -31,6 +35,7 @@ class I128
     public function toPhp(int $decimals): int|float
     {
         $reversed = $this->reverse();
+
         return $reversed / pow(10, $decimals);
     }
 

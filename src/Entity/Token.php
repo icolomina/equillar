@@ -1,13 +1,17 @@
 <?php
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 
 namespace App\Entity;
 
 use App\Repository\TokenRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 
 #[ORM\Entity(repositoryClass: TokenRepository::class)]
-class Token 
+class Token
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -43,6 +47,12 @@ class Token
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $type = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $issuerAddress = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $issuerSite = null;
 
     public function getId(): ?int
     {
@@ -165,6 +175,30 @@ class Token
     public function setType(string $type): static
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getIssuerAddress(): ?string
+    {
+        return $this->issuerAddress;
+    }
+
+    public function setIssuerAddress(string $issuerAddress): static
+    {
+        $this->issuerAddress = $issuerAddress;
+
+        return $this;
+    }
+
+    public function getIssuerSite(): ?string
+    {
+        return $this->issuerSite;
+    }
+
+    public function setIssuerSite(string $issuerSite): static
+    {
+        $this->issuerSite = $issuerSite;
 
         return $this;
     }

@@ -1,4 +1,8 @@
 <?php
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace App\Application\UserContract\Mapper;
 
@@ -10,15 +14,15 @@ class UserInvestmentTrxResultMapper
 {
     public function mapToEntity(array $trxResult, UserContract $userContract): void
     {
-        $decimals  = $userContract->getContract()->getToken()->getDecimals();
+        $decimals = $userContract->getContract()->getToken()->getDecimals();
 
-        foreach($trxResult as $key => $value) {
-            $result = match($key) {
-                'accumulated_interests', 'deposited', 'total', 'paid', 'regular_payment','commission'  => I128::fromLoAndHi($value->getLo(), $value->getHi())->toPhp($decimals),
+        foreach ($trxResult as $key => $value) {
+            $result = match ($key) {
+                'accumulated_interests', 'deposited', 'total', 'paid', 'regular_payment','commission' => I128::fromLoAndHi($value->getLo(), $value->getHi())->toPhp($decimals),
                 'claimable_ts' => $value,
                 'last_transfer_ts' => ($value > 0) ? new \DateTimeImmutable(date('Y-m-d H:i:s', $value)) : null,
                 'status' => (UserContractStatus::tryFrom($value) ?? UserContractStatus::UNKNOWN)->name,
-                default => null
+                default => null,
             };
 
             $this->setValueToEntity($userContract, $key, $result);
@@ -27,18 +31,18 @@ class UserInvestmentTrxResultMapper
 
     private function setValueToEntity(UserContract $userContract, string $key, mixed $value): void
     {
-        $currentTotalCharged = $userContract->getTotalCharged() ?? 0; 
-        match($key) {
-            'accumulated_interests' => $userContract->setInterests($value), 
+        $currentTotalCharged = $userContract->getTotalCharged() ?? 0;
+        match ($key) {
+            'accumulated_interests' => $userContract->setInterests($value),
             'commission' => $userContract->setCommission($value),
-            'deposited' => $userContract->setBalance($value), 
+            'deposited' => $userContract->setBalance($value),
             'total' => $userContract->setTotal($value),
             'claimable_ts' => $userContract->setClaimableTs($value),
             'last_transfer_ts' => $userContract->setLastPaymentReceivedAt($value),
-            'paid' => $userContract->setTotalCharged($currentTotalCharged + $value), 
+            'paid' => $userContract->setTotalCharged($currentTotalCharged + $value),
             'status' => $userContract->setStatus($value),
             'regular_payment' => $userContract->setRegularPayment($value),
-            default => null
+            default => null,
         };
     }
 }

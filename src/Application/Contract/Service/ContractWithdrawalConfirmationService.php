@@ -10,8 +10,9 @@ class ContractWithdrawalConfirmationService
 {
     public function __construct(
         private readonly ContractWithdrawalRequestEntityTransformer $contractWithdrawalRequestEntityTransformer,
-        private readonly PersistorInterface $persistor
-    ){}
+        private readonly PersistorInterface $persistor,
+    ) {
+    }
 
     public function confirmWithdrawal(ContractWithdrawalRequest $contractWithdrawalRequest): void
     {

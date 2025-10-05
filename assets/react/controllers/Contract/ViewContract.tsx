@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { Fragment, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,6 +16,9 @@ import { ContractOutput } from "../../model/contract";
 import CloseIcon from '@mui/icons-material/Close';
 import PdfViewer from "../Miscelanea/PdfViewer";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PauseCircleIcon from '@mui/icons-material/PauseCircle';
+import PendingIcon from '@mui/icons-material/Pending';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import { formatCurrencyFromValueAndTokenContract } from "../../utils/currency";
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import PaymentsIcon from '@mui/icons-material/Payments';
@@ -19,11 +28,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useAuth } from "../../hooks/AuthHook";
 import ContractActionIcon from "./Actions/ContractActionIcon";
-import { useApiRoutes } from "../../hooks/ApiRoutesHook";
 import ApproveContractModal from "./ApproveContractModal";
 import ActivateContractModal from "./ActivateContractModal";
 import CreateWithdrawalRequestModal from "../Company/Withdrawal/CreateWithdrawalRequestModal";
 import CreateReserveFundContributionModal from "../Company/ReserveFund/CreateReserveFundContributionModal";
+import CreateAvailableToReserveMovementModal from "../Company/Balance/CreateAvailableToReserveMovementModal";
+import PauseContractInvestmentsModal from "./PauseContractInvestmentsModal";
+import ResumeContractInvestmentsModal from "./ResumeContractInvestmentsModal";
 
 export default function ViewContract() {
 
@@ -31,12 +42,14 @@ export default function ViewContract() {
     const { callGet, callGetDownloadFile } = useApi();
     const {isAdmin, isCompany} = useAuth();
     const navigate = useNavigate();
-    const apiRoutes = useApiRoutes();
 
     const [openApproveModal, setOpenApproveModal] = useState(false);
     const [openActivationModal, setOpenActivationModal] = useState(false);
     const [openModalToRequestWithdrawal, setOpenModalToRequestWithdrawal] = useState<boolean>(false);
     const [openModalToRequestReserveFundContribution, setOpenModalToRequestReserveFundContribution] = useState<boolean>(false);
+    const [openModalToRequestAvailableToReserveFundMovement, setOpenModalToRequestAvailableToReserveFundMovement] = useState<boolean>(false);
+    const [openModalToPauseContract, setOpenModalToPauseContract] = useState<boolean>(false);
+    const [openModalToResumeContract, setOpenModalToResumeContract] = useState<boolean>(false);
     const [contractSelected, setContractSelected] = useState<ContractOutput | null>(null);
 
     const [contract, setContract] = useState<ContractOutput>(null);
@@ -105,6 +118,21 @@ export default function ViewContract() {
         setOpenModalToRequestReserveFundContribution(false);
     }
 
+    const handleCloseAvailableToReserveFundMovementModal = () => {
+        setContractSelected(null);
+        setOpenModalToRequestAvailableToReserveFundMovement(false);
+    }
+
+    const handleClosePauseContractModal = () => {
+        setContractSelected(null);
+        setOpenModalToPauseContract(false);
+    }
+
+    const handleCloseResumeContractModal = () => {
+        setContractSelected(null);
+        setOpenModalToResumeContract(false);
+    }
+
     const handleOpenModalForApprove = () => {
         setOpenApproveModal(true);
         setContractSelected(query.data);
@@ -125,11 +153,34 @@ export default function ViewContract() {
         setOpenModalToRequestReserveFundContribution(true);
     }
 
+    const handleOpenModalForAvailableToReserveFundMovement = () => {
+        setContractSelected(query.data);
+        setOpenModalToRequestAvailableToReserveFundMovement(true);
+    }
+
+    const handleOpenModalToPauseContract = () => {
+        setContractSelected(query.data);
+        setOpenModalToPauseContract(true);
+    }
+
+    const handleOpenModalToResumeContract = () => {
+        setContractSelected(query.data);
+        setOpenModalToResumeContract(true);
+    }
+
     const handleApprovalFinished = async () => {
         await query.refetch();
     }
 
     const handleActivationFinished = async () => {
+        await query.refetch();
+    }
+
+    const handlePauseContractFinished = async () => {
+        await query.refetch();
+    }
+
+    const handleResumeContractFinished = async () => {
         await query.refetch();
     }
 
@@ -169,10 +220,15 @@ export default function ViewContract() {
                                 <Grid2 container spacing={3}>
                                     {/* Identificador del contrato */}
                                     {query.data.initialized && (
-                                        <Grid2 size={12}>
-                                            <Typography variant="subtitle2" color="textSecondary">Contract Identifier</Typography>
-                                            <Typography variant="body1" fontWeight="medium">{query.data.address}</Typography>
-                                        </Grid2>
+                                        <>
+                                            <Grid2 size={12}>
+                                                <Typography variant="subtitle2" color="textSecondary">Contract Identifier</Typography>
+                                                <Typography variant="body1" fontWeight="medium">{query.data.address}</Typography>
+                                            </Grid2>
+                                            <Grid2 size={12}>
+                                                <Divider sx={{ my: 2 }} />
+                                            </Grid2>
+                                        </>
                                     )}
 
                                     {/* Resto de la información general */}
@@ -185,11 +241,31 @@ export default function ViewContract() {
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                             <Typography variant="body1" fontWeight="medium">{query.data.status}</Typography>
                                             {query.data.status === 'ACTIVE' && (<CheckCircleIcon sx={{ color: 'success.main', fontSize: '1.2rem' }} />)}
+                                            {query.data.status === 'APPROVED' && (<VerifiedIcon sx={{ color: 'info.main', fontSize: '1.2rem' }} />)}
+                                            {query.data.status === 'PAUSED' && (<PauseCircleIcon sx={{ color: 'warning.main', fontSize: '1.2rem' }} />)}
+                                            {query.data.status === 'REVIEWING' && (<PendingIcon sx={{ color: 'grey.500', fontSize: '1.2rem' }} />)}
                                         </Box>
                                     </Grid2>
                                     <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
-                                        <Typography variant="subtitle2" color="textSecondary">Started At</Typography>
-                                        <Typography variant="body1" fontWeight="medium">{query.data.initializedAt}</Typography>
+
+                                        {query.data.status === 'ACTIVE' && (
+                                            <>
+                                                <Typography variant="subtitle2" color="textSecondary">Started At</Typography>
+                                                <Typography variant="body1" fontWeight="medium">{query.data.lastResumedAt ?? query.data.initializedAt}</Typography>
+                                            </>
+                                        )}
+                                        {query.data.status === 'APPROVED' && (
+                                            <>
+                                                <Typography variant="subtitle2" color="textSecondary">Approved At</Typography>
+                                                <Typography variant="body1" fontWeight="medium">{query.data.approvedAt}</Typography>
+                                            </>
+                                        )}
+                                        {query.data.status === 'PAUSED' && (
+                                            <>
+                                                <Typography variant="subtitle2" color="textSecondary">Paused At</Typography>
+                                                <Typography variant="body1" fontWeight="medium">{query.data.lastPausedAt}</Typography>
+                                            </>
+                                        )}
                                     </Grid2>
                                     <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
                                         <Typography variant="subtitle2" color="textSecondary">Months to claim earnings</Typography>
@@ -269,6 +345,12 @@ export default function ViewContract() {
                                             {formatCurrencyFromValueAndTokenContract(query.data.contractBalance.reserveFundContributions, query.data.tokenContract)}
                                         </Typography>
                                     </Grid2>
+                                    <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
+                                        <Typography variant="subtitle2" color="textSecondary">Available to reserve movements</Typography>
+                                        <Typography variant="body1" fontWeight="medium">
+                                            {formatCurrencyFromValueAndTokenContract(query.data.contractBalance.availableToReserveMovements, query.data.tokenContract)}
+                                        </Typography>
+                                    </Grid2>
                                 </Grid2>
                                 <Divider sx={{ my: 3 }} />
                                 {/* Barra de progreso de fondos */}
@@ -327,7 +409,10 @@ export default function ViewContract() {
                                         {onClick: handleOpenModalForActivation, text: 'Activate', icon: <PlayCircleFilledIcon color="primary" />, id: 'activate'}
                                     }></ContractActionIcon> }
                                     { query.data.status == 'ACTIVE' && <ContractActionIcon iconAction={
-                                        {text: 'Disable', icon: <CancelIcon color="warning" />, id: 'stop'}
+                                        {text: 'Pause Contract', onClick: handleOpenModalToPauseContract, icon: <CancelIcon color="warning" />, id: 'stop'}
+                                    }></ContractActionIcon> }
+                                    { query.data.status == 'PAUSED' && <ContractActionIcon iconAction={
+                                        {text: 'Pause Contract', onClick: handleOpenModalToResumeContract, icon: <CancelIcon color="success" />, id: 'resume'}
                                     }></ContractActionIcon> }
                                     { isCompany() && query.data.status == 'ACTIVE' && query.data.contractBalance.available > 0 && <ContractActionIcon iconAction={
                                         {onClick: handleOpenModalForRequestWithdrawal, text: 'Request funds withdrawal', icon: <PriceChangeIcon color="primary" />, id: 'withdrawal'}
@@ -336,7 +421,7 @@ export default function ViewContract() {
                                         {onClick: handleOpenModalForReserveFundContribution, text: 'Reserve fund contribution', icon: <AccountBalanceWalletIcon color="primary" />, id: 'reserve_contribution'}
                                     }></ContractActionIcon> }
                                     { (isCompany() || isAdmin()) && query.data.status == 'ACTIVE' && query.data.contractBalance.available > 0 && <ContractActionIcon iconAction={
-                                        {text: 'Move funds to the reserve', icon: <PaymentsIcon color="primary" />, id: 'move funds'}
+                                        {onClick: handleOpenModalForAvailableToReserveFundMovement, text: 'Move funds to the reserve', icon: <PaymentsIcon color="primary" />, id: 'move funds'}
                                     }></ContractActionIcon> }
                                 </Grid2>
                             </CardContent>
@@ -408,6 +493,26 @@ export default function ViewContract() {
                 contract={contractSelected}
                 onClose={handleCloseReserveFundContributionModal}
             /> }
+
+            {openModalToRequestAvailableToReserveFundMovement && contractSelected && <CreateAvailableToReserveMovementModal
+                open={openModalToRequestAvailableToReserveFundMovement}
+                contract={contractSelected}
+                onClose={handleCloseAvailableToReserveFundMovementModal}
+            /> }
+
+            {openModalToPauseContract && contractSelected && <PauseContractInvestmentsModal 
+                openPauseInvesmentsModal={openModalToPauseContract}
+                contractToPause={contractSelected}
+                handleModalClose={handleClosePauseContractModal}
+                handlePausingFinished={handlePauseContractFinished}
+            />}
+
+            {openModalToResumeContract && contractSelected && <ResumeContractInvestmentsModal 
+                openResumeInvesmentsModal={openModalToResumeContract}
+                contractToResume={contractSelected}
+                handleModalClose={handleCloseResumeContractModal}
+                handleResumingFinished={handleResumeContractFinished}
+            />}
 
         </Fragment>
         )

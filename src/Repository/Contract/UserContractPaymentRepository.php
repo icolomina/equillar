@@ -1,9 +1,13 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Repository\Contract;
 
 use App\Entity\Contract\Contract;
-use App\Entity\Contract\UserContract;
 use App\Entity\Contract\UserContractPayment;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -22,6 +26,7 @@ class UserContractPaymentRepository extends ServiceEntityRepository
     public function findUserContractPayments(User $user): array
     {
         $qb = $this->createQueryBuilder('ucp');
+
         return $qb
             ->innerJoin('ucp.userContract', 'uc')
             ->andWhere($qb->expr()->eq('uc.usr', ':user'))
@@ -36,6 +41,7 @@ class UserContractPaymentRepository extends ServiceEntityRepository
     public function sumUserContractPaymentsByContract(Contract $contract): int|float|null
     {
         $qb = $this->createQueryBuilder('ucp');
+
         return $qb
             ->select('SUM(ucp.totalClaimed) as total')
             ->innerJoin('ucp.userContract', 'uc')

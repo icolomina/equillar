@@ -44,7 +44,6 @@ class ContractDoctrineStorage extends AbstractDoctrineStorage implements Contrac
         $contract->setInitialized(true);
         $contract->setAddress($contractAddress);
         $contract->setStatus(ContractStatus::ACTIVE->name);
-        
     }
 
     public function markContractAsFundsReached(Contract $contract): void

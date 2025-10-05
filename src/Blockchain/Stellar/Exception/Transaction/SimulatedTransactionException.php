@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+*/
 namespace App\Blockchain\Stellar\Exception\Transaction;
 
 use Soneso\StellarSDK\Soroban\Responses\SimulateTransactionResponse;
@@ -11,7 +16,7 @@ class SimulatedTransactionException extends \RuntimeException implements Transac
     public function __construct(SimulateTransactionResponse $simulateTransactionResponse)
     {
         $this->simulateTransactionResponse = $simulateTransactionResponse;
-        $message = sprintf('Soroban Simulated transaction failed: %s' , $this->getError());
+        $message = sprintf('Soroban Simulated transaction failed: %s', $this->getError());
         parent::__construct($message);
     }
 
@@ -32,10 +37,10 @@ class SimulatedTransactionException extends \RuntimeException implements Transac
 
     public function getError(): string
     {
-        return match(true) {
+        return match (true) {
             $this->simulateTransactionResponse->resultError => $this->simulateTransactionResponse->resultError,
             $this->simulateTransactionResponse->getError() && $this->simulateTransactionResponse->getError()->message => $this->simulateTransactionResponse->getError()->message,
-            default => 'Unknown error'
+            default => 'Unknown error',
         };
     }
 

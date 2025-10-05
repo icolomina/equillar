@@ -9,15 +9,15 @@ use App\Entity\User;
 use App\Persistence\PersistorInterface;
 use App\Presentation\Contract\DTO\Input\CreateContractReserveFundContributionDtoInput;
 use App\Presentation\Contract\DTO\Output\ContractReserveFundContributionCreatedDtoOutput;
-use Soneso\StellarSDK\Crypto\StrKey;
 
 class CreateReserveFundContributionService
 {
     public function __construct(
         private readonly ContractReserveFundContributionTransformer $contractReserveFundContributionTransformer,
         private readonly StellarAccountLoader $stellarAccountLoader,
-        private readonly PersistorInterface $persistor
-    ){}
+        private readonly PersistorInterface $persistor,
+    ) {
+    }
 
     public function createReserveFundContribution(Contract $contract, CreateContractReserveFundContributionDtoInput $createContractReserveFundContributionDtoInput, User $user): ContractReserveFundContributionCreatedDtoOutput
     {
@@ -25,6 +25,7 @@ class CreateReserveFundContributionService
         $this->persistor->persistAndFlush($contractReserveFundContribution);
 
         $systemStellarAddress = $this->stellarAccountLoader->getKeyPair()->getAccountId();
+
         return $this->contractReserveFundContributionTransformer->fromEntityToContractReserveFundContributionCreatedDtoOutput($contractReserveFundContribution, $systemStellarAddress);
     }
 }

@@ -1,16 +1,33 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../../../hooks/ApiHook";
 import { useApiRoutes } from "../../../hooks/ApiRoutesHook";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ContractReserveFund } from "../../../model/contract";
 import { Fragment } from "react/jsx-runtime";
-import { Backdrop, Box, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import PageListWrapper from "../../Miscelanea/Wrapper/PageListWrapper";
+import { useAuth } from "../../../hooks/AuthHook";
+import { useState } from "react";
+import CheckReserveFundContributionModal from "./CheckReserveFundContributionModal";
+
+interface ContractReserveFundCheckResult {
+    status: string
+}
 
 export default function GetReserveFundsContributions() {
 
     const { callGet } = useApi();
+    const { isAdmin } = useAuth();
     const routes = useApiRoutes();
+
+    const [selectedReserveFundContribution, setSelectedReserveFundContribution] = useState<ContractReserveFund>(null);
+    const [openModalToCheckReserveFundContribution, setOpenModalToCheckReserveFundContribution] = useState<boolean>(false);
 
     const query = useQuery(
         {
@@ -26,6 +43,17 @@ export default function GetReserveFundsContributions() {
             retry: 0,
         }
     );
+
+    const closeCheckReserveFundContributionlModal = () => {
+        setSelectedReserveFundContribution(null);
+        setOpenModalToCheckReserveFundContribution(false);
+        query.refetch();
+    }
+
+    const handleOpenCheckReserveFundContribution = (c: ContractReserveFund) => {
+        setSelectedReserveFundContribution(c);
+        setOpenModalToCheckReserveFundContribution(true);
+    }
 
     if (query.isLoading) {
         return (
@@ -67,6 +95,7 @@ export default function GetReserveFundsContributions() {
                                 <TableCell align="right">Created at</TableCell>
                                 <TableCell align="right">Received at</TableCell>
                                 <TableCell align="right">Transferred at</TableCell>
+                                <TableCell align="right">Options</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -83,12 +112,25 @@ export default function GetReserveFundsContributions() {
                                     <TableCell align="right">{c.createdAt}</TableCell>
                                     <TableCell align="right">{c.receivedAt}</TableCell>
                                     <TableCell align="right">{c.transferredAt}</TableCell>
+                                    <TableCell align="right">
+                                        {isAdmin() && (c.status == 'CREATED' || c.status == 'INSUFFICIENT_FUNDS_RECEIVED' ) && <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleOpenCheckReserveFundContribution(c)}>
+                                            Check
+                                        </Button>}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
             </PageListWrapper>
+
+            {selectedReserveFundContribution &&
+                <CheckReserveFundContributionModal
+                    open={openModalToCheckReserveFundContribution}
+                    contractReserveFund={selectedReserveFundContribution}
+                    onClose={closeCheckReserveFundContributionlModal}
+
+                />}
         </Fragment>
     );
 

@@ -2,21 +2,18 @@
 
 namespace App\Controller\Api\Contract;
 
-
 use App\Application\UserContract\Service\CreateUserContractService;
-use App\Application\UserContract\Service\GetUserContractPaymentsService;
 use App\Application\UserContract\Service\GetUserContractsService;
 use App\Application\UserContract\Service\UserContractEditService;
 use App\Entity\Contract\UserContract;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
 use App\Presentation\Contract\DTO\Input\CreateUserContractDtoInput;
-use App\Presentation\UserContract\DTO\Input\UserContractPaymentsInput;
-use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use App\Security\Authorization\Voter\Contract\User\UserContractVoter;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/v1/user-contract-investment')]
 class UserContractController extends AbstractController
@@ -34,9 +31,10 @@ class UserContractController extends AbstractController
 
     #[Route('/{id}', name: 'get_user_contract', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
-    public function getUserContract(UserContract $userContractInvestment, GetUserContractsService $getUserContractsInvestmentService): JsonResponse
+    public function getUserContract(UserContract $userContract, GetUserContractsService $getUserContractsInvestmentService): JsonResponse
     {
-        return $this->json($getUserContractsInvestmentService->getUserContract($userContractInvestment));
+        $this->denyAccessUnlessGranted(UserContractVoter::GET_USER_CONTRACT, $userContract);
+        return $this->json($getUserContractsInvestmentService->getUserContract($userContract));
     }
 
     #[Route('/create-user-investment', name: 'post_create_user_contract_investment', methods: ['POST'])]
@@ -47,6 +45,7 @@ class UserContractController extends AbstractController
          * @var User $user
          */
         $user = $this->getUser();
+
         return $this->json($createUserContractService->createUserContract($createUserContractDtoInput, $user));
     }
 
@@ -54,8 +53,7 @@ class UserContractController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function editUserContract(UserContract $userContract, UserContractEditService $userContractEditService): JsonResponse
     {
+        $this->denyAccessUnlessGranted(UserContractVoter::GET_USER_CONTRACT, $userContract);
         return $this->json($userContractEditService->editUserContract($userContract));
     }
-
 }
-

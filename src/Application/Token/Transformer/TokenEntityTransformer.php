@@ -1,4 +1,8 @@
 <?php
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace App\Application\Token\Transformer;
 
@@ -12,7 +16,7 @@ class TokenEntityTransformer
     public function fromEntityToOutputDto(Token $token): TokenDtoOutput
     {
         return new TokenDtoOutput(
-            (string)$token->getId(),
+            (string) $token->getId(),
             $token->getName(),
             $token->getCode(),
             $token->getAddress(),
@@ -39,12 +43,13 @@ class TokenEntityTransformer
 
     /**
      * @param Token[] $rows
+     *
      * @return TokenDtoOutput[]
      */
     public function fromEntitiesToOutputDtos(iterable $rows): iterable
     {
         return array_map(
-            fn(Token $token) => $this->fromEntityToOutputDto($token),
+            fn (Token $token) => $this->fromEntityToOutputDto($token),
             $rows
         );
     }

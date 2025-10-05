@@ -10,10 +10,10 @@ use App\Presentation\Contract\DTO\Output\ContractWithdrawalApprovalDtoOutput;
 
 class ContractWithdrawalApprovalEntityTransformer
 {
-
     public function __construct(
-        private readonly ContractWithdrawalRequestEntityTransformer $contractWithdrawalRequestEntityTransformer
-    ){}
+        private readonly ContractWithdrawalRequestEntityTransformer $contractWithdrawalRequestEntityTransformer,
+    ) {
+    }
 
     public function fromRequestApprovedToEntity(ContractWithdrawalRequest $contractInvestmentWithdrawalRequest, ContractTransaction $contractTransaction): ContractWithdrawalApproval
     {
@@ -39,6 +39,7 @@ class ContractWithdrawalApprovalEntityTransformer
     public function fromEntityToOutputDto(ContractWithdrawalApproval $contractWithdrawalApproval): ContractWithdrawalApprovalDtoOutput
     {
         $contractWithdrawalRequestOutputDto = $this->contractWithdrawalRequestEntityTransformer->fromEntityToOutputDto($contractWithdrawalApproval->getContractWithdrawalRequest());
+
         return new ContractWithdrawalApprovalDtoOutput(
             $contractWithdrawalRequestOutputDto,
             $contractWithdrawalApproval->getApprovedAt()?->format('Y-m-d H:i'),

@@ -1,6 +1,12 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Entity\Contract;
+
 
 use App\Entity\ContractCode;
 use App\Entity\ContractTransaction;
@@ -11,7 +17,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 
 #[ORM\Entity(repositoryClass: ContractRepository::class)]
 class Contract
@@ -106,6 +111,15 @@ class Contract
      */
     #[ORM\OneToMany(targetEntity: ContractPaymentAvailability::class, mappedBy: 'contract', orphanRemoval: true)]
     private Collection $paymentAvailabilities;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imageName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $lastPausedAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $lastResumedAt = null;
 
     public function __construct()
     {
@@ -469,6 +483,42 @@ class Contract
                 $paymentAvailability->setContract(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageName(string $imageName): static
+    {
+        $this->imageName = $imageName;
+
+        return $this;
+    }
+
+    public function getLastPausedAt(): ?\DateTimeImmutable
+    {
+        return $this->lastPausedAt;
+    }
+
+    public function setLastPausedAt(?\DateTimeImmutable $lastPausedAt): static
+    {
+        $this->lastPausedAt = $lastPausedAt;
+
+        return $this;
+    }
+
+    public function getLastResumedAt(): ?\DateTimeImmutable
+    {
+        return $this->lastResumedAt;
+    }
+
+    public function setLastResumedAt(?\DateTimeImmutable $lastResumedAt): static
+    {
+        $this->lastResumedAt = $lastResumedAt;
 
         return $this;
     }

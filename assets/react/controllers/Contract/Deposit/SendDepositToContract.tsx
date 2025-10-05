@@ -1,3 +1,8 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 import { useStellarWallet, Wallet } from "../../../hooks/StellarWalletsHook";
 import { Fragment, useContext, useEffect, useState } from "react";
@@ -184,16 +189,16 @@ export default function SendDepositToContract() {
             >
               <CardContent sx={{ flexGrow: 1, p: 4 }}>
                 <Typography variant="h6" gutterBottom>
-                  Inversión
+                  Investment
                 </Typography>
                 <TextField
                   fullWidth
                   name="amount"
-                  label="Cantidad a invertir"
+                  label="Amount to invest"
                   variant="outlined"
                   required
                   size="small"
-                  placeholder="Introduce la cantidad"
+                  placeholder="Enter the amount you want to invest"
                   value={formData.amount}
                   onChange={handleChange}
                   sx={{ marginBottom: 2 }} // Espacio inferior
@@ -300,7 +305,7 @@ export default function SendDepositToContract() {
                         sx={{ flexGrow: 1, mr: 1, height: 8, borderRadius: 1 }} // Barra más alta y con bordes redondeados
                       />
                       <Typography variant="body2" fontWeight="medium">
-                        {contract.percentageFundsReached}%
+                        {contract.contractBalance.percentajeFundsReceived}%
                       </Typography>
                     </Box>
                     <Typography variant="caption" color="textSecondary">

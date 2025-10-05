@@ -1,12 +1,17 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Blockchain\Stellar\Soroban\Transaction;
 
 use App\Blockchain\Stellar\Account\StellarAccountLoader;
 use App\Blockchain\Stellar\Exception\Transaction\GetTransactionException;
+use App\Blockchain\Stellar\Exception\Transaction\SendTransactionException;
 use App\Blockchain\Stellar\Exception\Transaction\SimulatedTransactionException;
 use App\Blockchain\Stellar\Soroban\Server\ServerLoaderService;
-use App\Blockchain\Stellar\Exception\Transaction\SendTransactionException;
 use Soneso\StellarSDK\AbstractOperation;
 use Soneso\StellarSDK\Crypto\KeyPair;
 use Soneso\StellarSDK\Soroban\Requests\SimulateTransactionRequest;
@@ -21,15 +26,15 @@ use Symfony\Component\DependencyInjection\Attribute\Lazy;
 #[Lazy]
 class ProcessTransactionService
 {
-    const int MAX_ITERATIONS = 10;
-    const int DEFAULT_WAITING_SLEEP = 1; // in seconds
+    public const int MAX_ITERATIONS = 10;
+    public const int DEFAULT_WAITING_SLEEP = 1; // in seconds
 
     private SorobanServer $server;
 
     public function __construct(
         private readonly ServerLoaderService $serverLoaderService,
-        private readonly StellarAccountLoader $stellarAccountLoader
-    ){
+        private readonly StellarAccountLoader $stellarAccountLoader,
+    ) {
         $this->server = $this->serverLoaderService->getServer();
     }
 
@@ -42,7 +47,7 @@ class ProcessTransactionService
         $request = new SimulateTransactionRequest($transaction);
         $simulateResponse = $this->server->simulateTransaction($request);
 
-        if($simulateResponse->resultError || $simulateResponse->getError()) {
+        if ($simulateResponse->resultError || $simulateResponse->getError()) {
             throw new SimulatedTransactionException($simulateResponse);
         }
 
@@ -51,24 +56,24 @@ class ProcessTransactionService
 
         $transaction->setSorobanTransactionData($transactionData);
         $transaction->addResourceFee($minResourceFee);
-        if($addAuth) {
+        if ($addAuth) {
             $this->addSorobanAuthenticationEntries($transaction, $simulateResponse, $invoker);
         }
 
         $transaction->sign($this->stellarAccountLoader->getKeyPair(), $this->serverLoaderService->getSorobanNetwork());
         $sendTransactionResponse = $this->server->sendTransaction($transaction);
 
-        if ($sendTransactionResponse->status !== SendTransactionResponse::STATUS_PENDING) {
+        if (SendTransactionResponse::STATUS_PENDING !== $sendTransactionResponse->status) {
             throw new SendTransactionException($sendTransactionResponse);
         }
 
         return $this->waitForTransaction($sendTransactionResponse->hash);
     }
 
-    public function waitForTransaction(string $hash, int $maxIterations = self::MAX_ITERATIONS, ?int $microseconds = null) : GetTransactionResponse 
+    public function waitForTransaction(string $hash, int $maxIterations = self::MAX_ITERATIONS, ?int $microseconds = null): GetTransactionResponse
     {
         $counter = 0;
-        do{
+        do {
             ($microseconds > 0)
                 ? usleep($microseconds)
                 : sleep(self::DEFAULT_WAITING_SLEEP)
@@ -76,22 +81,21 @@ class ProcessTransactionService
 
             $transactionResponse = $this->server->getTransaction($hash);
             $status = $transactionResponse->status;
-            $counter++;
+            ++$counter;
+        } while ($counter < $maxIterations && !in_array($status, [GetTransactionResponse::STATUS_SUCCESS, GetTransactionResponse::STATUS_FAILED]));
 
-        } while($counter < $maxIterations && !in_array($status, [GetTransactionResponse::STATUS_SUCCESS, GetTransactionResponse::STATUS_FAILED]));
-
-        if($status !== GetTransactionResponse::STATUS_SUCCESS) {
+        if (GetTransactionResponse::STATUS_SUCCESS !== $status) {
             throw new GetTransactionException($transactionResponse);
         }
 
-        return $transactionResponse;    
+        return $transactionResponse;
     }
 
-    private function addSorobanAuthenticationEntries(Transaction $transaction, SimulateTransactionResponse $simulateTransactionResponse, ?KeyPair $invoker) : void 
+    private function addSorobanAuthenticationEntries(Transaction $transaction, SimulateTransactionResponse $simulateTransactionResponse, ?KeyPair $invoker): void
     {
-        if($invoker) {
+        if ($invoker) {
             $auth = $simulateTransactionResponse->getSorobanAuth();
-            if(!empty($auth)){
+            if (!empty($auth)) {
                 $latestLedgerResponse = $this->server->getLatestLedger();
                 foreach ($auth as $a) {
                     $a->credentials->addressCredentials->signatureExpirationLedger = $latestLedgerResponse->sequence + 10;
@@ -99,11 +103,11 @@ class ProcessTransactionService
                 }
 
                 $transaction->setSorobanAuth($auth);
+
                 return;
             }
         }
-        
+
         $transaction->setSorobanAuth($simulateTransactionResponse->getSorobanAuth());
     }
-    
 }

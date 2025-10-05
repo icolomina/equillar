@@ -3,11 +3,11 @@
 namespace App\Controller\Api\Contract;
 
 use App\Application\User\Transformer\Service\GetUserPortfolioService;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Entity\User;
 
 #[Route('/api/v1/user')]
 class UserPorftolioController extends AbstractController
@@ -20,6 +20,7 @@ class UserPorftolioController extends AbstractController
          * @var User $user
          */
         $user = $this->getUser();
+
         return $this->json($getUserPortfolioService->getPortfolio($user));
     }
 }

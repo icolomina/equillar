@@ -14,8 +14,9 @@ class CheckContractBalanceMessageHandler
     public function __construct(
         private readonly ContractStorageInterface $contractStorage,
         private readonly ContractBalanceGetAndUpdateFromEventsService $contractBalanceGetAndUpdateFromEventsService,
-        private readonly ContractBalanceGetAndUpdateService $contractBalanceGetAndUpdateService
-    ){}
+        private readonly ContractBalanceGetAndUpdateService $contractBalanceGetAndUpdateService,
+    ) {
+    }
 
     public function __invoke(CheckContractBalanceMessage $checkContractBalanceMessage): void
     {

@@ -1,5 +1,9 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 namespace App\Command;
 
 use App\Application\SystemWallet\Transformer\SystemWalletEntityTransformer;
@@ -24,26 +28,28 @@ class GenerateSystemWalletCommand
         private readonly BlockchainNetworkStorageInterface $blockchainNetworkStorage,
         private readonly KernelInterface $kernel,
         private readonly SystemWalletEntityTransformer $systemWalletEntityTransformer,
-        private readonly PersistorInterface $persistor
-    ){}
+        private readonly PersistorInterface $persistor,
+    ) {
+    }
 
     public function __invoke(
         SymfonyStyle $io,
         #[Option] ?string $network = null,
         #[Option] ?string $blockchain = null,
         #[Option] ?string $secret = null,
-    ): int
-    {
+    ): int {
         $blockchainNetwork = $this->blockchainNetworkStorage->getByBlockchainAndNetwork($blockchain, $network);
 
-        if(!$blockchainNetwork) {
+        if (!$blockchainNetwork) {
             $io->warning(sprintf('There is no blockchain network matching values: %s - %s', $blockchain, $network));
+
             return Command::INVALID;
         }
 
-        if(!$blockchainNetwork->isTest() && $this->kernel->getEnvironment() !== 'prod') {
+        if (!$blockchainNetwork->isTest() && 'prod' !== $this->kernel->getEnvironment()) {
             $io->warning('You cannot create a public address on a non production environment');
-            return Command::INVALID;   
+
+            return Command::INVALID;
         }
 
         $io->writeln('Generating key-pair ...');
@@ -52,16 +58,17 @@ class GenerateSystemWalletCommand
             : KeyPair::random()
         ;
 
-        if($blockchainNetwork->isTest()){
+        if ($blockchainNetwork->isTest()) {
             $io->writeln('Funding address with friendbot ....');
             $funded = FriendBot::fundTestAccount($keyPair->getAccountId());
-            if(!$funded) {
+            if (!$funded) {
                 $io->error('Unable to fund address with XLM');
+
                 return Command::FAILURE;
             }
 
             $io->writeln('Address funded successfully');
-        }   
+        }
 
         $io->writeln('Encrypting address secret ....');
         $cryptedValue = $this->encryptor->encryptMsg($keyPair->getSecretSeed());
@@ -69,8 +76,9 @@ class GenerateSystemWalletCommand
 
         $io->writeln('Checking encryption before persisting');
         $decrytedString = $this->encryptor->decryptMsg($cryptedValue->cipher, $cryptedValue->nonce);
-        if($decrytedString !== $keyPair->getSecretSeed()) {
+        if ($decrytedString !== $keyPair->getSecretSeed()) {
             $io->error('Invalid secret encryption ...');
+
             return Command::FAILURE;
         }
 
@@ -78,7 +86,7 @@ class GenerateSystemWalletCommand
         $this->persistor->persistAndFlush($systemWallet);
 
         $io->success('Done !');
-        return Command::SUCCESS;
 
+        return Command::SUCCESS;
     }
 }

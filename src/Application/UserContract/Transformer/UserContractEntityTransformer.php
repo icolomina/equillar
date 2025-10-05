@@ -1,21 +1,26 @@
 <?php
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace App\Application\UserContract\Transformer;
 
 use App\Application\Token\Transformer\TokenEntityTransformer;
 use App\Domain\Contract\ContractReturnType;
+use App\Domain\UserContract\UserContractPaymentCalendarItem;
 use App\Entity\Contract\Contract;
 use App\Entity\Contract\UserContract;
 use App\Entity\UserWallet;
 use App\Presentation\Contract\DTO\Input\CreateUserContractDtoInput;
 use App\Presentation\UserContract\DTO\Output\UserContractDtoOutput;
-use App\Domain\UserContract\UserContractPaymentCalendarItem;
 
 readonly class UserContractEntityTransformer
 {
     public function __construct(
-        private readonly TokenEntityTransformer $tokenEntityTransformer
-    ){}
+        private readonly TokenEntityTransformer $tokenEntityTransformer,
+    ) {
+    }
 
     /**
      * @param UserContractPaymentCalendarItem[] $calendar
@@ -23,10 +28,10 @@ readonly class UserContractEntityTransformer
     public function fromEntityToOutputDto(UserContract $userContract, array $calendar = []): UserContractDtoOutput
     {
         $claimableDate = ($userContract->getClaimableTs() > 0) ? date('Y-m-d H:i', $userContract->getClaimableTs()) : 'Unknown yet';
-        $tokenContract   = $this->tokenEntityTransformer->fromEntityToContractTokenOutputDto($userContract->getContract()->getToken());
+        $tokenContract = $this->tokenEntityTransformer->fromEntityToContractTokenOutputDto($userContract->getContract()->getToken());
 
         return new UserContractDtoOutput(
-            (string)$userContract->getId(),
+            (string) $userContract->getId(),
             $userContract->getContract()->getIssuer()->getName(),
             $userContract->getContract()->getLabel(),
             $userContract->getContract()->getAddress(),
@@ -51,7 +56,7 @@ readonly class UserContractEntityTransformer
     public function fromEntitiesToOutputDtos(array $userContracts): array
     {
         return array_map(
-            fn(UserContract $userContract) => $this->fromEntityToOutputDto($userContract),
+            fn (UserContract $userContract) => $this->fromEntityToOutputDto($userContract),
             $userContracts
         );
     }
@@ -61,7 +66,7 @@ readonly class UserContractEntityTransformer
         $userContract = new UserContract();
         $userContract->setUsr($userWallet->getUsr());
         $userContract->setContract($contract);
-        $userContract->setBalance((float)$createUserContractDtoInput->deposited);
+        $userContract->setBalance((float) $createUserContractDtoInput->deposited);
         $userContract->setHash($createUserContractDtoInput->hash);
         $userContract->setCreatedAt(new \DateTimeImmutable());
         $userContract->setUserWallet($userWallet);
@@ -78,5 +83,4 @@ readonly class UserContractEntityTransformer
         $userContract->setLastPaymentReceivedAt($transferredAt);
         $userContract->setTotalCharged($currentTotalCharged + $userContract->getRegularPayment());
     }
-    
 }

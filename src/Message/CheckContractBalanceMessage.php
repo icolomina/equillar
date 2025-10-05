@@ -6,6 +6,7 @@ readonly class CheckContractBalanceMessage
 {
     public function __construct(
         public string|int $contractId,
-        public ?int $startLedger = null
-    ){}
+        public ?int $startLedger = null,
+    ) {
+    }
 }

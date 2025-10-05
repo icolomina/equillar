@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Repository\Contract;
 
 use App\Entity\Contract\Contract;
@@ -21,6 +26,7 @@ class ContractReserveFundContributionRepository extends ServiceEntityRepository
     public function sumContributionsByContract(Contract $contract): int|float|null
     {
         $qb = $this->createQueryBuilder('crf');
+
         return $qb
             ->select('SUM(crf.amount) as total')
             ->andWhere($qb->expr()->eq('crf.contract', ':contract'))
@@ -33,6 +39,7 @@ class ContractReserveFundContributionRepository extends ServiceEntityRepository
     public function findReserveFundContributionsByIssuer(User $user): array
     {
         $qb = $this->createQueryBuilder('crf');
+
         return $qb
             ->innerJoin('crf.contract', 'c')
             ->andWhere($qb->expr()->eq('c.issuer', ':issuer'))
@@ -42,5 +49,4 @@ class ContractReserveFundContributionRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
-    
 }

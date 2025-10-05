@@ -10,12 +10,19 @@ class ReceiveReserveFundContributionService
 {
     public function __construct(
         private readonly ContractReserveFundContributionTransformer $contractReserveFundContributionTransformer,
-        private readonly PersistorInterface $persistor
-    ){}
+        private readonly PersistorInterface $persistor,
+    ) {
+    }
 
     public function setReserveFundContributionAsReceived(ContractReserveFundContribution $contractReserveFundContribution): void
     {
         $this->contractReserveFundContributionTransformer->updateAsReceived($contractReserveFundContribution);
-        $this->persistor->persist($contractReserveFundContribution);
+        $this->persistor->persistAndFlush($contractReserveFundContribution);
+    }
+
+    public function setReserveFundContributionAsInsufficientFunds(ContractReserveFundContribution $contractReserveFundContribution): void
+    {
+        $this->contractReserveFundContributionTransformer->updateAsInsufficientFundsReceived($contractReserveFundContribution);
+        $this->persistor->persistAndFlush($contractReserveFundContribution);
     }
 }

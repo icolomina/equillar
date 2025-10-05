@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../../hooks/ApiHook";
 import axios, { AxiosError, AxiosResponse } from "axios";
@@ -90,7 +96,7 @@ export default function UserPortfolio() {
                 </Typography>
 
                 <Card sx={cardStyle}>
-                    <CardHeader title="Resumen del portfolio" sx={headerStyle} />
+                    <CardHeader title="Porfolio resume" sx={headerStyle} />
                     <CardContent sx={contentStyle}>
                         <Grid2 container spacing={3}>
                             <UserPortfolioResumeData title="Deposits" resumeInfo={query.data.resume.depositInfo} ></UserPortfolioResumeData>

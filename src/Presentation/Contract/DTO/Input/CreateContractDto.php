@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Presentation\Contract\DTO\Input;
 
 use App\Domain\Contract\ContractReturnType;
@@ -11,12 +16,12 @@ use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-class CreateContractDto {
-
+class CreateContractDto
+{
     private ?UploadedFile $file = null;
 
     public function __construct(
-        #[NotBlank(message: 'Token cannot be empty')] 
+        #[NotBlank(message: 'Token cannot be empty')]
         public readonly string $token,
 
         #[NotBlank(message: 'Rate cannot be empty')]
@@ -51,14 +56,14 @@ class CreateContractDto {
         public readonly string|int $returnType,
 
         #[NotBlank(message: 'Return months cannot be empty')]
-        public readonly string|int $returnMonths
-
-    ){}
+        public readonly string|int $returnMonths,
+    ) {
+    }
 
     #[Callback]
     public function validateGoal(ExecutionContextInterface $context, mixed $payload): void
     {
-        if(!is_numeric($this->goal)) {
+        if (!is_numeric($this->goal)) {
             $context
                 ->buildViolation('The fundraising goal must be numeric')
                 ->atPath('goal')
@@ -66,7 +71,7 @@ class CreateContractDto {
             ;
         }
 
-        if((float)$this->goal <= 0){
+        if ((float) $this->goal <= 0) {
             $context
                 ->buildViolation('The fundraising goal must be greater than 0')
                 ->atPath('goal')
@@ -78,7 +83,7 @@ class CreateContractDto {
     #[Callback]
     public function validateMinPerInvestment(ExecutionContextInterface $context, mixed $payload): void
     {
-        if(!is_numeric($this->minPerInvestment)) {
+        if (!is_numeric($this->minPerInvestment)) {
             $context
                 ->buildViolation('The min per investment value must be numeric')
                 ->atPath('minPerInvestment')
@@ -86,7 +91,7 @@ class CreateContractDto {
             ;
         }
 
-        if((float)$this->goal <= 0){
+        if ((float) $this->goal <= 0) {
             $context
                 ->buildViolation('The min per investment value must be greater than 0')
                 ->atPath('minPerInvestment')

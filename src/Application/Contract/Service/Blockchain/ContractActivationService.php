@@ -17,16 +17,17 @@ class ContractActivationService
         private readonly ContractActivationOperation $contractActivationOperation,
         private readonly ContractTransactionEntityTransformer $contractTransactionEntityTransformer,
         private readonly ContractEntityTransformer $contractEntityTransformer,
-        private readonly PersistorInterface $persistor
-    ) {}
+        private readonly PersistorInterface $persistor,
+    ) {
+    }
 
     public function activateContract(Contract $contract): void
     {
-        $contractTransaction  = null;
+        $contractTransaction = null;
 
         try {
             $transactionResponse = $this->contractActivationOperation->activateContract($contract);
-            $contractAddress     = $transactionResponse->getCreatedContractId();
+            $contractAddress = $transactionResponse->getCreatedContractId();
             $contractTransaction = $this->contractTransactionEntityTransformer->fromSuccessfulTransaction(
                 $contractAddress,
                 ContractNames::INVESTMENT->name,

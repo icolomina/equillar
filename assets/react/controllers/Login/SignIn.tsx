@@ -1,4 +1,10 @@
-import { Container, TextField, Button, Typography, Box, Paper, Avatar, Grid2, CircularProgress, styled, List, ListItem, ListItemIcon, Divider, useTheme, ListItemText, Collapse, Alert } from '@mui/material';
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { Container, TextField, Button, Typography, Box, Paper, Avatar, Grid2, CircularProgress, List, ListItem, ListItemIcon, Divider, useTheme, ListItemText, Collapse, Alert } from '@mui/material';
 import { useAuth } from '../../hooks/AuthHook';
 import { useState } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -56,6 +62,9 @@ export default function SignIn() {
       (r: AxiosError) => {
         if(r.status === 401) {
           setAuthError('Bad Credentials');
+        }
+        if(r.status === 400) {
+          setAuthError('Missing credentials. Review user and pass fields');
         }
         setLoading(false);
       }

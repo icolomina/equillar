@@ -12,7 +12,6 @@ use Symfony\Component\Uid\Uuid;
 
 class ContractWithdrawalRequestEntityTransformer
 {
-
     public function fromRequestWithdrawalDtoToEntity(Contract $contract, User $user, ContractRequestWithdrawalDtoInput $contractInvestmentRequestWithdrawalDtoInput): ContractWithdrawalRequest
     {
         $validUntil = (new \DateTimeImmutable())->add(\DateInterval::createFromDateString('+ 15 minutes'));
@@ -45,24 +44,26 @@ class ContractWithdrawalRequestEntityTransformer
                 $contractWithdrawalRequest->getRequestedAmount(), $contractWithdrawalRequest->getContract()->getToken()->getReferencedCurrency()
             ),
             str_replace('_', ' ', $status),
-            $withdrawalApproval?->getApprovedAt()?->format('Y-m-d H:i')
+            $withdrawalApproval?->getApprovedAt()?->format('Y-m-d H:i'),
+            $contractWithdrawalRequest->getWithdrawalApproval()?->getContractTransaction()?->getTrxHash()
         );
     }
 
     /**
      * @param ContractWithdrawalRequest[] $contractWithdrawalRequests
+     *
      * @return ContractWithdrawalRequestDtoOutput[]
      */
     public function fromEntitiesToOutputDtos(iterable $contractWithdrawalRequests): array
     {
         return array_map(
-            fn(ContractWithdrawalRequest $contractWithdrawalRequest) => $this->fromEntityToOutputDto($contractWithdrawalRequest),
+            fn (ContractWithdrawalRequest $contractWithdrawalRequest) => $this->fromEntityToOutputDto($contractWithdrawalRequest),
             $contractWithdrawalRequests
         );
     }
 
     public function updateWithdrawalRequestAsConfirmed(ContractWithdrawalRequest $contractWithdrawalRequest): void
     {
-        $contractWithdrawalRequest->setStatus(ContractWithdrawalStatus::FUNDS_SENT->name);
+        $contractWithdrawalRequest->setStatus(ContractWithdrawalStatus::CONFIRMED->name);
     }
 }

@@ -22,16 +22,17 @@ class ContractReserveFundContributionTransferService
         private readonly ContractReserveFundContributionTransformer $contractReserveFundContributionTransformer,
         private readonly ScContractResultBuilder $scContractResultBuilder,
         private readonly PersistorInterface $persistor,
-        private readonly MessageBusInterface $bus
-    ){}
+        private readonly MessageBusInterface $bus,
+    ) {
+    }
 
     public function processReserveFundContribution(ContractReserveFundContribution $contractReserveFundContribution)
     {
         $contractTransaction = null;
-        
-        try{
+
+        try {
             $trxResponse = $this->contractReserveFundContributionOperation->contributeToReserveFund($contractReserveFundContribution);
-            $trxResult   = $this->scContractResultBuilder->getResultDataFromTransactionResponse($trxResponse);
+            $trxResult = $this->scContractResultBuilder->getResultDataFromTransactionResponse($trxResponse);
 
             $contractTransaction = $this->contractTransactionEntityTransformer->fromSuccessfulTransaction(
                 $contractReserveFundContribution->getContract()->getAddress(),
@@ -44,8 +45,7 @@ class ContractReserveFundContributionTransferService
 
             $this->contractReserveFundContributionTransformer->updateEntityAsTransferred($contractTransaction, $contractReserveFundContribution);
             $this->bus->dispatch(new CheckContractBalanceMessage($contractReserveFundContribution->getContract()->getId(), $trxResponse->getLedger()));
-        }
-        catch(TransactionExceptionInterface $ex) {
+        } catch (TransactionExceptionInterface $ex) {
             $contractTransaction = $this->contractTransactionEntityTransformer->fromFailedTransaction(
                 $contractReserveFundContribution->getContract()->getAddress(),
                 ContractNames::INVESTMENT->value,
@@ -56,8 +56,7 @@ class ContractReserveFundContributionTransferService
             );
 
             $this->contractReserveFundContributionTransformer->updateEntityAsFailed($contractTransaction, $contractReserveFundContribution);
-        }
-        finally{
+        } finally {
             $this->persistor->persistAndFlush([$contractTransaction, $contractReserveFundContribution]);
         }
     }

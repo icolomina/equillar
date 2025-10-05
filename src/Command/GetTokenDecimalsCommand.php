@@ -1,9 +1,12 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 namespace App\Command;
 
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\Token\GetTokenDecimalsOperation;
-use App\Domain\Token\Service\TokenNormalizer;
 use App\Persistence\Token\TokenStorageInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -18,8 +21,8 @@ class GetTokenDecimalsCommand extends Command
 {
     public function __construct(
         private readonly TokenStorageInterface $tokenStorage,
-        private readonly GetTokenDecimalsOperation $getTokenDecimalsOperation
-    ){
+        private readonly GetTokenDecimalsOperation $getTokenDecimalsOperation,
+    ) {
         parent::__construct();
     }
 
@@ -32,11 +35,10 @@ class GetTokenDecimalsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-
-        $token    = $this->tokenStorage->getOneByCode($input->getArgument('token'));
+        $token = $this->tokenStorage->getOneByCode($input->getArgument('token'));
         $decimals = $this->getTokenDecimalsOperation->getTokenDecimals($token);
 
-        $output->writeln(sprintf('Decimals for token %s: %s', $token->getCode(), $decimals ));
+        $output->writeln(sprintf('Decimals for token %s: %s', $token->getCode(), $decimals));
 
         return Command::SUCCESS;
     }

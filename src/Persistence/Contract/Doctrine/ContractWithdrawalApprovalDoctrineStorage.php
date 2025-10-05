@@ -2,8 +2,8 @@
 
 namespace App\Persistence\Contract\Doctrine;
 
-use App\Entity\Contract\ContractWithdrawalRequest;
 use App\Entity\Contract\ContractWithdrawalApproval;
+use App\Entity\Contract\ContractWithdrawalRequest;
 use App\Persistence\Contract\ContractWithdrawalApprovalStorageInterface;
 use App\Persistence\Layers\Doctrine\AbstractDoctrineStorage;
 

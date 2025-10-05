@@ -30,9 +30,15 @@ class ContractWithdrawalRequestDoctrineStorage extends AbstractDoctrineStorage i
         return $this->em->getRepository(ContractWithdrawalRequest::class)->findWithdrawalRequestsByUser($user);
     }
 
+    public function getAllWithdrawalRequests(): array
+    {
+        return $this->em->getRepository(ContractWithdrawalRequest::class)->findAll();
+    }
+
     public function getTotalsAmountByApprovedWithdrawalsAndContract(Contract $contract): int|float
     {
         $total = $this->em->getRepository(ContractWithdrawalRequest::class)->sumApprovedWithdrawalsAmountByContract($contract);
+
         return $total ?? 0;
     }
 }

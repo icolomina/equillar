@@ -22,7 +22,7 @@
     "build": "encore production --progress"
   },
   "dependencies": {
-    "@creit.tech/stellar-wallets-kit": "^1.7.3",
+    "@creit.tech/stellar-wallets-kit": "^1.9.5",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.1.1",

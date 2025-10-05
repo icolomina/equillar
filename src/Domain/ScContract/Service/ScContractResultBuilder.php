@@ -1,5 +1,9 @@
 <?php
-
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Domain\ScContract\Service;
 
 use App\Blockchain\Stellar\Exception\Transaction\ContractCallFunctionResultException;
@@ -14,6 +18,7 @@ class ScContractResultBuilder
     public function getResultDataFromTransactionResponse(GetTransactionResponse $transactionResponse): mixed
     {
         $xdrResult = $transactionResponse->getResultValue();
+
         return $this->getValueFromXdrResult($xdrResult, $transactionResponse->getTxHash());
     }
 
@@ -24,7 +29,7 @@ class ScContractResultBuilder
 
     private function getValueFromXdrResult(XdrSCVal $xdrResult, string $hash): mixed
     {
-        return match($xdrResult->type->value) {
+        return match ($xdrResult->type->value) {
             XdrSCValType::SCV_VOID => null,
             XdrSCValType::SCV_BOOL => $xdrResult->getB(),
             XdrSCValType::SCV_ERROR => $this->processFunctionCallError($xdrResult->getError(), $hash),
@@ -32,7 +37,7 @@ class ScContractResultBuilder
             XdrSCValType::SCV_MAP => $this->generateForMap($xdrResult->getMap()),
             XdrSCValType::SCV_U32 => $xdrResult->getU32(),
             XdrSCValType::SCV_STRING => $xdrResult->getStr(),
-            default => $xdrResult->encode()
+            default => $xdrResult->encode(),
         };
     }
 
@@ -40,31 +45,26 @@ class ScContractResultBuilder
     {
         $errorCodeConstants = array_flip((new \ReflectionClass($xdrSCError->getCode()))->getConstants());
         $errorTypeConstants = array_flip((new \ReflectionClass($xdrSCError->getType()))->getConstants());
-        throw new ContractCallFunctionResultException(
-            $errorCodeConstants[$xdrSCError->getCode()->getValue()] ?? 'Unknown Code', 
-            $errorTypeConstants[$xdrSCError->getType()->getValue()] ?? 'Unknown Type', 
-            $trxHash
-        );
+        throw new ContractCallFunctionResultException($errorCodeConstants[$xdrSCError->getCode()->getValue()] ?? 'Unknown Code', $errorTypeConstants[$xdrSCError->getType()->getValue()] ?? 'Unknown Type', $trxHash);
     }
 
     /**
      * @param XdrSCMapEntry[] $map
      */
-    private function generateForMap(array $map) : array 
+    private function generateForMap(array $map): array
     {
         $entryMap = [];
-        foreach($map as $entry) {
-
-            $value = match($entry->val->type->value) {
+        foreach ($map as $entry) {
+            $value = match ($entry->val->type->value) {
                 XdrSCValType::SCV_I128 => $entry->val->getI128(),
-                XdrSCValType::SCV_U64  => $entry->val->getU64(),
-                XdrSCValType::SCV_U32  => $entry->val->getU32(),
+                XdrSCValType::SCV_U64 => $entry->val->getU64(),
+                XdrSCValType::SCV_U32 => $entry->val->getU32(),
                 XdrSCValType::SCV_STRING => $entry->val->getStr(),
-                default => null
+                default => null,
             };
 
             $entryMap[$entry->key->sym] = $value;
-        } 
+        }
 
         return $entryMap;
     }

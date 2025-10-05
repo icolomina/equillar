@@ -10,8 +10,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 class SystemWalletEntityTransformer
 {
     public function __construct(
-        private readonly SerializerInterface $serializer
-    ){}
+        private readonly SerializerInterface $serializer,
+    ) {
+    }
 
     public function fromBlockchainNetworkAndCrypedValueToEntity(BlockchainNetwork $blockchainNetwork, CryptedValue $cryptedValue, string $address, bool $asDefault = true): SystemWallet
     {
@@ -23,7 +24,7 @@ class SystemWalletEntityTransformer
         $systemWallet->setBlockchainNetwork($blockchainNetwork);
         $systemWallet->setDefaultWallet($asDefault);
         $systemWallet->setCreatedAt(new \DateTimeImmutable());
-        
+
         return $systemWallet;
     }
 }

@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -31,6 +37,7 @@ import EditContract from "./Contract/EditContract";
 import GetReserveFundsContributions from "./Company/ReserveFund/GetReserveFundsContributions";
 import EditUserContract from "./Contract/User/EditUserContract";
 import { BackendContext, BackendContextData } from "../context/BackendContext";
+import GetContractBalanceMovements from "./Company/Balance/GetContractBalanceMovements";
 
 interface AppProps {
   sorobanNetworkPassphrase?: string;
@@ -72,6 +79,7 @@ export default function App(props: AppProps) {
                   <Route path="get-withdrawal-requests" element={<GetWithdrawalRequests />} />
                   <Route path="user-payments" element={<UserContractPayments />} />
                   <Route path="get-reserve-fund-contributions" element={<GetReserveFundsContributions />} />
+                  <Route path="get-contract-balance-movements" element={<GetContractBalanceMovements />} />
                 </Route>
               </Routes>
             </Router>

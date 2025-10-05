@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ContractWithdrawal } from "../../../model/contract";
@@ -9,6 +15,7 @@ import PageListWrapper from "../../Miscelanea/Wrapper/PageListWrapper";
 import { useApiRoutes } from "../../../hooks/ApiRoutesHook";
 import { useAuth } from "../../../hooks/AuthHook";
 import ApproveWithdrawalRequestModal from "./ApproveWithdrawalRequestModal";
+import EditStellarTransactionDataModal from "../../Blockchain/EditStellarTransactionDataModal";
 
 export default function GetWithdrawalRequests() {
 
@@ -17,6 +24,8 @@ export default function GetWithdrawalRequests() {
     const routes = useApiRoutes();
     const [selectedRequestWithdrawalToApprove, setSelectedRequestWithdrawalToApprove] = useState<ContractWithdrawal>(null);
     const [openModalToApproveWithdrawal, setOpenModalToApproveWithdrawal] = useState<boolean>(false);
+    const [selectedWithdrawalForTrxInfo, setSelectedWithdrawalForTrxInfo] = useState<ContractWithdrawal>(null);
+    const [openTrxInfoModal, setOpenTrxInfoModal] = useState<boolean>(false);
 
     const query = useQuery(
         {
@@ -50,6 +59,16 @@ export default function GetWithdrawalRequests() {
     const handleRejectWithdrawalRequest = () => {
 
     }
+
+    const handleOpenTrxInfoModal = (c: ContractWithdrawal) => {
+        setSelectedWithdrawalForTrxInfo(c);
+        setOpenTrxInfoModal(true);
+    };
+
+    const handleCloseTrxInfoModal = () => {
+        setSelectedWithdrawalForTrxInfo(null);
+        setOpenTrxInfoModal(false);
+    };
 
     if (query.isLoading) {
         return (
@@ -110,12 +129,24 @@ export default function GetWithdrawalRequests() {
                                     <TableCell align="right">{c.status}</TableCell>
                                     <TableCell align="right">{c.approvedAt}</TableCell>
                                     <TableCell align="right">
-                                        {isAdmin() && c.status == 'CONFIRMED' && <Button variant="contained" color="success" size="small" sx={{ mr: 1 }} onClick={() => handleOpenApproveWithdrawalModal(c)}>
+                                        {isAdmin() && c.status == 'REQUESTED' && <Button variant="contained" color="success" size="small" sx={{ mr: 1 }} onClick={() => handleOpenApproveWithdrawalModal(c)}>
                                             Approve
                                         </Button>}
                                         {isAdmin() && !c.approvedAt && <Button variant="contained" color="warning" size="small" sx={{ mr: 1 }} onClick={handleRejectWithdrawalRequest}>
                                             Reject
                                         </Button>}
+                                        {c.approvedAt && (
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                size="small"
+                                                sx={{ mr: 1 }}
+                                                onClick={() => handleOpenTrxInfoModal(c)}
+                                                disabled={!c.hash}
+                                            >
+                                                Trx info
+                                            </Button>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -133,6 +164,13 @@ export default function GetWithdrawalRequests() {
                   
               /> }
 
+              {openTrxInfoModal && selectedWithdrawalForTrxInfo && (
+                <EditStellarTransactionDataModal
+                    openModal={openTrxInfoModal}
+                    hash={selectedWithdrawalForTrxInfo.hash}
+                    handleCloseModal={handleCloseTrxInfoModal}
+                />
+            )}
         </Fragment>
     );
 }

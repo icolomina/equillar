@@ -18,19 +18,19 @@ class ModifyContractService
         private readonly TokenStorageInterface $tokenStorage,
         private readonly ContractEntityTransformer $contractEntityTransformer,
         private readonly FilesStorageInterface $filesStorage,
-        private readonly PersistorInterface $persistor
-    ){}
+        private readonly PersistorInterface $persistor,
+    ) {
+    }
 
     public function modifyContract(Contract $contract, CreateContractDto $createContractDto, mixed $file, User $user): ContractDtoOutput
     {
-        $token    = $this->tokenStorage->getOneByCode($createContractDto->token);
+        $token = $this->tokenStorage->getOneByCode($createContractDto->token);
 
         $filename = null;
-        if($file instanceof UploadedFile){
+        if ($file instanceof UploadedFile) {
             $filename = $this->filesStorage->moveProjectFile($file);
         }
-        
-        
+
         $this->contractEntityTransformer->updateContractWithNewData($contract, $createContractDto, $user, $token, $filename);
         $this->persistor->persistAndFlush($contract);
 

@@ -1,4 +1,8 @@
 <?php
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace App\Application\Contract\Service;
 
@@ -11,15 +15,20 @@ class GetContractWithdrawalRequestsService
 {
     public function __construct(
         private readonly ContractWithdrawalRequestStorageInterface $contractWithdrawalRequestStorage,
-        private readonly ContractWithdrawalRequestEntityTransformer $contractWithdrawalRequestEntityTransformer
-    ){}
+        private readonly ContractWithdrawalRequestEntityTransformer $contractWithdrawalRequestEntityTransformer,
+    ) {
+    }
 
     /**
      * @return ContractWithdrawalRequestDtoOutput[]
      */
     public function getContractRequestWithdrawals(User $user): array
     {
-        $withdrawalRequests = $this->contractWithdrawalRequestStorage->getWithdrawalRequestsByUser($user);
+        $withdrawalRequests = ($user->isAdmin())
+            ? $this->contractWithdrawalRequestStorage->getAllWithdrawalRequests()
+            : $this->contractWithdrawalRequestStorage->getWithdrawalRequestsByUser($user)
+        ;
+
         return $this->contractWithdrawalRequestEntityTransformer->fromEntitiesToOutputDtos($withdrawalRequests);
     }
 }

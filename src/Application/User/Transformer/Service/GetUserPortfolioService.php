@@ -1,4 +1,8 @@
 <?php
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace App\Application\User\Transformer\Service;
 
@@ -13,8 +17,9 @@ class GetUserPortfolioService
     public function __construct(
         private readonly UserContractStorageInterface $userContractInvestmentStorage,
         private readonly PortfolioResumeCalculator $portfolioResumeCalculator,
-        private readonly UserContractEntityTransformer $userContractEntityTransformer
-    ){}
+        private readonly UserContractEntityTransformer $userContractEntityTransformer,
+    ) {
+    }
 
     public function getPortfolio(User $user): UserPortfolioOutput
     {
@@ -27,6 +32,4 @@ class GetUserPortfolioService
             empty($userContracts)
         );
     }
-
-    
 }

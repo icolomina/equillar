@@ -15,7 +15,9 @@ RUN apt-get update && \
         curl \
         git \
         openssl \
-        postgresql-client
+        postgresql-client \
+        zip \
+        unzip
 
 RUN add-apt-repository ppa:ondrej/php
 RUN apt-get update && \
@@ -28,7 +30,9 @@ RUN apt-get update && \
     php8.3-gmp \
     php8.3-gd \
     php8.3-pgsql  \
-    php8.3-bcmath 
+    php8.3-bcmath \
+    php8.3-zip \
+    php8.3-intl 
 
 RUN apt-get clean 
 
@@ -42,7 +46,10 @@ ENV LANG=es_ES.UTF-8 LC_ALL=es_ES.UTF-8
 WORKDIR /var/www/equillar
 
 # Copy application files
-# COPY . .
+COPY . .
+
+# Assign write permissions to www-data group so that the web server can write to necessary directories
+RUN chgrp -R www-data /var/www/equillar && chmod -R 775 /var/www/equillar
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -67,9 +74,11 @@ RUN composer install
 # Install Node.js dependencies
 RUN npm install && npm run dev
 
+
 # Install Symfony-cli
 RUN curl -sS https://get.symfony.com/cli/installer | bash
 RUN mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
+
 
 EXPOSE 8000
 
@@ -77,4 +86,4 @@ COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["symfony", "server:start", "--no-interaction", "--allow-all-ip"]
+CMD ["symfony", "server:start", "--no-interaction", "--allow-all-ip", "--no-tls"]

@@ -22,8 +22,8 @@ class GetEventsService
     private SorobanServer $server;
 
     public function __construct(
-        private readonly ServerLoaderService $serverLoaderService
-    ){
+        private readonly ServerLoaderService $serverLoaderService,
+    ) {
         $this->server = $this->serverLoaderService->getServer();
     }
 
@@ -35,15 +35,15 @@ class GetEventsService
         $contractAddress = StrKey::encodeContractIdHex($contract->getAddress());
         $segmentMatchers = [];
 
-        foreach($topics as $topic) {
-            $segmentMatchers[] = ($topic === '*') 
+        foreach ($topics as $topic) {
+            $segmentMatchers[] = ('*' === $topic)
                 ? $topic
                 : XdrSCVal::forSymbol($topic)->toBase64Xdr()
             ;
         }
 
         $topicFilters = new TopicFilters(new TopicFilter($segmentMatchers));
-        $eventFilter = new EventFilter("contract", [$contractAddress], $topicFilters);
+        $eventFilter = new EventFilter('contract', [$contractAddress], $topicFilters);
         $eventFilters = new EventFilters();
         $eventFilters->add($eventFilter);
 
@@ -51,12 +51,12 @@ class GetEventsService
             startLedger: $startLedger,
             filters: $eventFilters,
         );
-        
+
         $response = $this->server->getEvents($request);
-        if($response->getError()) {
+        if ($response->getError()) {
             throw new EventsRequestTransactionException($response->getError()->getMessage());
         }
-        
+
         return $response;
     }
 }

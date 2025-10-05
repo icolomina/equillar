@@ -5,7 +5,6 @@ namespace App\Persistence\Token\Doctrine;
 use App\Entity\Token;
 use App\Persistence\Layers\Doctrine\AbstractDoctrineStorage;
 use App\Persistence\Token\TokenStorageInterface;
-use Persistence\Token\Doctrine\TokenDoctrineEntityTransformer;
 
 class TokenDoctrineStorage extends AbstractDoctrineStorage implements TokenStorageInterface
 {

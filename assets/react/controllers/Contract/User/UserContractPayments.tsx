@@ -1,15 +1,19 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../../../hooks/ApiHook";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { UserContractPayment } from "../../../model/user";
 import { Fragment } from "react/jsx-runtime";
-import { Backdrop, Box, Button, CircularProgress, IconButton, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import { MoreVert } from "@mui/icons-material";
+import { Backdrop, Box, Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { useState } from "react";
 import PageListWrapper from "../../Miscelanea/Wrapper/PageListWrapper";
 import { useApiRoutes } from "../../../hooks/ApiRoutesHook";
 import EditStellarTransactionDataModal from "../../Blockchain/EditStellarTransactionDataModal";
-import { StellarSelectorModal } from "@creit.tech/stellar-wallets-kit";
 
 export default function UserContractPayments() {
 

@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 namespace App\Persistence\UserContract\Doctrine;
 
 use App\Entity\Contract\Contract;
@@ -10,7 +15,6 @@ use App\Persistence\UserContract\UserContractStorageInterface;
 
 class UserContractDoctrineStorage extends AbstractDoctrineStorage implements UserContractStorageInterface
 {
-
     public function getById(int $id): ?UserContract
     {
         return $this->em->getRepository(UserContract::class)->find($id);
@@ -35,6 +39,7 @@ class UserContractDoctrineStorage extends AbstractDoctrineStorage implements Use
     public function getClaimableCandidates(\DateTimeImmutable $claimableFrom, \DateTimeImmutable $lastPaymentFrom): iterable
     {
         $query = $this->em->getRepository(UserContract::class)->findClaimableCandidates($claimableFrom, $lastPaymentFrom);
+
         return $query->toIterable();
     }
 

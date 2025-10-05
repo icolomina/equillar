@@ -1,4 +1,9 @@
-import { IconAction } from "./menu";
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { TokenContract } from "./token";
 
 export enum ContractStatus {
@@ -16,7 +21,8 @@ export interface ContracBalance {
   payments: number,
   projectWithdrawals: number,
   reserveFundContributions: number,
-  percentajeFundsReceived: number
+  percentajeFundsReceived: number,
+  availableToReserveMovements: number
 }
 
 export interface ContractOutput {
@@ -26,6 +32,9 @@ export interface ContractOutput {
   rate: number;
   createdAt: string;
   initializedAt: string|null;
+  approvedAt: string|null;
+  lastPausedAt: string|null;
+  lastResumedAt: string|null;
   initialized: boolean;
   issuer: string;
   claimMonths: number;
@@ -33,6 +42,7 @@ export interface ContractOutput {
   fundsReached: boolean;
   description: string,
   shortDescription: string,
+  imageUrl: string,
   contractBalance: ContracBalance,
   status: string
   goal: number,
@@ -51,11 +61,19 @@ export interface ContractWithdrawal {
   requestedAmount: number;
   status: string;
   approvedAt?: string;
+  hash?: string;
 }
 
 export interface ContractReserveFundContributionRequestResult {
   contributionId: string,
   destinationAddress: string,
+  amount: number
+}
+
+export interface ContractAvailableToReserveFundMovementCreatedResult {
+  segmentFrom: string,
+  segmentTo: string,
+  status: string,
   amount: number
 }
 
@@ -67,6 +85,17 @@ export interface ContractReserveFund {
   createdAt: string,
   receivedAt: string,
   transferredAt: string
+}
+
+export interface ContractBalanceMovement {
+  id: number;
+  contractName: string;
+  amount: number;
+  segmentFrom: string;
+  segmentTo: string;
+  createdAt: string;
+  movedAt: string | null;
+  status: string;
 }
 
 export enum ContractReturnTypes {

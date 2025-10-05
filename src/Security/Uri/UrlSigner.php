@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 namespace App\Security\Uri;
 
 use Symfony\Component\DependencyInjection\Attribute\Lazy;
@@ -13,8 +18,8 @@ class UrlSigner
     private UriSigner $uriSigner;
 
     public function __construct(
-        private readonly string $uriSignerKey
-    ){
+        private readonly string $uriSignerKey,
+    ) {
         $this->uriSigner = new UriSigner($this->uriSignerKey);
     }
 
@@ -25,7 +30,7 @@ class UrlSigner
 
     public function check(string|Request $request): bool
     {
-        return ($request instanceof Request) 
+        return ($request instanceof Request)
             ? $this->uriSigner->checkRequest($request)
             : $this->uriSigner->check($request)
         ;
@@ -33,7 +38,7 @@ class UrlSigner
 
     public function validateRequestSignature(Request $request): void
     {
-        if(!$this->check($request)) {
+        if (!$this->check($request)) {
             throw new AccessDeniedException('Invalid request signature');
         }
     }

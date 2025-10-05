@@ -1,4 +1,10 @@
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useApi } from "../../../hooks/ApiHook";
 import { ContractOutput, ContractReserveFundContributionRequestResult } from "../../../model/contract";
 import { useState } from "react";
@@ -66,7 +72,7 @@ export default function CreateReserveFundContributionModal(props: ReserveFundCon
                     borderRadius: 1,
                     boxShadow: 24,
                     p: 4,
-                    width: isMobile ? '90%' : 400, // Mayor ancho en escritorio, adaptable en móvil
+                    width: isMobile ? '90%' : 600, // Mayor ancho en escritorio, adaptable en móvil
                     maxWidth: 600, // Ancho máximo para pantallas grandes
                     display: 'flex',
                     flexDirection: 'column',

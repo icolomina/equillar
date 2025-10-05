@@ -1,6 +1,6 @@
 {
     "type": "project",
-    "license": "AGPL-3.0",
+    "license": "MPL-2.0",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "authors": [
@@ -15,7 +15,7 @@
         "ext-iconv": "*",
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.12",
-        "doctrine/doctrine-migrations-bundle": "^3.3",
+        "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^3.1",
         "firebase/php-jwt": "^6.10",
         "phpdocumentor/reflection-docblock": "^5.4",
@@ -34,7 +34,6 @@
         "symfony/http-client": "7.3.*",
         "symfony/http-foundation": "7.3.*",
         "symfony/intl": "7.3.*",
-        "symfony/mailer": "7.3.*",
         "symfony/messenger": "7.3.*",
         "symfony/mime": "7.3.*",
         "symfony/monolog-bundle": "^3.0",
@@ -94,7 +93,11 @@
             "@auto-scripts"
         ],
         "post-update-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "cp assets/bootstrap.backup.js assets/bootstrap.js && rm assets/bootstrap.backup.js"
+        ],
+        "pre-update-cmd": [
+            "cp assets/bootstrap.js assets/bootstrap.backup.js"
         ]
     },
     "conflict": {
@@ -109,6 +112,7 @@
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.2",
         "doctrine/doctrine-fixtures-bundle": "^3.6",
+        "friendsofphp/php-cs-fixer": "^3.86",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "7.3.*",

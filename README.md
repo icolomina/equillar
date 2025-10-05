@@ -48,4 +48,6 @@ We welcome contributions from the community. Please read our [CONTRIBUTING guide
 
 # Contact
 
-For questions or support, you can open an issue or create a new [discussion](https://github.com/icolomina/equillar/discussions)
+For questions or support, you can:
+- Open an [issue](https://github.com/icolomina/equillar/issues) for bugs or feature requests
+- Start a [discussion](https://github.com/icolomina/equillar/discussions) for general questions or ideas

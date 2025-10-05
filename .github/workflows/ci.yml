@@ -50,6 +50,9 @@ jobs:
       - name: Create database
         run: php bin/console doctrine:database:create --if-not-exists --no-interaction
 
+      - name: Update schema
+        run: php bin/console doctrine:schema:update --force --no-interaction
+
       - name: Load fixtures
         run: php bin/console doctrine:fixtures:load --no-interaction --purge-with-truncate
 

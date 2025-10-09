@@ -16,6 +16,7 @@ export interface UserContractInvestment {
     interest: number,
     commission: number,
     total: number,
+    hash: string,
     status: string,
     paymentType: string,
     paymentsCalendar?: UserContractCalendarItem[]

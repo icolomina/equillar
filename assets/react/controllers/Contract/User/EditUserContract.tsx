@@ -11,8 +11,10 @@ import { useParams } from "react-router-dom";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { UserContractInvestment } from "../../../model/user";
 import { Fragment } from "react/jsx-runtime";
-import { Backdrop, Box, Card, CardContent, CircularProgress, Divider, Grid2, Typography } from "@mui/material";
+import { Backdrop, Box, Button, Card, CardContent, CircularProgress, Divider, Grid2, Typography } from "@mui/material";
 import { formatCurrencyFromValueAndTokenContract } from "../../../utils/currency";
+import { useState } from "react";
+import EditStellarTransactionDataModal from "../../Blockchain/EditStellarTransactionDataModal";
 
 import UserContractPaymentsCalendar from "./Payments/UserContractPaymentsCalendar";
 
@@ -21,6 +23,15 @@ export default function EditUserContract() {
     const params = useParams();
     const { callGet } = useApi();
     const apiRoutes = useApiRoutes();
+    const [openTrxInfoModal, setOpenTrxInfoModal] = useState<boolean>(false);
+
+    const handleViewTrxInfo = () => {
+        setOpenTrxInfoModal(true);
+    }
+
+    const handleCloseTrxInfoModal = () => {
+        setOpenTrxInfoModal(false);
+    }
 
     const query = useQuery<UserContractInvestment>({
         queryKey: ['userContractEdit', params.id],
@@ -57,11 +68,7 @@ export default function EditUserContract() {
                     </Typography>
                     <Divider sx={{ mb: 4 }} />
                     <Grid2 container spacing={4}>
-
-                        {/* Contenido principal del contrato */}
                         <Grid2 size={{ xs: 12, md: 8 }}>
-
-                            {/* Tarjeta de información general */}
                             <Card sx={{ mb: 4, borderRadius: 2, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
                                 <CardContent>
                                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -91,10 +98,27 @@ export default function EditUserContract() {
                                             <Typography variant="body1" fontWeight="medium">{query.data.paymentType}</Typography>
                                         </Grid2>
                                     </Grid2>
+                                    
+                                    <Divider sx={{ my: 3 }} />
+                                    
+                                    <Grid2 container spacing={3}>
+                                        <Grid2 size={{ xs: 12, sm: 6, md: 8 }}>
+                                            <Typography variant="subtitle2" color="textSecondary">Transaction hash</Typography>
+                                            <Typography variant="body1" fontWeight="medium">{query.data.hash}</Typography>
+                                        </Grid2>
+                                        <Grid2 size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: 'flex', alignItems: 'end' }}>
+                                            <Button 
+                                                variant="contained" 
+                                                color="primary" 
+                                                size="small" 
+                                                onClick={handleViewTrxInfo}
+                                            >
+                                                Trx info
+                                            </Button>
+                                        </Grid2>
+                                    </Grid2>
                                 </CardContent>
                             </Card>
-
-                            {/* Tarjeta de detalles financieros */}
                             <Card sx={{ mb: 4, borderRadius: 2, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
                                 <CardContent>
                                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -142,6 +166,13 @@ export default function EditUserContract() {
                     </Grid2>
                 </Box>
 
+                {openTrxInfoModal && query.data?.hash && (
+                    <EditStellarTransactionDataModal
+                        openModal={openTrxInfoModal} 
+                        hash={query.data.hash} 
+                        handleCloseModal={handleCloseTrxInfoModal}
+                    />
+                )}
             </Fragment>
         )
     }

@@ -46,7 +46,7 @@ The .env.dist file comes with a default password for the local database. After m
 After doing it, change the "DATABASE_URL" enviroment var in the ".env" file by this one:
 
 ```bash
-DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5972/equillar?serverVersion=16&charset=utf8"
+DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5497/equillar?serverVersion=16&charset=utf8"
 ```
 
 > If you want to use a diferent port, just edit the "docker-compose.yaml" file and link another port on the database service.
@@ -103,6 +103,8 @@ php bin/console app:system-address:create-token-trustline --token=USDC
 php bin/console app:system-address:create-token-trustline --token=EURC
 php bin/console app:contract:deploy --vers="1.0" --status=STABLE --comments="Local contract version"
 ```
+
+> If you get an this error: "invalid type for accountid : 4717", simply try to run the command again.
 
 Let's explain the commands line by line:
 

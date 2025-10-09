@@ -18,7 +18,7 @@ This roadmap outlines the planned evolution and improvements for the Equillar pl
 - Create user / company / admin register form.
 - Create a "User settings" section.
 - Add "View in Stellar Explorer" button to the lists where it is missing.
-- Add the transaction hash in the user contract information page.
+- Add the transaction hash in the user contract information page. (DONE)
 
 ## 🚀 Medium Term (5-10 months)
 

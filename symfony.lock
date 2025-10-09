@@ -62,6 +62,9 @@
             ".php-cs-fixer.dist.php"
         ]
     },
+    "nelmio/cors-bundle": {
+        "version": "2.5.0"
+    },
     "phpstan/phpstan": {
         "version": "2.1",
         "recipe": {
@@ -121,18 +124,6 @@
     },
     "symfony/framework-bundle": {
         "version": "v7.0.6"
-    },
-    "symfony/mailer": {
-        "version": "7.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "4.3",
-            "ref": "2bf89438209656b85b9a49238c4467bff1b1f939"
-        },
-        "files": [
-            "config/packages/mailer.yaml"
-        ]
     },
     "symfony/maker-bundle": {
         "version": "1.58",

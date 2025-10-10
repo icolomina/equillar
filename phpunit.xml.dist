@@ -8,7 +8,6 @@
          bootstrap="tests/bootstrap.php"
          convertDeprecationsToExceptions="false"
          failOnWarning="false"
-         failOnDeprecation="false"
 >
     <php>
         <ini name="display_errors" value="1" />

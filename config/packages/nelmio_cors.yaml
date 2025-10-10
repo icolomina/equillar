@@ -13,12 +13,12 @@ nelmio_cors:
         skip_same_as_origin: true
     paths:
         '^/api/':
-            allow_origin: ['*']
+            allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
             allow_methods: ['POST', 'PATCH', 'GET', 'DELETE']
             max_age: 3600
         '^/':
             origin_regex: true
-            allow_origin: ['*']
+            allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
             allow_methods: ['POST', 'PATCH', 'GET', 'DELETE']
             max_age: 3600
             hosts: ['^api\.']

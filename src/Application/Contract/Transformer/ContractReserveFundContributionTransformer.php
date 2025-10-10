@@ -56,6 +56,7 @@ class ContractReserveFundContributionTransformer
             $contractReserveFundContribution->getCreatedAt()->format('Y-m-d H:i'),
             $contractReserveFundContribution->getReceivedAt()?->format('Y-m-d H:i'),
             $contractReserveFundContribution->getTransferredAt()?->format('Y-m-d H:i'),
+            $contractReserveFundContribution->getContractTrasaction()?->getTrxHash()
         );
     }
 

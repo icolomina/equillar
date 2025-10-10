@@ -15,6 +15,7 @@ import PageListWrapper from "../../Miscelanea/Wrapper/PageListWrapper";
 import { useAuth } from "../../../hooks/AuthHook";
 import { useState } from "react";
 import MoveAvailableToReserveMovementModal from "./MoveAvailableToReserveMovementModal";
+import EditStellarTransactionDataModal from "../../Blockchain/EditStellarTransactionDataModal";
 
 export default function GetContractBalanceMovements() {
 
@@ -24,6 +25,8 @@ export default function GetContractBalanceMovements() {
 
     const [selectedContractBalanceMovement, setSelectedContractBalanceMovement] = useState<ContractBalanceMovement>(null);
     const [openModalToPerformBalanceMovement, setOpenModalToPerformBalanceMovement] = useState<boolean>(false);
+    const [selectedContractBalanceMovementForTrxInfo, setSelectedContractBalanceMovementForTrxInfo] = useState<ContractBalanceMovement>(null);
+    const [openTrxInfoModal, setOpenTrxInfoModal] = useState<boolean>(false);
 
     const query = useQuery(
         {
@@ -50,6 +53,16 @@ export default function GetContractBalanceMovements() {
         setSelectedContractBalanceMovement(c);
         setOpenModalToPerformBalanceMovement(true);
     }
+
+    const handleOpenTrxInfoModal = (c: ContractBalanceMovement) => {
+        setSelectedContractBalanceMovementForTrxInfo(c);
+        setOpenTrxInfoModal(true);
+    };
+        
+    const handleCloseTrxInfoModal = () => {
+        setSelectedContractBalanceMovementForTrxInfo(null);
+        setOpenTrxInfoModal(false);
+    };
 
     if (query.isLoading) {
         return (
@@ -114,6 +127,18 @@ export default function GetContractBalanceMovements() {
                                         {isAdmin() && (c.status == 'CREATED' ) && <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleOpenPerformBalanceMovementlModal(c)}>
                                             Move to the reserve
                                         </Button>}
+                                        {c.movedAt && (
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                size="small"
+                                                sx={{ mr: 1 }}
+                                                onClick={() => handleOpenTrxInfoModal(c)}
+                                                disabled={!c.hash}
+                                            >
+                                                Trx info
+                                            </Button>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -128,6 +153,15 @@ export default function GetContractBalanceMovements() {
                     contractBalanceMovement={selectedContractBalanceMovement}
                     onClose={closePerformBalanceMovementlModal}
             />}
+
+            {openTrxInfoModal && selectedContractBalanceMovementForTrxInfo && (
+                <EditStellarTransactionDataModal
+                    openModal={openTrxInfoModal}
+                    hash={selectedContractBalanceMovementForTrxInfo.hash}
+                    handleCloseModal={handleCloseTrxInfoModal}
+                />
+            )}
+            
         </Fragment>
     );
 

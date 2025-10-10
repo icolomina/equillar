@@ -49,7 +49,8 @@ class ContractBalanceMovementTransformer
             $contractBalanceMovement->getSegmentTo(),
             $contractBalanceMovement->getCreatedAt()->format('Y-m-d H:i'),
             $contractBalanceMovement->getMovedAt()?->format('Y-m-d H:i'),
-            $contractBalanceMovement->getStatus()
+            $contractBalanceMovement->getStatus(),
+            $contractBalanceMovement->getContractTransaction()?->getTrxHash()
         );
     }
 

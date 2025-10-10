@@ -164,7 +164,7 @@ export default function GetWithdrawalRequests() {
                   
               /> }
 
-              {openTrxInfoModal && selectedWithdrawalForTrxInfo && (
+            {openTrxInfoModal && selectedWithdrawalForTrxInfo && (
                 <EditStellarTransactionDataModal
                     openModal={openTrxInfoModal}
                     hash={selectedWithdrawalForTrxInfo.hash}

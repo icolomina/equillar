@@ -84,7 +84,8 @@ export interface ContractReserveFund {
   status: string,
   createdAt: string,
   receivedAt: string,
-  transferredAt: string
+  transferredAt: string,
+  hash?: string
 }
 
 export interface ContractBalanceMovement {
@@ -96,6 +97,7 @@ export interface ContractBalanceMovement {
   createdAt: string;
   movedAt: string | null;
   status: string;
+  hash?: string;
 }
 
 export enum ContractReturnTypes {

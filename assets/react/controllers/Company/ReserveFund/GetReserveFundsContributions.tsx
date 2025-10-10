@@ -15,6 +15,7 @@ import PageListWrapper from "../../Miscelanea/Wrapper/PageListWrapper";
 import { useAuth } from "../../../hooks/AuthHook";
 import { useState } from "react";
 import CheckReserveFundContributionModal from "./CheckReserveFundContributionModal";
+import EditStellarTransactionDataModal from "../../Blockchain/EditStellarTransactionDataModal";
 
 interface ContractReserveFundCheckResult {
     status: string
@@ -28,6 +29,8 @@ export default function GetReserveFundsContributions() {
 
     const [selectedReserveFundContribution, setSelectedReserveFundContribution] = useState<ContractReserveFund>(null);
     const [openModalToCheckReserveFundContribution, setOpenModalToCheckReserveFundContribution] = useState<boolean>(false);
+    const [selectedContractReserveFundForTrxInfo, setSelectedContractReserveFundForTrxInfo] = useState<ContractReserveFund>(null);
+    const [openTrxInfoModal, setOpenTrxInfoModal] = useState<boolean>(false);
 
     const query = useQuery(
         {
@@ -54,6 +57,16 @@ export default function GetReserveFundsContributions() {
         setSelectedReserveFundContribution(c);
         setOpenModalToCheckReserveFundContribution(true);
     }
+
+    const handleOpenTrxInfoModal = (c: ContractReserveFund) => {
+        setSelectedContractReserveFundForTrxInfo(c);
+        setOpenTrxInfoModal(true);
+    };
+
+    const handleCloseTrxInfoModal = () => {
+        setSelectedContractReserveFundForTrxInfo(null);
+        setOpenTrxInfoModal(false);
+    };
 
     if (query.isLoading) {
         return (
@@ -116,6 +129,18 @@ export default function GetReserveFundsContributions() {
                                         {isAdmin() && (c.status == 'CREATED' || c.status == 'INSUFFICIENT_FUNDS_RECEIVED' ) && <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleOpenCheckReserveFundContribution(c)}>
                                             Check
                                         </Button>}
+                                        {c.transferredAt && (
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                size="small"
+                                                sx={{ mr: 1 }}
+                                                onClick={() => handleOpenTrxInfoModal(c)}
+                                                disabled={!c.hash}
+                                            >
+                                                Trx info
+                                            </Button>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -131,6 +156,14 @@ export default function GetReserveFundsContributions() {
                     onClose={closeCheckReserveFundContributionlModal}
 
                 />}
+
+            {openTrxInfoModal && selectedContractReserveFundForTrxInfo && (
+                <EditStellarTransactionDataModal
+                    openModal={openTrxInfoModal}
+                    hash={selectedContractReserveFundForTrxInfo.hash}
+                    handleCloseModal={handleCloseTrxInfoModal}
+                />
+            )}
         </Fragment>
     );
 

@@ -18,6 +18,7 @@ readonly class ContractReserveFundContributionDtoOutput
         public string $createdAt,
         public ?string $receivedAt,
         public ?string $transferredAt,
+        public ?string $hash = null
     ) {
     }
 }

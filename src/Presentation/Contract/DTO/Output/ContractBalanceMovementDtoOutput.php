@@ -18,6 +18,7 @@ readonly class ContractBalanceMovementDtoOutput
         public string $segmentTo,
         public string $createdAt,
         public ?string $movedAt,
-        public string $status
+        public string $status,
+        public ?string $hash = null
     ){}
 }

@@ -72,7 +72,7 @@ class ContractMoveFundsToTheReserveServiceTest extends KernelTestCase
         
         // Reload from database to check the updated state
         $contractBalanceMovements = $this->contractBalanceMovementStorage->getAll();
-        $updatedMovement = $contractBalanceMovements[0];
+        $updatedMovement = array_pop($contractBalanceMovements);
 
         $this->assertEquals('MOVED', $updatedMovement->getStatus());
         $this->assertNotNull($updatedMovement->getMovedAt());
@@ -118,7 +118,7 @@ class ContractMoveFundsToTheReserveServiceTest extends KernelTestCase
         
         // Reload from database to check the updated state
         $contractBalanceMovements = $this->contractBalanceMovementStorage->getAll();
-        $updatedMovement = $contractBalanceMovements[0];
+        $updatedMovement = array_pop($contractBalanceMovements);
 
         $this->assertEquals('FAILED', $updatedMovement->getStatus());
         $this->assertNull($updatedMovement->getMovedAt());

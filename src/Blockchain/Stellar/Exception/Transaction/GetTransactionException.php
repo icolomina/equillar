@@ -53,4 +53,9 @@ class GetTransactionException extends \RuntimeException implements TransactionEx
     {
         return $this->getTransactionResponse->getTxHash();
     }
+    
+    public function getCreatedAt(): ?string
+    {
+        return $this->getTransactionResponse->getCreatedAt();
+    }
 }

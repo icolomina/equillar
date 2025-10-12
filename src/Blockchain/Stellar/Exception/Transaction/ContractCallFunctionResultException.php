@@ -42,4 +42,9 @@ class ContractCallFunctionResultException extends \RuntimeException implements T
     {
         return $this->hash;
     }
+
+    public function getCreatedAt(): ?string
+    {
+        return null;
+    }
 }

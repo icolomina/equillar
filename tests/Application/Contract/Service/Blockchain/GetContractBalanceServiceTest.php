@@ -88,7 +88,7 @@ class GetContractBalanceServiceTest extends KernelTestCase
         $transactionResponseStub = $this->getMockBuilder(GetTransactionResponse::class)->disableOriginalConstructor()->getMock();
         $transactionResponseStub->expects($this->once())->method('getResultValue')->willReturn($xdrMapResultMock);
         $transactionResponseStub->expects($this->atLeastOnce())->method('getTxHash')->willReturn('886996787366366355553');
-        $transactionResponseStub->expects($this->once())->method('getLatestLedger')->willReturn(15986662548);
+        $transactionResponseStub->expects($this->once())->method('getCreatedAt')->willReturn('2025-04-15T23:15:41+00:00');
 
         return $transactionResponseStub;
     }

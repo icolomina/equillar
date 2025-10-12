@@ -8,7 +8,6 @@ use App\Blockchain\Stellar\Exception\Transaction\TransactionExceptionInterface;
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\ContractWithdrawalOperation;
 use App\Domain\Contract\ContractFunctions;
 use App\Domain\Contract\ContractNames;
-use App\Domain\ScContract\Service\ScContractResultBuilder;
 use App\Entity\Contract\ContractWithdrawalRequest;
 use App\Message\CheckContractBalanceMessage;
 use App\Persistence\PersistorInterface;
@@ -38,7 +37,7 @@ class ContractWithdrawalApprovalService
                 ContractFunctions::single_withdrawn->name,
                 [true],
                 $trxResponse->getTxHash(),
-                $trxResponse->getLedger()
+                $trxResponse->getCreatedAt()
             );
 
             $contractWithdrawalApproval = $this->contractWithdrawalApprovalEntityTransformer->fromRequestApprovedToEntity($contractWithdrawalRequest, $contractTransaction);
@@ -50,7 +49,7 @@ class ContractWithdrawalApprovalService
                 ContractFunctions::single_withdrawn->name,
                 $ex->getError(),
                 $ex->getHash(),
-                $ex->getFailureLedger()
+                $ex->getCreatedAt()
             );
 
             $contractWithdrawalApproval = $this->contractWithdrawalApprovalEntityTransformer->fromRequestApprovalFailureToEntity($contractWithdrawalRequest, $contractTransaction);

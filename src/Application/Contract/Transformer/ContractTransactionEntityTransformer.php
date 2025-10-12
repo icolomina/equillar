@@ -34,15 +34,18 @@ class ContractTransactionEntityTransformer
         return $contractTransaction;
     }
 
-    public function fromSuccessfulTransaction(string $contracAddress, string $contractName, string $functionCalled, array $trxResult, ?string $trxHash, int $trxLedger): ContractTransaction
+    public function fromSuccessfulTransaction(string $contracAddress, string $contractName, string $functionCalled, array $trxResult, ?string $trxHash, ?string $trxCreatedAt): ContractTransaction
     {
+
+        $trxDate = new \DateTimeImmutable($trxCreatedAt ?? date('Y-m-d H:i:s'));
+
         $contractTransaction = new ContractTransaction();
         $contractTransaction->setContractAddress($contracAddress);
         $contractTransaction->setContractLabel($contractName);
         $contractTransaction->setFunctionCalled($functionCalled);
         $contractTransaction->setTrxResultData($trxResult);
         $contractTransaction->setTrxHash($trxHash);
-        $contractTransaction->setTrxDate(new \DateTimeImmutable(date('Y-m-d H:i:s', $trxLedger)));
+        $contractTransaction->setTrxDate($trxDate);
 
         return $contractTransaction;
     }
@@ -55,20 +58,22 @@ class ContractTransactionEntityTransformer
         $contractTransaction->setFunctionCalled('GetEvents - ContractBalanceUpdated');
         $contractTransaction->setTrxResultData($trxResult);
         $contractTransaction->setTrxHash($eventInfo->txHash);
-        $contractTransaction->setTrxDate(new \DateTimeImmutable(date('Y-m-d H:i:s', $eventInfo->ledger)));
+        $contractTransaction->setTrxDate(new \DateTimeImmutable($eventInfo->ledgerClosedAt));
 
         return $contractTransaction;
     }
 
-    public function fromFailedTransaction(?string $contractAddress, string $contractName, string $functionCalled, string $txError, ?string $txHash, int $trxLedger): ContractTransaction
+    public function fromFailedTransaction(?string $contractAddress, string $contractName, string $functionCalled, string $txError, ?string $txHash, ?string $trxCreatedAt): ContractTransaction
     {
+        $trxDate = new \DateTimeImmutable($trxCreatedAt ?? date('Y-m-d H:i:s'));
+
         $contractTransaction = new ContractTransaction();
         $contractTransaction->setContractAddress($contractAddress);
         $contractTransaction->setContractLabel($contractName);
         $contractTransaction->setFunctionCalled($functionCalled);
         $contractTransaction->setError($txError);
         $contractTransaction->setTrxHash($txHash);
-        $contractTransaction->setTrxDate(new \DateTimeImmutable(date('Y-m-d H:i:s', $trxLedger)));
+        $contractTransaction->setTrxDate($trxDate);
 
         return $contractTransaction;
     }

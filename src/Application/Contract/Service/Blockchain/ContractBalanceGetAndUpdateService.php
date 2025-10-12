@@ -43,7 +43,7 @@ class ContractBalanceGetAndUpdateService
                 ContractFunctions::get_contract_balance->name,
                 $trxResult,
                 $transactionResponse->getTxHash(),
-                $transactionResponse->getLatestLedger() ?? $transactionResponse->getLedger()
+                $transactionResponse->getCreatedAt()
             );
 
             $this->getContractBalanceMapper->mapToEntity($trxResult, $contractBalance);
@@ -63,7 +63,7 @@ class ContractBalanceGetAndUpdateService
                 ContractFunctions::get_contract_balance->name,
                 $ex->getError(),
                 $ex->getHash(),
-                $ex->getFailureLedger()
+                $ex->getCreatedAt()
             );
 
             $this->contractBalanceEntityTransformer->updateContractBalanceAsFailed($contractBalance, $contractTransaction);

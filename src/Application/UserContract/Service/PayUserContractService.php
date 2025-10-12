@@ -50,7 +50,7 @@ class PayUserContractService
                 ContractFunctions::process_investor_payment->name,
                 $trxResult,
                 $trxHash,
-                $transactionResponse->getLedger()
+                $transactionResponse->getCreatedAt()
             );
 
             $paidAt = new \DateTimeImmutable(date('Y-m-d H:i:s', (int) $transactionResponse->getCreatedAt()));
@@ -73,7 +73,7 @@ class PayUserContractService
                 ContractFunctions::process_investor_payment->name,
                 $ex->getError(),
                 $ex->getHash(),
-                $ex->getFailureLedger()
+                $ex->getCreatedAt()
             );
 
             $userContractPayment->setTransaction($contractTransaction);

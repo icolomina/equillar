@@ -40,7 +40,7 @@ class ContractReserveFundContributionTransferService
                 ContractFunctions::add_company_transfer->name,
                 [$trxResult],
                 $trxResponse->getTxHash(),
-                $trxResponse->getLedger()
+                $trxResponse->getCreatedAt()
             );
 
             $this->contractReserveFundContributionTransformer->updateEntityAsTransferred($contractTransaction, $contractReserveFundContribution);
@@ -52,7 +52,7 @@ class ContractReserveFundContributionTransferService
                 ContractFunctions::add_company_transfer->name,
                 $ex->getError(),
                 $ex->getHash(),
-                $ex->getFailureLedger()
+                $ex->getCreatedAt()
             );
 
             $this->contractReserveFundContributionTransformer->updateEntityAsFailed($contractTransaction, $contractReserveFundContribution);

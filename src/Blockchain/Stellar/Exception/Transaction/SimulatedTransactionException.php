@@ -53,4 +53,9 @@ class SimulatedTransactionException extends \RuntimeException implements Transac
     {
         return null;
     }
+
+    public function getCreatedAt(): ?string
+    {
+        return null;
+    }
 }

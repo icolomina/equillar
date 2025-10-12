@@ -59,6 +59,7 @@ class ContractActivationServiceTest extends KernelTestCase
         $contract = $this->contractStorage->getContractById($contract->getId());
 
         $this->assertEquals('778585757uj4h4743h377f7f64g4hb', $contract->getAddress());
+        $this->assertEquals('2025-04-15 23:15:41', $contract->getContractTransaction()->getTrxDate()->format('Y-m-d H:i:s'));
     }
 
     private function createTransactionResponseStub(): MockObject
@@ -66,7 +67,7 @@ class ContractActivationServiceTest extends KernelTestCase
         $transactionResponseStub = $this->getMockBuilder(GetTransactionResponse::class)->disableOriginalConstructor()->getMock();
         $transactionResponseStub->expects($this->once())->method('getCreatedContractId')->willReturn('778585757uj4h4743h377f7f64g4hb');
         $transactionResponseStub->expects($this->once())->method('getTxHash')->willReturn('886996787366366355553');
-        $transactionResponseStub->expects($this->once())->method('getLatestLedger')->willReturn(15986662548);
+        $transactionResponseStub->expects($this->once())->method('getCreatedAt')->willReturn('2025-04-15T23:15:41+00:00');
 
         return $transactionResponseStub;
     }

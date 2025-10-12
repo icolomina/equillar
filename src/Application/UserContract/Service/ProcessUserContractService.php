@@ -44,7 +44,7 @@ class ProcessUserContractService
                 ContractFunctions::invest->name,
                 $trxResult,
                 $transactionResponse->getTxHash(),
-                $transactionResponse->getLedger()
+                $transactionResponse->getCreatedAt()
             );
 
             $this->bus->dispatch(new CheckContractBalanceMessage($userContract->getContract()->getId(), $transactionResponse->getLedger()));
@@ -56,7 +56,7 @@ class ProcessUserContractService
                 ContractFunctions::invest->name,
                 $ex->getError(),
                 $ex->getHash(),
-                $ex->getFailureLedger()
+                $ex->getCreatedAt()
             );
         } finally {
             $this->persistor->persistAndFlush([$userContract, $contractTransaction]);

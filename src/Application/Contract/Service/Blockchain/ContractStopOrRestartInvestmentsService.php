@@ -36,7 +36,6 @@ class ContractStopOrRestartInvestmentsService
 
         try {
             $transactionResponse = $this->contractStopOrRestartInvestmentsOperation->stopOrRestartInventments($contract, $type);
-            $trxLedger = $transactionResponse->getLatestLedger() ?? $transactionResponse->getLedger();
             $trxResult = $this->scContractResultBuilder->getResultDataFromTransactionResponse($transactionResponse);
 
             $contractTransaction = $this->contractTransactionEntityTransformer->fromSuccessfulTransaction(
@@ -45,7 +44,7 @@ class ContractStopOrRestartInvestmentsService
                 $contractFunction,
                 [$trxResult],
                 $transactionResponse->getTxHash(),
-                $trxLedger
+                $transactionResponse->getCreatedAt()
             );
 
             $contractInvestmentsPauseResume = $this->contractInvestmentsPauseResumeTransformer->fromContractSuccessfulPausedOrResumedInvestments($contract, $contractTransaction, $currentFunds, $reason, $type);
@@ -68,7 +67,7 @@ class ContractStopOrRestartInvestmentsService
                 $contractFunction,
                 $ex->getError(),
                 $ex->getHash(),
-                $ex->getFailureLedger()
+                $ex->getCreatedAt()
             );
 
             $contractInvestmentsPauseResume = $this->contractInvestmentsPauseResumeTransformer->fromContractFailurePausedOrResumedInvestments($contract, $contractTransaction, $currentFunds, $reason, $type);

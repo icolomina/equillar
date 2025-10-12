@@ -34,7 +34,7 @@ class ContractActivationService
                 ContractFunctions::activation->name,
                 [$contractAddress],
                 $transactionResponse->getTxHash(),
-                $transactionResponse->getLedger() ?? $transactionResponse->getLatestLedger()
+                $transactionResponse->getCreatedAt()
             );
 
             $this->contractEntityTransformer->updateContractAsActive($contract, $contractAddress);
@@ -45,7 +45,7 @@ class ContractActivationService
                 ContractFunctions::activation->name,
                 $ex->getError(),
                 $ex->getHash(),
-                $ex->getFailureLedger()
+                $ex->getCreatedAt()
             );
 
             $this->contractEntityTransformer->updateContractAsDeploymentFailed($contract);

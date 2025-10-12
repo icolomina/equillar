@@ -39,7 +39,7 @@ class ContractMoveFundsToTheReserveService
                 ContractFunctions::move_funds_to_the_reserve->name,
                 [$trxResult],
                 $trxResponse->getTxHash(),
-                $trxResponse->getLedger()
+                $trxResponse->getCreatedAt()
             );
 
             $this->contractBalanceMovementTransformer->updateContractBalanceMovementAsMoved($contractBalanceMovement, $contractTransaction);
@@ -51,7 +51,7 @@ class ContractMoveFundsToTheReserveService
                 ContractFunctions::move_funds_to_the_reserve->name,
                 $ex->getError(),
                 $ex->getHash(),
-                $ex->getFailureLedger()
+                $ex->getCreatedAt()
             );
 
             $this->contractBalanceMovementTransformer->updateContractBalanceMovementAsFailed($contractBalanceMovement, $contractTransaction);

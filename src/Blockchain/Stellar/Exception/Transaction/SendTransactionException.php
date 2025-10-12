@@ -54,4 +54,12 @@ class SendTransactionException extends \RuntimeException implements TransactionE
     {
         return $this->sendTransactionResponse->getHash();
     }
+
+    public function getCreatedAt(): ?string
+    {
+        return ($this->sendTransactionResponse->getLatestLedgerCloseTime() > 0)
+            ? date($this->sendTransactionResponse->getLatestLedgerCloseTime())
+            : null
+        ;
+    }
 }

@@ -42,7 +42,7 @@ class ContractCheckPaymentAvailabilityService
                 ContractFunctions::check_reserve->name,
                 $trxResult,
                 $trxResponse->getTxHash(),
-                $trxResponse->getLedger()
+                $trxResponse->getCreatedAt()
             );
 
             $this->contractPaymentAvailabilityTransformer->updateContractPaymentAvalabilityAsProcessed($contractPaymentAvailability, $contractTransaction, $requiredFunds);
@@ -61,7 +61,7 @@ class ContractCheckPaymentAvailabilityService
                 ContractFunctions::check_reserve->name,
                 $ex->getError(),
                 $ex->getHash(),
-                $ex->getFailureLedger()
+                $ex->getCreatedAt()
             );
 
             $this->contractPaymentAvailabilityTransformer->updateContractPaymentAvalabilityAsFailed($contractPaymentAvailability, $contractTransaction);

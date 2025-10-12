@@ -18,4 +18,6 @@ interface TransactionExceptionInterface
     public function getFailureLedger(): int;
 
     public function getHash(): ?string;
+
+    public function getCreatedAt(): ?string;
 }

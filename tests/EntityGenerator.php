@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use App\Entity\Contract\Contract;
+use App\Entity\Contract\ContractBalanceMovement;
 use App\Entity\Contract\ContractWithdrawalRequest;
 use App\Entity\Contract\UserContract;
 use App\Entity\Contract\UserContractPayment;
@@ -151,5 +152,19 @@ class EntityGenerator
         $contractWithdrawalRequest->setUuid(Uuid::v4());
 
         return $contractWithdrawalRequest;
+    }
+
+    public static function createContractBalanceMovement(User $user, Contract $contract): ContractBalanceMovement
+    {
+        $contractBalanceMovement = new ContractBalanceMovement();
+        $contractBalanceMovement->setContract($contract);
+        $contractBalanceMovement->setAmount(1000.50);
+        $contractBalanceMovement->setSegmentFrom('available');
+        $contractBalanceMovement->setSegmentTo('reserve_fund');
+        $contractBalanceMovement->setCreatedAt(new \DateTimeImmutable());
+        $contractBalanceMovement->setRequestedBy($user);
+        $contractBalanceMovement->setStatus('CREATED');
+
+        return $contractBalanceMovement;
     }
 }

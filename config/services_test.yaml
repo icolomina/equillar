@@ -19,7 +19,9 @@ services:
   test.App\Application\UserContract\Transformer\UserContractPaymentEntityTransformer: '@App\Application\UserContract\Transformer\UserContractPaymentEntityTransformer'
   test.App\Application\Contract\Mapper\GetContractBalanceMapper: '@App\Application\Contract\Mapper\GetContractBalanceMapper'
   test.App\Application\Contract\Transformer\ContractBalanceEntityTransformer: '@App\Application\Contract\Transformer\ContractBalanceEntityTransformer'
+  test.App\Application\Contract\Transformer\ContractBalanceMovementTransformer: '@App\Application\Contract\Transformer\ContractBalanceMovementTransformer'
 
+  test.App\Persistence\Contract\ContractBalanceMovementStorageInterface: '@App\Persistence\Contract\ContractBalanceMovementStorageInterface'
   test.App\Persistence\Contract\ContractBalanceStorageInterface: '@App\Persistence\Contract\ContractBalanceStorageInterface'
   test.App\Application\Contract\Transformer\ContractWithdrawalApprovalEntityTransformer: '@App\Application\Contract\Transformer\ContractWithdrawalApprovalEntityTransformer'
   test.App\Persistence\Contract\ContractWithdrawalApprovalStorageInterface: '@App\Persistence\Contract\ContractWithdrawalApprovalStorageInterface'

@@ -49,5 +49,8 @@ Thumbs.db
 *.pid
 *.log
 
+# Documentation and improvement reports
+FRONTEND_IMPROVEMENTS.md
+
 # Storybook (if used)
 /storybook-static/

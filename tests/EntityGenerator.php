@@ -167,4 +167,17 @@ class EntityGenerator
 
         return $contractBalanceMovement;
     }
+
+    public static function createContractReserveFundContribution(User $user, Contract $contract): \App\Entity\Contract\ContractReserveFundContribution
+    {
+        $contribution = new \App\Entity\Contract\ContractReserveFundContribution();
+        $contribution->setUuid(Uuid::v4());
+        $contribution->setAmount(1000.0);
+        $contribution->setStatus('CREATED');
+        $contribution->setSourceUser($user);
+        $contribution->setContract($contract);
+        $contribution->setCreatedAt(new \DateTimeImmutable());
+
+        return $contribution;
+    }
 }

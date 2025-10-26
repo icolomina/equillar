@@ -24,6 +24,7 @@ phpstan.neon
 
 .phpunit.result.cache
 .php-cs-fixer.cache
+.phpunit.cache
 
 /config/secrets/
 
@@ -48,6 +49,7 @@ Thumbs.db
 # Temporary files and logs
 *.pid
 *.log
+*.bak
 
 # Documentation and improvement reports
 FRONTEND_IMPROVEMENTS.md

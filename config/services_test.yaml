@@ -25,3 +25,9 @@ services:
   test.App\Persistence\Contract\ContractBalanceStorageInterface: '@App\Persistence\Contract\ContractBalanceStorageInterface'
   test.App\Application\Contract\Transformer\ContractWithdrawalApprovalEntityTransformer: '@App\Application\Contract\Transformer\ContractWithdrawalApprovalEntityTransformer'
   test.App\Persistence\Contract\ContractWithdrawalApprovalStorageInterface: '@App\Persistence\Contract\ContractWithdrawalApprovalStorageInterface'
+
+  test.App\Persistence\Contract\ContractReserveFundContributionStorageInterface: '@App\Persistence\Contract\ContractReserveFundContributionStorageInterface'
+  test.App\Domain\Contract\Service\ContractReserveFundContributonIdEncoder: '@App\Domain\Contract\Service\ContractReserveFundContributonIdEncoder'
+  test.App\Domain\Token\Service\TokenNormalizer: '@App\Domain\Token\Service\TokenNormalizer'
+  test.App\Application\Contract\Service\ReceiveReserveFundContributionService: '@App\Application\Contract\Service\ReceiveReserveFundContributionService'
+  test.App\Application\Contract\Transformer\ContractReserveFundContributionTransformer: '@App\Application\Contract\Transformer\ContractReserveFundContributionTransformer'

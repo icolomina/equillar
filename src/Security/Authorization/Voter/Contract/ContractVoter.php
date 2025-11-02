@@ -15,6 +15,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class ContractVoter extends Voter
 {
+    public const CREATE_CONTRACT  = 'CREATE_CONTRACT';
     public const APPROVE_CONTRACT  = 'APPROVE_CONTRACT';
     public const ACTIVATE_CONTRACT = 'ACTIVATE_CONTRACT';
     public const MODIFY_CONTRACT   = 'MODIFY_CONTRACT';
@@ -26,14 +27,28 @@ class ContractVoter extends Voter
     public const REQUEST_OPERATION = 'REQUEST_OPERATION';
 
     public const GET_CONTRACT_RELATED_OPERATIONS = 'GET_CONTRACT_RELATED_OPERATIONS';
+    public const GET_WITHDRAWAL_REQUESTS = 'GET_WITHDRAWAL_REQUESTS';
+    public const GET_RESERVE_FUNDS_CONTRIBUTIONS = 'GET_RESERVE_FUNDS_CONTRIBUTIONS';
+    public const GET_CONTRACT_BALANCE_MOVEMENTS = 'GET_CONTRACT_BALANCE_MOVEMENTS';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if (!$subject instanceof Contract) {
-            return false;
+        if ($subject instanceof Contract) {
+            return true;
         }
 
-        return true;
+        if (in_array($attribute, [
+                self::CREATE_CONTRACT, 
+                self::GET_WITHDRAWAL_REQUESTS, 
+                self::GET_CONTRACT_BALANCE_MOVEMENTS, 
+                self::GET_RESERVE_FUNDS_CONTRIBUTIONS
+            ]
+        )) {
+            return true;
+            
+        }
+
+        return false;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -43,6 +58,10 @@ class ContractVoter extends Voter
          */
         $user = $token->getUser();
         return match($attribute) {
+            self::GET_CONTRACT_BALANCE_MOVEMENTS => $this->canGetContractBalanceMovements($user),
+            self::GET_RESERVE_FUNDS_CONTRIBUTIONS => $this->canGetReserveFundsContributions($user),
+            self::GET_WITHDRAWAL_REQUESTS => $this->canGetWithdrawalRequests($user),
+            self::CREATE_CONTRACT  => $this->canCreateContract($user),
             self::APPROVE_CONTRACT  => $this->canApproveContract($user, $subject),
             self::ACTIVATE_CONTRACT => $this->canActivateContract($user, $subject),
             self::MODIFY_CONTRACT   => $this->canModifyContract($user, $subject),
@@ -53,6 +72,26 @@ class ContractVoter extends Voter
             self::PAUSE_CONTRACT => $this->canPauseContract($user, $subject),
             default => true
         };
+    }
+
+    private function canGetContractBalanceMovements(User $user): bool
+    {
+        return $user->isCompany() || $user->isAdmin();
+    }
+
+    private function canGetReserveFundsContributions(User $user): bool
+    {
+        return $user->isCompany() || $user->isAdmin();
+    }
+
+    private function canGetWithdrawalRequests(User $user): bool
+    {
+        return $user->isCompany() || $user->isAdmin();
+    }
+
+    private function canCreateContract(User $user): bool    
+    {
+        return $user->isCompany() || $user->isAdmin();
     }
 
     private function canApproveContract(User $user, Contract $contract): bool

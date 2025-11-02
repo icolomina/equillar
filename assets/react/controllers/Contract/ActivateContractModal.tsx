@@ -45,12 +45,19 @@ export default function ActivateContractModal({ openActivateModal, handleModalCl
     const handleActivate = () => {
         const contractId = contractToActivate.id;
         setActivating(true);
-        callPatch(apiRoutes.startContract(contractId), {}).then(
-            async () => {
-                setActivating(false);
-                setActive(true);
-            }
-        )
+        callPatch(apiRoutes.startContract(contractId), {})
+            .then(
+                async () => {
+                    setActivating(false);
+                    setActive(true);
+                }
+            ).catch(
+                (reason: any) => {
+                    console.log(reason);
+                    handleCloseAndNotify();
+                }
+            )
+        ;
     }
 
     const handleCloseAndNotify = () => {

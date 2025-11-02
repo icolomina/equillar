@@ -5,6 +5,7 @@ namespace App\Tests\Application\Contract\Service\Blockchain;
 use App\Application\Contract\Service\Blockchain\ContractMoveFundsToTheReserveService;
 use App\Blockchain\Stellar\Exception\Transaction\GetTransactionException;
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\ContractAvailableToReserveFundOperation;
+use App\Domain\Contract\Exception\ContractExecutionFailedException;
 use App\Entity\Contract\ContractBalanceMovement;
 use App\Persistence\Contract\ContractBalanceMovementStorageInterface;
 use App\Persistence\PersistorInterface;
@@ -113,6 +114,7 @@ class ContractMoveFundsToTheReserveServiceTest extends KernelTestCase
             ->getMock()
         ;
 
+        $this->expectException(ContractExecutionFailedException::class);
         $contractBalanceMovement = $this->loadContractBalanceMovement();
         $contractMoveFundsToTheReserveServiceStub->moveAvailableFundsToTheReserve($contractBalanceMovement);
         

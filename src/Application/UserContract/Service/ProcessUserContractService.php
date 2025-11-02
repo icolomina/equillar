@@ -54,9 +54,7 @@ class ProcessUserContractService
                 $userContract->getContract()->getAddress(),
                 ContractNames::INVESTMENT->value,
                 ContractFunctions::invest->name,
-                $ex->getError(),
-                $ex->getHash(),
-                $ex->getCreatedAt()
+                $ex
             );
         } finally {
             $this->persistor->persistAndFlush([$userContract, $contractTransaction]);

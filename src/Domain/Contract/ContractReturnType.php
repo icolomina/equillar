@@ -14,7 +14,7 @@ enum ContractReturnType: int
     public function getReadableName(): string
     {
         return match ($this) {
-            self::REVERSE_LOAN => 'Reverse loan',
+            self::REVERSE_LOAN => 'Reverse Loan',
             default => 'Coupon',
         };
     }

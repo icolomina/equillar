@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useApiRoutes } from "../../../hooks/ApiRoutesHook";
 import { useForm } from "react-hook-form";
 import { currenciesForSelector } from "../../../model/form";
-import { ContractOutput, returnTypes } from "../../../model/contract";
+import { ContractOutput, returnTypes, getReturnType } from "../../../model/contract";
 import { useEffect, useState } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 
@@ -122,7 +122,7 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
                 }
             )
             .catch((error: AxiosError) => {
-                if(error.response.status === 422) {
+                if(error.response.status === 400) {
                     const validationErrors = error.response.data;
                     Object.keys(validationErrors).forEach((field: any) => {
                         setError(validationErrors[field]['label'], { type: 'server', message: validationErrors[field]['msg'] });
@@ -303,67 +303,71 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
                                 </Grid2>
                             </Grid2>
 
-                            <Divider sx={{ my: 3 }} />
+                            { !contractId && (<Divider sx={{ my: 3 }} /> )}
 
-                            <Grid2 container>
-                                <Grid2 size={12}>
-                                    <Typography variant="h6" sx={{ mb: 1 }}>
-                                        Project file
-                                    </Typography>
-                                    <input
-                                        type="file"
-                                        id="file-upload"
-                                        style={{ display: 'none' }}
-                                        accept="application/pdf"
-                                        {...register('file')}
-                                    />
-                                    <label htmlFor="file-upload">
-                                        <Button variant="outlined" component="span">
-                                            Select file
-                                        </Button>
-                                    </label>
-                                    {fileSelected && fileSelected.length > 0 && (
-                                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                                            File selected: **{fileSelected[0].name}**
+                            { !contractId && (
+                                <Grid2 container>
+                                    <Grid2 size={12}>
+                                        <Typography variant="h6" sx={{ mb: 1 }}>
+                                            Project file
                                         </Typography>
-                                    )}
-                                    {errors.file && (
-                                        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-                                            {errors.file.message}
-                                        </Typography>
-                                    )}
+                                        <input
+                                            type="file"
+                                            id="file-upload"
+                                            style={{ display: 'none' }}
+                                            accept="application/pdf"
+                                            {...register('file')}
+                                        />
+                                        <label htmlFor="file-upload">
+                                            <Button variant="outlined" component="span">
+                                                Select file
+                                            </Button>
+                                        </label>
+                                        {fileSelected && fileSelected.length > 0 && (
+                                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                                File selected: **{fileSelected[0].name}**
+                                            </Typography>
+                                        )}
+                                        {errors.file && (
+                                            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                                                {errors.file.message}
+                                            </Typography>
+                                        )}
+                                    </Grid2>
                                 </Grid2>
-                            </Grid2>
+                            ) }
 
-                            <Grid2 container>
-                                <Grid2 size={12}>
-                                    <Typography variant="h6" sx={{ mb: 1 }}>
-                                        Project image
-                                    </Typography>
-                                    <input
-                                        type="file"
-                                        id="image-upload"
-                                        style={{ display: 'none' }}
-                                        accept="image/png, image/jpeg, image/jpg"
-                                        {...register('image')}
-                                    />
-                                    <label htmlFor="image-upload">
-                                        <Button variant="outlined" component="span">
-                                            Select image
-                                        </Button>
-                                    </label>
-                                    {imageSelected && imageSelected.length > 0 && (
-                                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                                            Image selected: **{imageSelected[0].name}**
+                            { !contractId && (
+                                <Grid2 container>
+                                    <Grid2 size={12}>
+                                        <Typography variant="h6" sx={{ mb: 1 }}>
+                                            Project image
                                         </Typography>
-                                    )}
-                                    {errors.file && (
-                                        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-                                            {errors.file.message}
-                                        </Typography>
-                                    )}
+                                        <input
+                                            type="file"
+                                            id="image-upload"
+                                            style={{ display: 'none' }}
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            {...register('image')}
+                                        />
+                                        <label htmlFor="image-upload">
+                                            <Button variant="outlined" component="span">
+                                                Select image
+                                            </Button>
+                                        </label>
+                                        {imageSelected && imageSelected.length > 0 && (
+                                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                                Image selected: **{imageSelected[0].name}**
+                                            </Typography>
+                                        )}
+                                        {errors.file && (
+                                            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                                                {errors.file.message}
+                                            </Typography>
+                                        )}
+                                    </Grid2>
                                 </Grid2>
-                            </Grid2>
+                            ) }
                         </Paper>
                     </Grid2>
 

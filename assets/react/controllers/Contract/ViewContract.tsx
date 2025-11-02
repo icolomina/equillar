@@ -412,7 +412,7 @@ export default function ViewContract() {
                                         {text: 'Pause Contract', onClick: handleOpenModalToPauseContract, icon: <CancelIcon color="warning" />, id: 'stop'}
                                     }></ContractActionIcon> }
                                     { query.data.status == 'PAUSED' && <ContractActionIcon iconAction={
-                                        {text: 'Pause Contract', onClick: handleOpenModalToResumeContract, icon: <CancelIcon color="success" />, id: 'resume'}
+                                        {text: 'Resume Contract', onClick: handleOpenModalToResumeContract, icon: <CancelIcon color="success" />, id: 'resume'}
                                     }></ContractActionIcon> }
                                     { isCompany() && query.data.status == 'ACTIVE' && query.data.contractBalance.available > 0 && <ContractActionIcon iconAction={
                                         {onClick: handleOpenModalForRequestWithdrawal, text: 'Request funds withdrawal', icon: <PriceChangeIcon color="primary" />, id: 'withdrawal'}

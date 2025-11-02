@@ -9,6 +9,7 @@ use App\Blockchain\Stellar\Exception\Transaction\TransactionExceptionInterface;
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\CheckContractPaymentAvailabilityOperation;
 use App\Domain\Contract\ContractFunctions;
 use App\Domain\Contract\ContractNames;
+use App\Domain\Contract\Exception\ContractExecutionFailedException;
 use App\Domain\ScContract\Service\ScContractResultBuilder;
 use App\Domain\Utils\Math\I128Handler;
 use App\Entity\Contract\ContractPaymentAvailability;
@@ -59,13 +60,13 @@ class ContractCheckPaymentAvailabilityService
                 $contractPaymentAvailability->getContract()->getAddress(),
                 ContractNames::INVESTMENT->value,
                 ContractFunctions::check_reserve->name,
-                $ex->getError(),
-                $ex->getHash(),
-                $ex->getCreatedAt()
+                $ex
             );
 
             $this->contractPaymentAvailabilityTransformer->updateContractPaymentAvalabilityAsFailed($contractPaymentAvailability, $contractTransaction);
             $this->persistor->persistAndFlush([$contractTransaction, $contractPaymentAvailability]);
+            
+            throw ContractExecutionFailedException::fromContractTransaction($contractTransaction);
         }
     }
 }

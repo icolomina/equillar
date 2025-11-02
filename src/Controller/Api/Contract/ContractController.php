@@ -40,7 +40,6 @@ use App\Security\Authorization\Voter\Contract\ContractVoter;
 use App\Security\Authorization\Voter\Contract\ContractWithdrawalRequestVoter;
 use App\Domain\Contract\ContractPauseOrResumeTypes;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -78,7 +77,6 @@ class ContractController extends AbstractController
     }
 
     #[Route('/create-contract', name: 'post_create_contract', methods: ['POST'])]
-    #[IsGranted(new Expression('is_granted("ROLE_COMPANY") or is_granted("ROLE_ADMIN")'))]
     public function createContractAction(
         #[MapRequestPayload] CreateContractDto $createContractDto,
         #[MapUploadedFile([
@@ -91,6 +89,7 @@ class ContractController extends AbstractController
         ])] UploadedFile $image, 
         CreateContractService $createContractService): JsonResponse
     {
+        $this->denyAccessUnlessGranted(ContractVoter::CREATE_CONTRACT, null);
         /**
          * @var User $user
          */
@@ -107,10 +106,7 @@ class ContractController extends AbstractController
     }
 
     #[Route('/{id}/modify-contract', name: 'patch_modify_contract', methods: ['POST'])]
-    public function modifyContractAction(Contract $contract, #[MapRequestPayload] CreateContractDto $createContractDto,
-        #[MapUploadedFile([
-            new File(extensions: ['pdf'], extensionsMessage: 'Please upload a valid PDF'),
-        ])] UploadedFile|array $file, ModifyContractService $modifyContractService): JsonResponse
+    public function modifyContractAction(Contract $contract, #[MapRequestPayload] CreateContractDto $createContractDto, ModifyContractService $modifyContractService): JsonResponse
     {
         $this->denyAccessUnlessGranted(ContractVoter::MODIFY_CONTRACT, $contract);
 
@@ -119,7 +115,7 @@ class ContractController extends AbstractController
          */
         $user = $this->getUser();
 
-        return $this->json($modifyContractService->modifyContract($contract, $createContractDto, $file, $user));
+        return $this->json($modifyContractService->modifyContract($contract, $createContractDto, $user));
     }
 
     #[Route('/{id}/approve-contract', name: 'patch_approve_contract', methods: ['PATCH'])]
@@ -147,9 +143,10 @@ class ContractController extends AbstractController
     }
 
     #[Route('/get-request-withdrawals', name: 'get_contract_request_withdrawals', methods: ['GET'])]
-    #[IsGranted(new Expression('is_granted("ROLE_COMPANY") or is_granted("ROLE_ADMIN")'))]
     public function getWithdrawalRequests(GetContractWithdrawalRequestsService $getContractWithdrawalRequestsService): JsonResponse
     {
+        $this->denyAccessUnlessGranted(ContractVoter::GET_WITHDRAWAL_REQUESTS, null);
+
         /**
          * @var User $user
          */
@@ -220,9 +217,10 @@ class ContractController extends AbstractController
     }
 
     #[Route('/get-reserve-fund-contributions', name: 'api_get_reserve_fund_contributions', methods: ['GET'])]
-    #[IsGranted(new Expression('is_granted("ROLE_COMPANY") or is_granted("ROLE_ADMIN")'))]
     public function getReserveFundContributions(GetContractReserveFundContributionsService $getContractReserveFundContributionsService): JsonResponse
     {
+        $this->denyAccessUnlessGranted(ContractVoter::GET_RESERVE_FUNDS_CONTRIBUTIONS, null);
+        
         /**
          * @var User $user
          */
@@ -285,7 +283,6 @@ class ContractController extends AbstractController
     }
 
     #[Route('/get-contract-balance-movements', name: 'api_get_contract_balance_movements', methods: ['GET'])]
-    #[IsGranted(new Expression('is_granted("ROLE_COMPANY") or is_granted("ROLE_ADMIN")'))]
     public function getContractBalanceMovements(GetContractBalanceMovementsService $getContractBalanceMovementsService): JsonResponse
     {
         /**

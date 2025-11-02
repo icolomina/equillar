@@ -38,6 +38,7 @@ import GetReserveFundsContributions from "./Company/ReserveFund/GetReserveFundsC
 import EditUserContract from "./Contract/User/EditUserContract";
 import { BackendContext, BackendContextData } from "../context/BackendContext";
 import GetContractBalanceMovements from "./Company/Balance/GetContractBalanceMovements";
+import { ErrorProvider } from "../context/ErrorProvider";
 
 interface AppProps {
   sorobanNetworkPassphrase?: string;
@@ -60,29 +61,31 @@ export default function App(props: AppProps) {
         <CssBaseline />
         <QueryClientProvider client={queryClient}>
           <SorobanContextProvider value={sorobanContextData} >
-            <Router>
-              <Routes>
-                <Route path="/login" element={<SignIn />} />
-                <Route path="/withdrawal-confirmed" element={<WithdrawalRequestConfirmed />} />
-                <Route path="/app" element={<ProtectedRoute children={<Layout />} />}>
-                  <Route index element={<Home />} />
-                  <Route path="home-investor" element={<HomeInvestor />} />
-                  <Route path="home-company" element={<HomeCompany />} />
-                  <Route path="user-portfolio" element={<UserPortfolio />} />
-                  <Route path="create-project" element={<CreateContract />} />
-                  <Route path="project/:id/start" element={<StartContract />} />
-                  <Route path="project/:id/invest" element={<SendDepositToContract />} />
-                  <Route path="project/:id/view" element={<ViewContract />} />
-                  <Route path="project/:id/edit" element={<EditContract />} />
-                  <Route path="user-contract/:id/edit" element={<EditUserContract />} />
-                  <Route path="available-tokens" element={<TokenList />} />
-                  <Route path="get-withdrawal-requests" element={<GetWithdrawalRequests />} />
-                  <Route path="user-payments" element={<UserContractPayments />} />
-                  <Route path="get-reserve-fund-contributions" element={<GetReserveFundsContributions />} />
-                  <Route path="get-contract-balance-movements" element={<GetContractBalanceMovements />} />
-                </Route>
-              </Routes>
-            </Router>
+            <ErrorProvider>
+              <Router>
+                <Routes>
+                  <Route path="/login" element={<SignIn />} />
+                  <Route path="/withdrawal-confirmed" element={<WithdrawalRequestConfirmed />} />
+                  <Route path="/app" element={<ProtectedRoute children={<Layout />} />}>
+                    <Route index element={<Home />} />
+                    <Route path="home-investor" element={<HomeInvestor />} />
+                    <Route path="home-company" element={<HomeCompany />} />
+                    <Route path="user-portfolio" element={<UserPortfolio />} />
+                    <Route path="create-project" element={<CreateContract />} />
+                    <Route path="project/:id/start" element={<StartContract />} />
+                    <Route path="project/:id/invest" element={<SendDepositToContract />} />
+                    <Route path="project/:id/view" element={<ViewContract />} />
+                    <Route path="project/:id/edit" element={<EditContract />} />
+                    <Route path="user-contract/:id/edit" element={<EditUserContract />} />
+                    <Route path="available-tokens" element={<TokenList />} />
+                    <Route path="get-withdrawal-requests" element={<GetWithdrawalRequests />} />
+                    <Route path="user-payments" element={<UserContractPayments />} />
+                    <Route path="get-reserve-fund-contributions" element={<GetReserveFundsContributions />} />
+                    <Route path="get-contract-balance-movements" element={<GetContractBalanceMovements />} />
+                  </Route>
+                </Routes>
+              </Router>
+            </ErrorProvider>
           </SorobanContextProvider>
         </QueryClientProvider>
       </ThemeProvider>

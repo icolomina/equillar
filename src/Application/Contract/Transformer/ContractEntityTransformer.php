@@ -13,6 +13,7 @@ use App\Domain\Contract\Service\ContractImageUrlGenerator;
 use App\Domain\DateFormats;
 use App\Entity\Contract\Contract;
 use App\Entity\Contract\ContractBalance;
+use App\Entity\ContractTransaction;
 use App\Entity\Token;
 use App\Entity\User;
 use App\Presentation\Contract\DTO\Input\CreateContractDto;
@@ -97,7 +98,7 @@ class ContractEntityTransformer
         return $contract;
     }
 
-    public function updateContractWithNewData(Contract $contract, CreateContractDto $createContractDto, User $user, Token $token, ?string $filename): void
+    public function updateContractWithNewData(Contract $contract, CreateContractDto $createContractDto, User $user, Token $token): void
     {
         $contract->setIssuer($user);
         $contract->setRate((float) $createContractDto->rate);
@@ -111,10 +112,6 @@ class ContractEntityTransformer
         $contract->setReturnMonths((int) $createContractDto->returnMonths);
         $contract->setReturnType((int) $createContractDto->returnType);
         $contract->setProjectAddress($createContractDto->projectAddress);
-
-        if ($filename) {
-            $contract->setFilename($filename);
-        }
     }
 
     public function updateContractAsBlocked(Contract $contract): void
@@ -127,17 +124,19 @@ class ContractEntityTransformer
         $contract->setStatus(ContractStatus::FUNDS_REACHED->name);
     }
 
-    public function updateContractAsActive(Contract $contract, string $address): void
+    public function updateContractAsActive(Contract $contract, string $address, ContractTransaction $contractTransaction): void
     {
         $contract->setStatus(ContractStatus::ACTIVE->name);
         $contract->setAddress($address);
         $contract->setInitialized(true);
         $contract->setInitializedAt(new \DateTimeImmutable());
+        $contract->setContractTransaction($contractTransaction);
     }
 
-    public function updateContractAsDeploymentFailed(Contract $contract): void
+    public function updateContractAsDeploymentFailed(Contract $contract, ContractTransaction $contractTransaction): void
     {
         $contract->setStatus(ContractStatus::DEPLOYMENT_FAILED->name);
+        $contract->setContractTransaction($contractTransaction);
     }
 
     public function updateContractAsApproved(Contract $contract): void

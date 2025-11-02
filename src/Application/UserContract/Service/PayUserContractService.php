@@ -71,9 +71,7 @@ class PayUserContractService
                 $userContractPayment->getUserContract()->getContract()->getAddress(),
                 ContractNames::INVESTMENT->name,
                 ContractFunctions::process_investor_payment->name,
-                $ex->getError(),
-                $ex->getHash(),
-                $ex->getCreatedAt()
+                $ex
             );
 
             $userContractPayment->setTransaction($contractTransaction);

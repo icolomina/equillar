@@ -8,6 +8,7 @@ use App\Blockchain\Stellar\Exception\Transaction\TransactionExceptionInterface;
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\ContractReserveFundContributionOperation;
 use App\Domain\Contract\ContractFunctions;
 use App\Domain\Contract\ContractNames;
+use App\Domain\Contract\Exception\ContractExecutionFailedException;
 use App\Domain\ScContract\Service\ScContractResultBuilder;
 use App\Entity\Contract\ContractReserveFundContribution;
 use App\Message\CheckContractBalanceMessage;
@@ -44,20 +45,20 @@ class ContractReserveFundContributionTransferService
             );
 
             $this->contractReserveFundContributionTransformer->updateEntityAsTransferred($contractTransaction, $contractReserveFundContribution);
+            $this->persistor->persistAndFlush([$contractTransaction, $contractReserveFundContribution]);
             $this->bus->dispatch(new CheckContractBalanceMessage($contractReserveFundContribution->getContract()->getId(), $trxResponse->getLedger()));
         } catch (TransactionExceptionInterface $ex) {
             $contractTransaction = $this->contractTransactionEntityTransformer->fromFailedTransaction(
                 $contractReserveFundContribution->getContract()->getAddress(),
                 ContractNames::INVESTMENT->value,
                 ContractFunctions::add_company_transfer->name,
-                $ex->getError(),
-                $ex->getHash(),
-                $ex->getCreatedAt()
+                $ex
             );
 
             $this->contractReserveFundContributionTransformer->updateEntityAsFailed($contractTransaction, $contractReserveFundContribution);
-        } finally {
             $this->persistor->persistAndFlush([$contractTransaction, $contractReserveFundContribution]);
-        }
+            
+            throw ContractExecutionFailedException::fromContractTransaction($contractTransaction);
+        } 
     }
 }

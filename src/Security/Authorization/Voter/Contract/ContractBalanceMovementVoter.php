@@ -19,11 +19,11 @@ class ContractBalanceMovementVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if (!$subject instanceof ContractBalanceMovement && in_array($attribute, [self::PERFORM_BALANCE_MOVEMENT] )) {
-            return false;
+        if ($subject instanceof ContractBalanceMovement && in_array($attribute, [self::PERFORM_BALANCE_MOVEMENT] )) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool

@@ -10,6 +10,7 @@ use App\Blockchain\Stellar\Exception\Transaction\TransactionExceptionInterface;
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\GetContractBalanceOperation;
 use App\Domain\Contract\ContractFunctions;
 use App\Domain\Contract\ContractNames;
+use App\Domain\Contract\Exception\ContractExecutionFailedException;
 use App\Domain\ScContract\Service\ScContractResultBuilder;
 use App\Entity\Contract\Contract;
 use App\Persistence\PersistorInterface;
@@ -61,13 +62,13 @@ class ContractBalanceGetAndUpdateService
                 $contract->getAddress(),
                 ContractNames::INVESTMENT->value,
                 ContractFunctions::get_contract_balance->name,
-                $ex->getError(),
-                $ex->getHash(),
-                $ex->getCreatedAt()
+                $ex
             );
 
             $this->contractBalanceEntityTransformer->updateContractBalanceAsFailed($contractBalance, $contractTransaction);
             $this->persistor->persistAndFlush([$contractTransaction, $contractBalance]);
+            
+            throw ContractExecutionFailedException::fromContractTransaction($contractTransaction);
         }
     }
 }

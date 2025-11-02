@@ -6,6 +6,7 @@
 
 namespace App\Application\Contract\Transformer;
 
+use App\Blockchain\Stellar\Exception\Transaction\TransactionExceptionInterface;
 use App\Domain\Contract\ContractFunctions;
 use App\Entity\ContractTransaction;
 use Soneso\StellarSDK\Soroban\Responses\EventInfo;
@@ -36,8 +37,7 @@ class ContractTransactionEntityTransformer
 
     public function fromSuccessfulTransaction(string $contracAddress, string $contractName, string $functionCalled, array $trxResult, ?string $trxHash, ?string $trxCreatedAt): ContractTransaction
     {
-
-        $trxDate = new \DateTimeImmutable($trxCreatedAt ?? date('Y-m-d H:i:s'));
+        $trxDate = new \DateTimeImmutable($trxCreatedAt ? date('Y-m-d H:i:s', (int)$trxCreatedAt) : date('Y-m-d H:i:s'));
 
         $contractTransaction = new ContractTransaction();
         $contractTransaction->setContractAddress($contracAddress);
@@ -63,17 +63,15 @@ class ContractTransactionEntityTransformer
         return $contractTransaction;
     }
 
-    public function fromFailedTransaction(?string $contractAddress, string $contractName, string $functionCalled, string $txError, ?string $txHash, ?string $trxCreatedAt): ContractTransaction
+    public function fromFailedTransaction(?string $contractAddress, string $contractName, string $functionCalled, TransactionExceptionInterface $tx): ContractTransaction
     {
-        $trxDate = new \DateTimeImmutable($trxCreatedAt ?? date('Y-m-d H:i:s'));
-
         $contractTransaction = new ContractTransaction();
         $contractTransaction->setContractAddress($contractAddress);
         $contractTransaction->setContractLabel($contractName);
         $contractTransaction->setFunctionCalled($functionCalled);
-        $contractTransaction->setError($txError);
-        $contractTransaction->setTrxHash($txHash);
-        $contractTransaction->setTrxDate($trxDate);
+        $contractTransaction->setError($tx->getError());
+        $contractTransaction->setTrxHash($tx->getHash());
+        $contractTransaction->setTrxDate(new \DateTimeImmutable($tx->getCreatedAt()));
 
         return $contractTransaction;
     }

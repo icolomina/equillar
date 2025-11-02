@@ -9,6 +9,7 @@ use App\Blockchain\Stellar\Soroban\ScContract\Operation\ContractStopOrRestartInv
 use App\Domain\Contract\ContractFunctions;
 use App\Domain\Contract\ContractNames;
 use App\Domain\Contract\ContractStatus;
+use App\Domain\Contract\Exception\ContractExecutionFailedException;
 use App\Domain\ScContract\Service\ScContractResultBuilder;
 use App\Entity\Contract\Contract;
 use App\Persistence\Contract\ContractBalanceStorageInterface;
@@ -27,8 +28,9 @@ class ContractStopOrRestartInvestmentsService
     ) {
     }
 
-    public function stopOrRestartInvestments(Contract $contract, string $type, string $reason = 'No reason provided'): void
+    public function stopOrRestartInvestments(Contract $contract, string $type, ?string $reason = null): void
     {
+        $reason = $reason ?? 'No reason provided';
         $lastContractBalance = $this->contractBalanceStorage->getLastBalanceByContract($contract);
         $currentFunds = $lastContractBalance?->getFundsReceived() ?? 0;
 
@@ -59,22 +61,20 @@ class ContractStopOrRestartInvestmentsService
             }
 
             $this->persistor->persist([$contractTransaction, $contractInvestmentsPauseResume, $contract]);
+            $this->persistor->persistAndFlush([$contractTransaction, $contractInvestmentsPauseResume, $contract]);
             
         } catch (TransactionExceptionInterface $ex) {
             $contractTransaction = $this->contractTransactionEntityTransformer->fromFailedTransaction(
                 $contract->getAddress(),
                 ContractNames::INVESTMENT->name,
                 $contractFunction,
-                $ex->getError(),
-                $ex->getHash(),
-                $ex->getCreatedAt()
+                $ex
             );
 
             $contractInvestmentsPauseResume = $this->contractInvestmentsPauseResumeTransformer->fromContractFailurePausedOrResumedInvestments($contract, $contractTransaction, $currentFunds, $reason, $type);
-
-            $this->persistor->persist([$contractTransaction, $contractInvestmentsPauseResume]);
-        } finally {
-            $this->persistor->flush();
-        }
+            $this->persistor->persistAndFlush([$contractTransaction, $contractInvestmentsPauseResume]);
+            
+            throw ContractExecutionFailedException::fromContractTransaction($contractTransaction);
+        } 
     }
 }

@@ -7,6 +7,8 @@
  */
 namespace App\Event\Subscriber;
 
+use App\Domain\Contract\Exception\BlockchainNetworkException;
+use App\Domain\Contract\Exception\ContractExecutionFailedException;
 use Firebase\JWT\ExpiredException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,15 +31,28 @@ class KernelSubscriber implements EventSubscriberInterface
         $exception = $event->getThrowable();
 
         if ($exception->getPrevious() instanceof ValidationFailedException) {
-            $event->setResponse(new JsonResponse($this->getErrors($exception->getPrevious()), 422));
+            $event->setResponse(new JsonResponse($this->getErrors($exception->getPrevious()), 400));
+            return;
         }
 
         if ($exception instanceof ValidationFailedException) {
-            $event->setResponse(new JsonResponse($this->getErrors($exception), 422));
+            $event->setResponse(new JsonResponse($this->getErrors($exception), 400));
+            return;
         }
 
         if ($exception instanceof ExpiredException) {
             $event->setThrowable(new AuthenticationException($exception->getMessage()));
+            return;
+        }
+
+        if ($exception instanceof ContractExecutionFailedException) {
+            $event->setResponse(new JsonResponse([
+                'error' => 'CONTRACT_EXECUTION_FAILED',
+                'message' => $exception->getMessage(),
+                'contract_id' => $exception->getContractId(),
+                'transaction_hash' => $exception->getTransactionHash(),
+            ], 422));
+            return;
         }
     }
 

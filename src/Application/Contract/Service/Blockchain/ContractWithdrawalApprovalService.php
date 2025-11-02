@@ -8,6 +8,7 @@ use App\Blockchain\Stellar\Exception\Transaction\TransactionExceptionInterface;
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\ContractWithdrawalOperation;
 use App\Domain\Contract\ContractFunctions;
 use App\Domain\Contract\ContractNames;
+use App\Domain\Contract\Exception\ContractExecutionFailedException;
 use App\Entity\Contract\ContractWithdrawalRequest;
 use App\Message\CheckContractBalanceMessage;
 use App\Persistence\PersistorInterface;
@@ -41,20 +42,20 @@ class ContractWithdrawalApprovalService
             );
 
             $contractWithdrawalApproval = $this->contractWithdrawalApprovalEntityTransformer->fromRequestApprovedToEntity($contractWithdrawalRequest, $contractTransaction);
+            $this->persistor->persistAndFlush([$contractTransaction, $contractWithdrawalRequest, $contractWithdrawalApproval]);
             $this->bus->dispatch(new CheckContractBalanceMessage($contractWithdrawalRequest->getContract()->getId(), $trxResponse->getLedger()));
         } catch (TransactionExceptionInterface $ex) {
             $contractTransaction = $this->contractTransactionEntityTransformer->fromFailedTransaction(
                 $contractWithdrawalRequest->getContract()->getAddress(),
                 ContractNames::INVESTMENT->value,
                 ContractFunctions::single_withdrawn->name,
-                $ex->getError(),
-                $ex->getHash(),
-                $ex->getCreatedAt()
+                $ex
             );
 
             $contractWithdrawalApproval = $this->contractWithdrawalApprovalEntityTransformer->fromRequestApprovalFailureToEntity($contractWithdrawalRequest, $contractTransaction);
-        } finally {
             $this->persistor->persistAndFlush([$contractTransaction, $contractWithdrawalRequest, $contractWithdrawalApproval]);
+            
+            throw ContractExecutionFailedException::fromContractTransaction($contractTransaction);
         }
     }
 }

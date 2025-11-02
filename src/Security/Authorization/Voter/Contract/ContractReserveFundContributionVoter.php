@@ -21,7 +21,7 @@ class ContractReserveFundContributionVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if (!$subject instanceof ContractReserveFundContribution && in_array($attribute, [self::CHECK_RESERVE_FUND_CONTRIBUTION, self::TRANSFER_RECEIVE_FUND_CONTRIBUTION] )) {
+        if ($subject instanceof ContractReserveFundContribution && in_array($attribute, [self::CHECK_RESERVE_FUND_CONTRIBUTION, self::TRANSFER_RECEIVE_FUND_CONTRIBUTION] )) {
             return false;
         }
 

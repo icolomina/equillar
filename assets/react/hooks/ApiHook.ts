@@ -8,6 +8,8 @@ import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { BackendContext } from "../context/BackendContext";
+import { ErrorContext } from "../context/ErrorContext";
+import { BlockchainErrorResponse, BlockchainErrorType } from "../model/error";
 
 type Headers = {
     [key: string]: string|number
@@ -41,14 +43,38 @@ export const useApi = () => {
 
     const navigate = useNavigate();
     const ctx = useContext(BackendContext);
+    const errorCtx = useContext(ErrorContext);
 
     useEffect(() => {
         const responseInterceptor = axios.interceptors.response.use(
             response => response,
             error => {
-                if (error.response && error.response.status === 401) {
+                const status = error.response?.status;
+
+                // Handle authentication errors
+                if (status === 401) {
                     navigate('/login');
+                    return Promise.reject(error);
                 }
+
+                // Handle blockchain errors (422, 424)
+                if ((status === 422 || status === 424) && errorCtx) {
+                    const errorData: BlockchainErrorResponse = error.response?.data;
+                    
+                    if (errorData && (
+                        errorData.error === BlockchainErrorType.CONTRACT_EXECUTION_FAILED ||
+                        errorData.error === BlockchainErrorType.BLOCKCHAIN_NETWORK_ERROR
+                    )) {
+                        errorCtx.showError({
+                            error: errorData.error,
+                            message: errorData.message,
+                            contract_id: errorData.contract_id,
+                            transaction_hash: errorData.transaction_hash,
+                            timestamp: Date.now()
+                        });
+                    }
+                }
+
                 return Promise.reject(error);
             }
         );
@@ -56,7 +82,7 @@ export const useApi = () => {
         return () => {
             axios.interceptors.response.eject(responseInterceptor);
         };
-    }, [navigate]);
+    }, [navigate, errorCtx]);
 
     const callGetDownloadFile = <T extends object, R>(path: string, queryParams: T, extraHeaders: object = {}): Promise<AxiosResponse<R>|AxiosError> => {
         let headers: Headers = prepareHeaders(HttpMethod.GET, false);

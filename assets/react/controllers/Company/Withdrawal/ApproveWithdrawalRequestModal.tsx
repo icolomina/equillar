@@ -41,7 +41,10 @@ export default function ApproveWithdrawalRequestModal(props: ApproveWithdrawalMo
 
                 setApprovingWithdrawal(false);
             }
-        )
+        ).catch(() => {
+            setApprovingWithdrawal(false);
+            handleCloseOnSuccess();
+        })
     }
 
 

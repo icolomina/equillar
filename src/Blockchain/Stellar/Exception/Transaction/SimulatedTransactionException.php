@@ -7,6 +7,7 @@
 */
 namespace App\Blockchain\Stellar\Exception\Transaction;
 
+use App\Domain\Contract\ContractError;
 use Soneso\StellarSDK\Soroban\Responses\SimulateTransactionResponse;
 
 class SimulatedTransactionException extends \RuntimeException implements TransactionExceptionInterface
@@ -37,11 +38,8 @@ class SimulatedTransactionException extends \RuntimeException implements Transac
 
     public function getError(): string
     {
-        return match (true) {
-            $this->simulateTransactionResponse->resultError => $this->simulateTransactionResponse->resultError,
-            $this->simulateTransactionResponse->getError() && $this->simulateTransactionResponse->getError()->message => $this->simulateTransactionResponse->getError()->message,
-            default => 'Unknown error',
-        };
+        $contractError = $this->getContractError();
+        return $contractError?->getMessage() ?? 'Unknown error';
     }
 
     public function getFailureLedger(): int
@@ -57,5 +55,27 @@ class SimulatedTransactionException extends \RuntimeException implements Transac
     public function getCreatedAt(): ?string
     {
         return null;
+    }
+
+    private function getContractError(): ?ContractError
+    {
+        $rawError = match (true) {
+            !empty($this->simulateTransactionResponse->resultError) => $this->simulateTransactionResponse->resultError,
+            $this->hasErrorMessage() => $this->simulateTransactionResponse->getError()->message,
+            $this->hasErrorData() => json_encode($this->simulateTransactionResponse->getError()->data),
+            default => null,
+        };
+
+        return (is_null($rawError)) ? null : ContractError::fromRawError($rawError);
+    }
+
+    private function hasErrorMessage(): bool
+    {
+        return $this->simulateTransactionResponse->getError() && $this->simulateTransactionResponse->getError()->message;
+    }
+
+    private function hasErrorData(): bool
+    {
+        return $this->simulateTransactionResponse->getError() && $this->simulateTransactionResponse->getError()->data;
     }
 }

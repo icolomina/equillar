@@ -2,7 +2,7 @@
 
 This roadmap outlines the planned evolution and improvements for the Equillar platform. These are indicative goals and priorities that may be adjusted based on community feedback, technical discoveries, and changing requirements.
 
-## ⚠️ Important Disclaimer
+## Important Disclaimer
 
 **This roadmap is non-binding and purely indicative.** It represents our current intentions and aspirations for the project but does not constitute any commitment, promise, or guarantee. Features, timelines, and priorities may change without notice based on:
 
@@ -17,20 +17,12 @@ This roadmap outlines the planned evolution and improvements for the Equillar pl
 
 - Create user / company / admin register form.
 - Create a "User settings" section.
-- Add "View in Stellar Explorer" button to the lists where it is missing.
+- Add "View in Stellar Explorer" button to the lists where it is missing (DOING).
 - Add the transaction hash in the user contract information page. (DONE)
 
 ## 🚀 Medium Term (5-10 months)
 
-- Add configurable 2FA Authetication 
 - Create and deploy a demo app
-
-## 🌟 Long Term (10+ months)
-
-- Research reputable audit firms in the Stellar/Soroban ecosystem
-- Cost-benefit analysis of contract auditing
-- Technical feasibility study for hybrid custody models
-
 
 ## 📋 Ongoing Priorities
 
@@ -42,7 +34,6 @@ Throughout all phases, we will continue to focus on:
 - **Documentation**: Comprehensive guides, API documentation, and tutorials
 - **Performance optimization**: Database queries, frontend rendering, and blockchain interactions
 - **Security**: Regular security reviews and vulnerability assessments
-- **Compliance**: Staying updated with financial regulations and blockchain governance
 - **Updates & Upgrades**: Continuosly updates with the last PHP and Symfony versions with the last Soroban SDK versions. Also upgrade to the last React and frontend components versions. This also includes upgrades and revisions of the Soroban Contract so that it is continously improved and adapted to the last Stellar protocol upgrades.
 
 ## 🤝 Community Contribution
@@ -59,4 +50,4 @@ We will try to regularly update this roadmap to reflect:
 
 ---
 
-**Last Updated**: October 2025  
+**Last Updated**: November 2025  

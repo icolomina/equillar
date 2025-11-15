@@ -28,6 +28,8 @@ The authors, contributors, and maintainers expressly disclaim all liability for 
 - Regulatory enforcement or penalties
 - Any other direct, indirect, incidental, or consequential damages
 
+**Note:** Production deployments require, but are not limited to: comprehensive code and security audits, penetration testing, legal and regulatory compliance review, professional financial and legal consultation, proper key management infrastructure, and ongoing security monitoring.
+
 ## Third-Party Components
 
 This project integrates with third-party services (Stellar network, Soroban testnet, wallet providers). Use of such services is subject to their respective terms and policies. The project authors are not responsible for third-party service behavior or availability.

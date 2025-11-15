@@ -1,53 +1,148 @@
 
-[![CI](https://github.com/icolomina/equillar/actions/workflows/ci.yml/badge.svg)](https://github.com/icolomina/equillar/actions/workflows/ci.yml) [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0) [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/icolomina/equillar?include_prereleases)](https://github.com/icolomina/equillar/releases)
+[![CI](https://github.com/icolomina/equillar/actions/workflows/ci.yml/badge.svg)](https://github.com/icolomina/equillar/actions/workflows/ci.yml) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0) [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/icolomina/equillar?include_prereleases)](https://github.com/icolomina/equillar/releases)
 
 # Equillar
 
-Equillar is an open-source fintech application that enables companies and institutions to publish projects seeking funding, and allows investors to contribute capital using stablecoins issued on the [Stellar](https://stellar.org/) blockchain using [Soroban](https://stellar.org/soroban) contracts. 
-This application deploy the contracts on the [Soroban testnet](https://developers.stellar.org/docs/build/smart-contracts/getting-started/deploy-to-testnet) and those contrats manage balances, payments and returns.
+**Learn Blockchain Development with Open Source**
 
-Equillar is not offered as a deployed SaaS service. It provides a technology stack that organizations and developers can use as the foundation for their own applications.
+An open-source platform powered by PHP, Symfony, React, and Soroban smart contracts. Learn blockchain development with ready-to-run local code, or use it as a technical foundation for your organization to build upon.
 
-![Equillar capital contributon](docs/images/equillar_short_capital_contribution_optimized.gif)
+![Equillar capital contribution](docs/images/equillar_short_capital_contribution_optimized.gif)
+
+# What is Equillar?
+
+Equillar is a complete, open-source blockchain application that serves dual purposes:
+
+1. **Educational Resource**: Learn how to build real-world blockchain applications by exploring, running, and modifying working code
+2. **Technical Foundation**: Use it as a starting point for prototyping and experimenting with blockchain-based solutions in a local/test environment
+
+Built as an investment platform on the [Stellar](https://stellar.org/) blockchain using [Soroban](https://stellar.org/soroban) smart contracts, Equillar demonstrates how to integrate distributed ledger technology with modern web applications. All contracts are deployed on the [Soroban testnet](https://developers.stellar.org/docs/build/smart-contracts/getting-started/deploy-to-testnet), making it perfect for learning and experimentation.
+
+> **⚠️ Important**: Equillar is designed for education and prototyping, not for production use. It provides a tech stack for learning and building blockchain applications in controlled environments.
 
 # License
 
-This project is licensed under the Mozilla Public License 2.0 (MPL‑2.0). See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See the [LICENSE](./LICENSE) file for details.
 
-# Value proposition
+# Why Equillar?
 
-Equillar provides a complete open-source fintech platform for collaborative investment, designed for companies and institutions seeking funding, and for investors who want to contribute capital using stablecoins on the Stellar blockchain via Soroban smart contracts.
+## For Learning Blockchain Development
 
-## Key features and benefits
+- **Complete, working codebase**: Explore a full-stack application integrating blockchain technology from end to end
+- **Smart contract integration**: Learn how to interact with Soroban contracts from a web application
+- **Modern tech stack**: Experience real-world development with PHP/Symfony, React/TypeScript, and blockchain technology
+- **Hands-on experimentation**: Run locally with Docker, modify code, and see results immediately
+- **Well-documented**: Clear folder structures and comprehensive documentation to guide your learning journey
 
-- **End-to-end application:** Includes both backend (Symfony + PHP) and frontend (React + Typescript) codebases, ready to install and test.
-- **Soroban smart contract integration:** Investment logic is managed by Soroban contracts deployed on the Stellar Testnet. The contract code is also hosted on Github with clear instructions for installing and testing it. 
-- **Modern technology stack:** Uses PostgreSQL, Symfony UX, Webpack Encore, Material UI, and modular React architecture for scalability and maintainability.
-- **Ready-to-use demo:** Quick local setup with Docker Compose; test the platform and explore its features without code changes.
-- **Comprehensive dashboard:** Manage projects, investments, and returns with a user-friendly interface. Includes company and investor flows, project creation, and capital management.
-- **Freigther wallet support:** Tested with Freigther wallet for Soroban contract interactions.
-- **Clear folder structure:** Well-documented backend and frontend organization for easy navigation and extension.
-- **Extensible and customizable:** Fork, modify, and extend both the application and smart contracts to fit your business needs.
-- **Community-driven:** Open to contributions, with guidelines and support for developers.
+## As a Technical Foundation
 
-Whether you want to run a demo, integrate with your systems, or build on top of Equillar, this project gives you a robust foundation for blockchain-based investment management.
+- **Ready-to-fork**: Clone and customize for your organization's specific prototyping needs
+- **End-to-end architecture**: Backend (Symfony + PHP) and frontend (React + TypeScript) fully integrated
+- **Extensible design**: Modular architecture makes it easy to add features or modify existing ones
+- **Test environment**: Safe testnet deployment for experimenting with blockchain features
+- **Real implementation patterns**: Learn from production-quality code organization and best practices
 
-# Table of Contents
+## Key Features to Explore
 
-- [Installation](docs/installation.md)
-- [Soroban Contract](docs/contract.md)
-- [Freigther Wallet](docs/freigther-wallet.md)
-- [Exploring the Dashboard](docs/exploring_the_dashboard.md)
-- [Tech Stack](docs/tech-stack.md)
-- [Backend Folder Structure](docs/backend-folder-structure.md)
-- [Frontend Folder Structure](docs/frontend-folder-structure.md)
+- **Blockchain wallet integration**: See how Freighter wallet connects to Soroban contracts
+- **Transaction handling**: Learn how to simulate, sign, and submit blockchain transactions
+- **Smart contract interaction**: Understand contract deployment, invocation, and error handling
+- **Modern UI/UX**: Material UI components and React patterns for blockchain applications
+- **Database integration**: See how blockchain data syncs with traditional databases (PostgreSQL)
+- **User flows**: Complete investor and company dashboards demonstrating real-world scenarios
 
-# How to contribute
+# What You'll Learn
 
-We welcome contributions from the community. Please read our [CONTRIBUTING guidelines](CONTRIBUTING.md) before submitting issues or pull requests.
+Through Equillar's investment platform example, you'll discover:
 
-# Contact
+- How to integrate smart contracts with web applications
+- Blockchain transaction lifecycle management
+- Wallet connectivity and user authentication
+- Handling contract errors and edge cases
+- State management between blockchain and traditional databases
+- Building user interfaces for blockchain interactions
+- Testing blockchain applications locally
 
-For questions or support, you can:
-- Open an [issue](https://github.com/icolomina/equillar/issues) for bugs or feature requests
-- Start a [discussion](https://github.com/icolomina/equillar/discussions) for general questions or ideas
+# Technology Stack
+
+- **Backend**: PHP 8.3+, Symfony 7.x
+- **Frontend**: React 18+, TypeScript, Material UI
+- **Blockchain**: Stellar, Soroban smart contracts (Rust)
+- **Database**: PostgreSQL
+- **Build Tools**: Webpack Encore, Symfony UX
+- **Deployment**: Docker Compose
+
+See the full [Tech Stack](docs/tech-stack.md) documentation for details.
+
+# Quick Start
+
+Get Equillar running locally in minutes:
+
+```bash
+# Clone the repository
+git clone https://github.com/icolomina/equillar.git
+cd equillar
+
+# Start with Docker Compose
+docker-compose up -d
+
+# Install dependencies and set up the database
+# (See full installation guide for details)
+```
+
+For complete installation instructions, see the [Installation Guide](docs/installation.md).
+
+# Documentation
+
+- [Installation](docs/installation.md) - Complete setup guide
+- [Soroban Contract](docs/contract.md) - Understanding the smart contracts
+- [Freighter Wallet](docs/freigther-wallet.md) - Wallet integration guide
+- [Exploring the Dashboard](docs/exploring_the_dashboard.md) - Platform features walkthrough
+- [Tech Stack](docs/tech-stack.md) - Technology overview
+- [Backend Folder Structure](docs/backend-folder-structure.md) - Backend code organization
+- [Frontend Folder Structure](docs/frontend-folder-structure.md) - Frontend code organization
+- [Handling Contract Errors](docs/handling-contract-errors.md) - Error management patterns
+
+# Use Cases
+
+## For Students and Developers
+- Learn blockchain development with a complete, working example
+- Understand smart contract integration patterns
+- Experiment with blockchain features in a safe environment
+- Build your portfolio with blockchain projects
+
+## For Organizations
+- Prototype blockchain solutions quickly
+- Evaluate Stellar/Soroban technology for your use case
+- Use as a foundation for hackathons or internal projects
+- Train your team on blockchain development
+
+## For Educators
+- Teaching material for blockchain courses
+- Real-world example for technical workshops
+- Reference implementation for blockchain concepts
+
+# Contributing
+
+We welcome contributions from the community! Whether you're:
+- Fixing bugs or improving documentation
+- Adding new features or examples
+- Suggesting improvements to the learning materials
+- Sharing how you've used Equillar in your projects
+
+Please read our [CONTRIBUTING guidelines](CONTRIBUTING.md) before submitting issues or pull requests.
+
+# Community & Support
+
+For questions, ideas, or support:
+- **Issues**: Report bugs or request features via [GitHub Issues](https://github.com/icolomina/equillar/issues)
+- **Discussions**: Ask questions or share ideas in [GitHub Discussions](https://github.com/icolomina/equillar/discussions)
+- **Learning**: Check our documentation and explore the code
+
+# Roadmap
+
+See our [ROADMAP](ROADMAP.md) for planned features and improvements.
+
+---
+
+**Start your blockchain development journey today!** Clone Equillar, explore the code, and learn by doing.

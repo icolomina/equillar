@@ -1,3 +1,7 @@
+// Copyright 2025 The Equillar Authors. All rights reserved.
+// Use of this source code is governed by a license that can be
+// found in the LICENSE file.
+
 export const GetContractsPath = '/api/v1/contract/get-issuer-contracts' ;
 export const GetAvailableContractsPath = '/api/v1/contract/get-available-contracts';
 export const CreateContractInvestmentPath = '/api/v1/contract/create-contract';

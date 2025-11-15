@@ -1,8 +1,7 @@
 <?php
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
- * If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
+// Copyright 2025 The Equillar Authors. All rights reserved.
+// Use of this source code is governed by a license that can be
+// found in the LICENSE file.
 
 namespace App\Application\Contract\Service;
 

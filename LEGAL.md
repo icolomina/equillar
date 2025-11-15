@@ -12,14 +12,6 @@ This project provides open-source code to help developers learn how to build blo
 - Soroban **testnet** deployments only
 - Prototyping and experimentation in controlled settings
 
-**This software is NOT:**
-- Ready for production or mainnet deployment
-- Audited for security vulnerabilities
-- Compliant with financial regulations
-- Suitable for handling real assets or value
-
-Deployment to mainnet or use in production environments is **strongly discouraged** and done entirely at your own risk.
-
 ## No Financial, Legal, or Regulatory Advice
 
 This repository does not constitute financial, legal, tax, or investment advice. The example investment platform is for educational demonstration only and should not be used for actual financial services. Any organization considering blockchain solutions for production use must obtain independent legal, tax, regulatory, and security advice from qualified professionals.

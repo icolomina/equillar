@@ -18,7 +18,7 @@ Equillar is a complete, open-source blockchain application that serves dual purp
 
 Built as an investment platform on the [Stellar](https://stellar.org/) blockchain using [Soroban](https://stellar.org/soroban) smart contracts, Equillar demonstrates how to integrate distributed ledger technology with modern web applications. All contracts are deployed on the [Soroban testnet](https://developers.stellar.org/docs/build/smart-contracts/getting-started/deploy-to-testnet), making it perfect for learning and experimentation.
 
-> **⚠️ Important**: Equillar is designed for education and prototyping, not for production use. It provides a tech stack for learning and building blockchain applications in controlled environments.
+> **Important**: Equillar is designed for education and prototyping, not for production use. It provides a tech stack for learning and building blockchain applications in controlled environments. Read the [LEGAL](./LEGAL.md) advice for more info.
 
 # License
 

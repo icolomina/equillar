@@ -6,7 +6,7 @@ This project provides open-source code to help developers learn how to build blo
 
 ## Educational and Test Environment Only
 
-**⚠️ CRITICAL: This software is designed exclusively for:**
+**This software is designed exclusively for:**
 - Educational purposes and learning blockchain development
 - Local development and testing environments
 - Soroban **testnet** deployments only

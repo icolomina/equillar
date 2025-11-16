@@ -72,36 +72,11 @@ Through Equillar's investment platform example, you'll discover:
 - **Build Tools**: Webpack Encore, Symfony UX
 - **Deployment**: Docker Compose
 
-See the full [Tech Stack](docs/tech-stack.md) documentation for details.
+See the full [Tech Stack](https://docs.equillar.com/category/tech-stack) documentation for details.
 
-# Quick Start
+# Quick Start and Docs
 
-Get Equillar running locally in minutes:
-
-```bash
-# Clone the repository
-git clone https://github.com/icolomina/equillar.git
-cd equillar
-
-# Start with Docker Compose
-docker-compose up -d
-
-# Install dependencies and set up the database
-# (See full installation guide for details)
-```
-
-For complete installation instructions, see the [Installation Guide](docs/installation.md).
-
-# Documentation
-
-- [Installation](docs/installation.md) - Complete setup guide
-- [Soroban Contract](docs/contract.md) - Understanding the smart contracts
-- [Freighter Wallet](docs/freigther-wallet.md) - Wallet integration guide
-- [Exploring the Dashboard](docs/exploring_the_dashboard.md) - Platform features walkthrough
-- [Tech Stack](docs/tech-stack.md) - Technology overview
-- [Backend Folder Structure](docs/backend-folder-structure.md) - Backend code organization
-- [Frontend Folder Structure](docs/frontend-folder-structure.md) - Frontend code organization
-- [Handling Contract Errors](docs/handling-contract-errors.md) - Error management patterns
+Visit the Equillar [docs](https://docs.equillar.com) site to start and learn
 
 # Use Cases
 

@@ -1,51 +1,52 @@
-## Disclaimer and Legal Notice
+## About This Project
 
-**Equillar is an educational and prototyping platform designed for learning blockchain development and experimentation in controlled test environments. It is NOT intended for production use, mainnet deployment, or handling real financial transactions.**
+**Equillar is an educational platform designed for learning blockchain development with Stellar/Soroban smart contracts.**
 
-This project provides open-source code to help developers learn how to build blockchain applications using Stellar/Soroban smart contracts, and serves as a technical foundation for organizations to prototype and experiment with blockchain technology.
+This project serves as:
+- A learning resource for blockchain development
+- A foundation for prototyping and experimentation
+- A technical reference for building with Soroban
 
-## Educational and Test Environment Only
+**Important:** This software is intended exclusively for testnet environments. It is not designed, tested, or secured for production use or mainnet deployment.
 
-**This software is designed exclusively for:**
-- Educational purposes and learning blockchain development
-- Local development and testing environments
-- Soroban **testnet** deployments only
-- Prototyping and experimentation in controlled settings
+## Scope and Purpose
 
-## No Financial, Legal, or Regulatory Advice
+This codebase demonstrates:
+- Integration with Stellar blockchain and Soroban smart contracts
+- Full-stack development with Symfony and React
+- Wallet connectivity and transaction handling
+- Basic investment contract interactions
 
-This repository does not constitute financial, legal, tax, or investment advice. The example investment platform is for educational demonstration only and should not be used for actual financial services. Any organization considering blockchain solutions for production use must obtain independent legal, tax, regulatory, and security advice from qualified professionals.
+Use this project to learn, experiment, and build prototypes in safe test environments.
 
-## No Warranty - Use at Your Own Risk
+## Production Use
 
-This software is provided "AS IS", without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, security, or non-infringement. 
+**This software is not ready for production environments or mainnet deployment.**
 
-The authors, contributors, and maintainers expressly disclaim all liability for any damages arising from the use of this software, including but not limited to:
+If you plan to adapt this code for real-world use, you are responsible for (but not limited to):
+- Comprehensive security, code audits, and penetration testing
+- Legal and regulatory compliance in your jurisdiction
+- Professional review of smart contracts and backend systems
+- Proper key management, monitoring, and operational procedures
 
-- Loss of funds or cryptocurrencies
-- Security breaches or vulnerabilities
-- Smart contract bugs or malfunctions
-- Regulatory enforcement or penalties
-- Any other direct, indirect, incidental, or consequential damages
+For details on warranty disclaimers and liability limitations, refer to the [LICENSE](./LICENSE) file (AGPL-3.0, sections 15 and 16).
 
-**Note:** Production deployments require, but are not limited to: comprehensive code and security audits, penetration testing, legal and regulatory compliance review, professional financial and legal consultation, proper key management infrastructure, and ongoing security monitoring.
+## Third-Party Services
 
-## Third-Party Components
-
-This project integrates with third-party services (Stellar network, Soroban testnet, wallet providers). Use of such services is subject to their respective terms and policies. The project authors are not responsible for third-party service behavior or availability.
+This project integrates with external services (Stellar network, Soroban testnet, wallet providers). Use of these services is subject to their respective terms and policies.
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See the [LICENSE](./LICENSE) file for full details.
 
-Under AGPL-3.0, if you modify this software and make it available as a network service, you must make your modified source code available to users of that service.
+**Key requirement:** If you modify this software and make it available as a network service, you must make your modified source code available to users of that service.
 
 ## Contact
 
-For questions about this project, contributions, or security issues:
-- Open an [issue](https://github.com/icolomina/equillar/issues) for bugs or feature requests
-- Start a [discussion](https://github.com/icolomina/equillar/discussions) for questions or ideas
+- Report bugs or request features: [GitHub Issues](https://github.com/icolomina/equillar/issues)
+- Ask questions or share ideas: [GitHub Discussions](https://github.com/icolomina/equillar/discussions)
 
 ---
 
-Last updated: 2025-11-15
+Last updated: 2025-11-16
+

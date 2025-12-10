@@ -7,7 +7,10 @@ namespace App\Blockchain\Stellar\Account;
 
 use App\Application\SystemWallet\Service\RetrieveSystemWalletService;
 use App\Domain\Crypt\Service\CryptedValueEncryptor;
+use App\Domain\Token\Service\TokenNormalizer;
+use App\Entity\Token;
 use Soneso\StellarSDK\Crypto\KeyPair;
+use Soneso\StellarSDK\MuxedAccount;
 use Soneso\StellarSDK\Network;
 use Soneso\StellarSDK\Responses\Account\AccountResponse;
 use Soneso\StellarSDK\StellarSDK;
@@ -24,6 +27,7 @@ class StellarAccountLoader
     public function __construct(
         private readonly RetrieveSystemWalletService $retrieveSystemWalletService,
         private readonly CryptedValueEncryptor $cryptedValueEncryptor,
+        private readonly TokenNormalizer $tokenNormalizer
     ) {
         $this->load();
     }
@@ -41,6 +45,46 @@ class StellarAccountLoader
 
         $this->network = ($systemWalletData->isTest) ? Network::testnet() : Network::public();
         $this->account = $this->sdk->requestAccount($this->keyPair->getAccountId());
+    }
+
+    public function getTokenBalance(Token $token): float 
+    {
+        $assetBalance = 0;
+        $balances = $this->account->getBalances();
+
+        if($balances->count() === 0) {
+            return $assetBalance;
+        }
+
+        $balances->rewind();
+        $found = false;
+
+        while($balances->valid() && !$found ) {
+            $currentBalance = $balances->current();
+
+            if($currentBalance->getAssetCode() === $token->getCode() && $currentBalance->getAssetIssuer() === $token->getIssuerAddress()) {
+                $assetBalance = ((float)$currentBalance->getBalance() == 0) 
+                    ? 0 
+                    : $this->tokenNormalizer
+                        ->normalizeTokenValue($currentBalance->getBalance(), $token->getDecimals())
+                        ->toPhp($token->getDecimals())
+                ;
+
+                $found = true;
+            }
+
+            $balances->next();
+        }
+        
+        return $assetBalance;
+    }
+
+    /**
+     * Muxed ID is mandatory so the account returned should be 'M .....'
+     */
+    public function generateMuxedAccount(int $muxedId): string
+    {
+        return (new MuxedAccount($this->account->getAccountId(), $muxedId))->getAccountId();
     }
 
     public function getKeyPair(): KeyPair

@@ -5,13 +5,13 @@
 import { Box, Button, CircularProgress, Modal, Typography } from "@mui/material";
 import { Fragment } from "react/jsx-runtime";
 import { useApi } from "../../hooks/ApiHook";
+import { useApiRoutes } from "../../hooks/ApiRoutesHook";
 import { useEffect, useState } from "react";
-import { ApproveContractPath } from "../../services/Api/Investment/ApiRoutes";
-import { sprintf } from "sprintf-js";
 
 export default function ApproveContractModal({ openApproveModal, handleModalClose, handleApprovalFinished, contractToApprove }) {
 
     const { callPatch } = useApi();
+    const apiRoutes = useApiRoutes();
 
     const [approving, setApproving] = useState<boolean>(false);
     const [approved, setApproved] = useState<boolean>(false);
@@ -44,7 +44,7 @@ export default function ApproveContractModal({ openApproveModal, handleModalClos
     const handleApprove = () => {
         const contractId = contractToApprove.id;
         setApproving(true);
-        callPatch(sprintf(ApproveContractPath, contractId), {}).then(
+        callPatch(apiRoutes.approveContract(contractId), {}).then(
             async () => {
                 setApproving(false);
                 setApproved(true);

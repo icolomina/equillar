@@ -9,9 +9,9 @@ use App\Domain\I128;
 
 class TokenNormalizer
 {
-    public function normalizeTokenValue(float|int $value, int $tokenDecimals): I128
+    public function normalizeTokenValue(string|float|int $value, int $tokenDecimals): I128
     {
-        $valueStr = (string) $value;
+        $valueStr = !is_string($value) ? (string) $value : $value;
         $fraction = '';
         $whole = $valueStr;
 

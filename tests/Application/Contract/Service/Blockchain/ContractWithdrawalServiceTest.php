@@ -95,7 +95,8 @@ class ContractWithdrawalServiceTest extends KernelTestCase
 
     private function loadContractWithdrawalRequest(): ContractWithdrawalRequest
     {
-        $issuer         = EntityGenerator::createIssuer();
+        $organization   = EntityGenerator::createOrganization();
+        $issuer         = EntityGenerator::createIssuer($organization);
         $token          = EntityGenerator::createToken();
         $investor       = EntityGenerator::createInvestor();
         $investorWallet = EntityGenerator::createUserWallet($investor);
@@ -104,6 +105,7 @@ class ContractWithdrawalServiceTest extends KernelTestCase
 
 
         $this->persistor->persistAndFlush([
+            $organization,
             $token,
             $issuer,
             $investor,

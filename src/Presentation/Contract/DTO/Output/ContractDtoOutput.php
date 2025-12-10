@@ -8,33 +8,34 @@ namespace App\Presentation\Contract\DTO\Output;
 
 use App\Presentation\Token\DTO\Output\TokenContractDtoOutput;
 
-class ContractDtoOutput
+readonly class ContractDtoOutput
 {
     public function __construct(
-        public readonly string $id,
-        public readonly ?string $address,
-        public readonly TokenContractDtoOutput $tokenContract,
-        public readonly float $rate,
-        public readonly string $createdAt,
-        public readonly ?string $initializedAt,
-        public readonly ?string $approvedAt,
-        public readonly ?string $lastPausedAt,
-        public readonly ?string $lastResumedAt,
-        public readonly bool $initialized,
-        public readonly string $issuer,
-        public readonly int $claimMonths,
-        public readonly string $label,
-        public readonly bool $fundsReached,
-        public readonly string $description,
-        public readonly string $shortDescription,
-        public readonly string $imageUrl,
-        public readonly ContractBalanceDtoOutput $contractBalance,
-        public readonly string $status,
-        public readonly float $goal,
-        public readonly float $minPerInvestment,
-        public readonly string $returnType,
-        public readonly int $returnMonths,
-        public readonly string $projectAddress,
+        public string $id,
+        public ?string $address,
+        public TokenContractDtoOutput $tokenContract,
+        public float $rate,
+        public string $createdAt,
+        public ?string $initializedAt,
+        public ?string $approvedAt,
+        public ?string $lastPausedAt,
+        public ?string $lastResumedAt,
+        public bool $initialized,
+        public string $issuer,
+        public int $claimMonths,
+        public string $label,
+        public bool $fundsReached,
+        public string $description,
+        public string $shortDescription,
+        public string $imageUrl,
+        public ContractBalanceDtoOutput $contractBalance,
+        public string $status,
+        public float $goal,
+        public float $minPerInvestment,
+        public string $returnType,
+        public int $returnMonths,
+        public string $projectAddress,
+        public ?string $muxedAccount = null
     ) {
     }
 }

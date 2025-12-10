@@ -129,12 +129,18 @@ export default function Header() {
           <AccountCircle />
         </IconButton>
         <Box sx={{ display: 'flex', flexDirection: 'column', ml: 1 }}>
-          <Typography variant="body1" fontWeight="bold">
-            {getUserData().name}
-          </Typography>
           <Typography variant="body2" color="text.secondary">
-            {getUserData().role_type}
+              {getUserData().name}
           </Typography>
+          {getUserData().organization.length > 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              {getUserData().organization} - {getUserData().role_type}
+            </Typography>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              {getUserData().role_type}
+            </Typography>
+          )}
         </Box>
       </MenuItem>
     </Menu>
@@ -199,9 +205,15 @@ export default function Header() {
               <Typography variant="body1" fontWeight="bold" sx={{ color: 'text.primary' }}>
                 {getUserData().name}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {getUserData().role_type}
-              </Typography>
+              {getUserData().organization.length > 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  {getUserData().organization} - {getUserData().role_type}
+                </Typography>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  {getUserData().role_type}
+                </Typography>
+              )}
             </Box>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>

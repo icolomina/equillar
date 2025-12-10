@@ -39,6 +39,7 @@ export const useAuth = () => {
     const getUserData = () => {
       return {
         name: localStorage.getItem('name'),
+        organization: localStorage.getItem('organization'),
         role_type: localStorage.getItem('role_type')
       }
     }

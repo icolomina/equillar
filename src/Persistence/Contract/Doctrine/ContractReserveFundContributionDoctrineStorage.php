@@ -40,6 +40,11 @@ class ContractReserveFundContributionDoctrineStorage extends AbstractDoctrineSto
         return $this->em->getRepository(ContractReserveFundContribution::class)->findReserveFundContributionsByIssuer($user);
     }
 
+    public function getByPaymentTransactionHash(string $paymentTransactionHash): ?ContractReserveFundContribution
+    {
+        return $this->em->getRepository(ContractReserveFundContribution::class)->findOneBy(['receivedTransactionHash' => $paymentTransactionHash]);
+    }
+
     public function getAll(): array
     {
         return $this->em->getRepository(ContractReserveFundContribution::class)->findAll();

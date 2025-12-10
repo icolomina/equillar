@@ -5,7 +5,7 @@
 import { Fragment } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../../hooks/ApiHook';
-import { GetAvailableTokens } from '../../services/Api/Investment/ApiRoutes';
+import { useApiRoutes } from '../../hooks/ApiRoutesHook';
 import { Backdrop, Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import PageListWrapper from '../Miscelanea/Wrapper/PageListWrapper';
@@ -15,11 +15,12 @@ import { Token } from '../../model/token';
 export default function TokenList() {
 
     const { callGet } = useApi();
+    const apiRoutes = useApiRoutes();
 
     const query = useQuery({
         queryKey: ['availableTokens'],
         queryFn: async () => {
-            const result: AxiosResponse<Token[]>|AxiosError = await callGet<object, Token[]>(GetAvailableTokens, {});
+            const result: AxiosResponse<Token[]>|AxiosError = await callGet<object, Token[]>(apiRoutes.getAvailableTokens, {});
             if(!axios.isAxiosError(result)) {
                 return result.data;
             }

@@ -7,11 +7,13 @@ namespace App\Application\Contract\Service\Blockchain;
 
 use App\Application\Contract\Transformer\ContractEntityTransformer;
 use App\Application\Contract\Transformer\ContractTransactionEntityTransformer;
+use App\Blockchain\Stellar\Account\StellarAccountLoader;
 use App\Blockchain\Stellar\Exception\Transaction\TransactionExceptionInterface;
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\ContractActivationOperation;
 use App\Domain\Contract\ContractFunctions;
 use App\Domain\Contract\ContractNames;
 use App\Domain\Contract\Exception\ContractExecutionFailedException;
+use App\Domain\Contract\Service\ContractMuxedIdGenerator;
 use App\Entity\Contract\Contract;
 use App\Persistence\PersistorInterface;
 
@@ -21,7 +23,9 @@ class ContractActivationService
         private readonly ContractActivationOperation $contractActivationOperation,
         private readonly ContractTransactionEntityTransformer $contractTransactionEntityTransformer,
         private readonly ContractEntityTransformer $contractEntityTransformer,
-        private readonly PersistorInterface $persistor
+        private readonly PersistorInterface $persistor,
+        private readonly StellarAccountLoader $stellarAccountLoader,
+        private readonly ContractMuxedIdGenerator $contractMuxedIdGenerator
     ) {
     }
 
@@ -44,6 +48,11 @@ class ContractActivationService
             $this->contractEntityTransformer->updateContractAsActive($contract, $contractAddress, $contractTransaction);
             $this->persistor->persistAndFlush([$contractTransaction, $contract]);
 
+            $muxedId      = $this->contractMuxedIdGenerator->generateMuxedId($contract);
+            $muxedAccount = $this->stellarAccountLoader->generateMuxedAccount($muxedId);
+
+            $this->contractEntityTransformer->updateContractWithMuxedAccount($contract, $muxedAccount, $muxedId);
+            $this->persistor->persistAndFlush([$contractTransaction, $contract]);
         } 
         catch (TransactionExceptionInterface $ex) {
             $contractTransaction = $this->contractTransactionEntityTransformer->fromFailedTransaction(

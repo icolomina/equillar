@@ -23,6 +23,8 @@ interface ContractReserveFundContributionStorageInterface
      */
     public function getByContract(Contract $contract): array;
 
+    public function getByPaymentTransactionHash(string $paymentTransactionHash): ?ContractReserveFundContribution;
+
     /**
      * @return ContractReserveFundContribution[]
      */

@@ -23,15 +23,16 @@ class ContractReserveFundContributionTransformer
     ) {
     }
 
-    public function fromAmountAndUserToEntity(User $user, Contract $contract, float $amount): ContractReserveFundContribution
+    public function fromContractAndAmountToEntity(Contract $contract, string $paymentTrxHash, float $amount): ContractReserveFundContribution
     {
         $contractReserveFundContribution = new ContractReserveFundContribution();
-        $contractReserveFundContribution->setStatus(ContractReserveFundContributionStatus::CREATED->name);
+        $contractReserveFundContribution->setStatus(ContractReserveFundContributionStatus::RECEIVED->name);
         $contractReserveFundContribution->setCreatedAt(new \DateTimeImmutable());
+        $contractReserveFundContribution->setReceivedat(new \DateTimeImmutable());
         $contractReserveFundContribution->setAmount($amount);
-        $contractReserveFundContribution->setSourceUser($user);
         $contractReserveFundContribution->setUuid(Uuid::v4());
         $contractReserveFundContribution->setContract($contract);
+        $contractReserveFundContribution->setReceivedTransactionHash($paymentTrxHash);
 
         return $contractReserveFundContribution;
     }

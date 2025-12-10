@@ -38,6 +38,11 @@ class ContractDoctrineStorage extends AbstractDoctrineStorage implements Contrac
         return $this->em->getRepository(Contract::class)->findOneBy(['address' => $address]);
     }
 
+    public function getContractByMuxedAccount(string $muxedAccount): ?Contract
+    {
+        return $this->em->getRepository(Contract::class)->findOneBy(['muxedAccount' => $muxedAccount]);
+    }
+
     public function markContractAsInitalized(Contract $contract, string $contractAddress, string $projectAddress, int $returnType, int $returnMonths, int $minPerInvestment): void
     {
         $contract->setReturnMonths($returnMonths);

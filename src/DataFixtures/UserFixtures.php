@@ -5,33 +5,44 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Organization;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserFixtures extends Fixture
+class UserFixtures extends Fixture implements DependentFixtureInterface
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
     ) {
     }
 
+    public function getDependencies(): array
+    {
+        return [
+            OrganizationFixtures::class
+        ];
+    }
+
     public function load(ObjectManager $manager): void
     {
         $userCompany1 = new User();
         $userCompany1->setEmail('greencycle@company.com');
-        $userCompany1->setName('GreenCycle Inc');
+        $userCompany1->setName('Jorge Gimenez');
         $userCompany1->setCreatedAt(new \DateTimeImmutable());
         $userCompany1->setPassword($this->passwordHasher->hashPassword($userCompany1, 'company1'));
         $userCompany1->setRoles([User::ROLE_FINANCIAL_ENTITY]);
+        $userCompany1->setOrganization($this->getReference(OrganizationFixtures::ORG_GREENCYCLE, Organization::class));
 
         $userCompany2 = new User();
         $userCompany2->setEmail('medtech@company.com');
-        $userCompany2->setName('MedTech Solutions Ltd');
+        $userCompany2->setName('Ana López');
         $userCompany2->setCreatedAt(new \DateTimeImmutable());
         $userCompany2->setPassword($this->passwordHasher->hashPassword($userCompany2, 'company2'));
         $userCompany2->setRoles([User::ROLE_FINANCIAL_ENTITY]);
+        $userCompany2->setOrganization($this->getReference(OrganizationFixtures::ORG_MEDTECH, Organization::class));
 
         $userSaver1 = new User();
         $userSaver1->setEmail('peter.parker@investor.com');

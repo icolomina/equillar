@@ -6,7 +6,9 @@
 namespace App\Tests\Application\Contract\Service\Blockchain;
 
 use App\Application\Contract\Service\Blockchain\ContractActivationService;
+use App\Blockchain\Stellar\Account\StellarAccountLoader;
 use App\Blockchain\Stellar\Soroban\ScContract\Operation\ContractActivationOperation;
+use App\Domain\Contract\Service\ContractMuxedIdGenerator;
 use App\Entity\Contract\Contract;
 use App\Persistence\Contract\ContractStorageInterface;
 use App\Persistence\PersistorInterface;
@@ -22,6 +24,7 @@ class ContractActivationServiceTest extends KernelTestCase
     private ContainerInterface $container;
     private PersistorInterface $persistor;
     private ContractStorageInterface $contractStorage;
+    private ContractMuxedIdGenerator $contractMuxedIdGenerator;
 
     protected function setUp(): void
     {
@@ -31,6 +34,7 @@ class ContractActivationServiceTest extends KernelTestCase
         $this->container = static::getContainer(); 
         $this->persistor = $this->container->get('test.App\Persistence\PersistorInterface');
         $this->contractStorage = $this->container->get('test.App\Persistence\Contract\ContractStorageInterface');
+        $this->contractMuxedIdGenerator = $this->container->get('test.App\Domain\Contract\Service\ContractMuxedIdGenerator');
     }
 
     public function testCreateContractSuccess(): void
@@ -41,7 +45,14 @@ class ContractActivationServiceTest extends KernelTestCase
             ->getMock()
         ;
 
+        $stellarAccountLoaderStub = $this->getMockBuilder(StellarAccountLoader::class)
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
         $contractActivationOperationStub->method('activateContract')->willReturn($transactionResponseStub);
+        $stellarAccountLoaderStub->method('generateMuxedAccount')->willReturn('MAGTRFFFTSTSRFF');
+
 
         /**
          * @var ContractActivationService $contractActivationServiceStub
@@ -51,7 +62,9 @@ class ContractActivationServiceTest extends KernelTestCase
                 $contractActivationOperationStub,
                 $this->container->get('test.App\Application\Contract\Transformer\ContractTransactionEntityTransformer'),
                 $this->container->get('test.App\Application\Contract\Transformer\ContractEntityTransformer'),
-                $this->persistor
+                $this->persistor,
+                $stellarAccountLoaderStub,
+                $this->contractMuxedIdGenerator
             ])
             ->onlyMethods([])
             ->getMock()
@@ -76,7 +89,8 @@ class ContractActivationServiceTest extends KernelTestCase
 
     private function loadContract(): Contract
     {
-        $issuer         = EntityGenerator::createIssuer();
+        $organization   = EntityGenerator::createOrganization();
+        $issuer         = EntityGenerator::createIssuer($organization);
         $token          = EntityGenerator::createToken();
         $investor       = EntityGenerator::createInvestor();
         $investorWallet = EntityGenerator::createUserWallet($investor);
@@ -84,6 +98,7 @@ class ContractActivationServiceTest extends KernelTestCase
 
 
         $this->persistor->persistAndFlush([
+            $organization,
             $token,
             $issuer,
             $investor,

@@ -54,6 +54,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
     #[ORM\OneToMany(targetEntity: UserWallet::class, mappedBy: 'usr', orphanRemoval: true)]
     private Collection $userWallets;
 
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Organization $organization = null;
+
     public function __construct()
     {
         $this->contracts = new ArrayCollection();
@@ -221,5 +225,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
     public function isEqualTo(UserInterface $user): bool
     {
         return $user->getUserIdentifier() === $this->getUserIdentifier();
+    }
+
+    public function getOrganization(): ?Organization
+    {
+        return $this->organization;
+    }
+
+    public function setOrganization(?Organization $organization): static
+    {
+        $this->organization = $organization;
+
+        return $this;
     }
 }

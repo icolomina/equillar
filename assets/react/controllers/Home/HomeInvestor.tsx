@@ -4,7 +4,7 @@
 
 import { Fragment } from "react";
 import { useApi } from "../../hooks/ApiHook";
-import { GetAvailableContractsPath } from "../../services/Api/Investment/ApiRoutes";
+import { useApiRoutes } from "../../hooks/ApiRoutesHook";
 import {
   Backdrop,
   Box,
@@ -29,12 +29,13 @@ import { EmptyElementsBox } from "../Theme/Styled/Box";
 export default function HomeInvestor() {
   const { callGet } = useApi();
   const navigate = useNavigate();
+  const apiRoutes = useApiRoutes();
 
   const query = useQuery(
     {
       queryKey: ['get-user-available-contracts'],
       queryFn: async () => {
-        const result: AxiosResponse<ContractOutput[]> | AxiosError = await callGet<object, ContractOutput[]>(GetAvailableContractsPath, {});
+        const result: AxiosResponse<ContractOutput[]> | AxiosError = await callGet<object, ContractOutput[]>(apiRoutes.getAvailableContracts, {});
         if (!axios.isAxiosError(result)) {
           return result.data;
         }

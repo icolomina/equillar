@@ -4,10 +4,9 @@
 
 import { useNavigate, useParams } from "react-router-dom";
 import { useApi } from "../../hooks/ApiHook";
+import { useApiRoutes } from "../../hooks/ApiRoutesHook";
 import { Box, Button, CircularProgress, Divider, Grid2, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { EditContractPath, StartContractPath } from "../../services/Api/Investment/ApiRoutes";
-import { sprintf } from 'sprintf-js';
 import { AxiosResponse } from "axios";
 import { ContractOutput, ContractReturnTypes, returnTypes } from "../../model/contract";
 
@@ -20,6 +19,7 @@ interface FormData {
 
 export default function StartContract() {
     const { callGet, callPatch } = useApi();
+    const apiRoutes = useApiRoutes();
     const [loading, setLoading] = useState<boolean>(false);
     const [contract, setContract] = useState<ContractOutput>(null);
     const params = useParams();
@@ -45,7 +45,7 @@ export default function StartContract() {
 
     const handleSubmit = () => {
         setLoading(true);
-        callPatch(sprintf(StartContractPath, params.id), formData).then(
+        callPatch(apiRoutes.startContract(params.id), formData).then(
             () => {
                 setLoading(false);
                 return navigate('/app/home-company');
@@ -55,7 +55,7 @@ export default function StartContract() {
 
     useEffect(() => {
         setLoading(true);
-        callGet<object, ContractOutput>(sprintf(EditContractPath, params.id), {}).then(
+        callGet<object, ContractOutput>(apiRoutes.editContract(params.id), {}).then(
             (response: AxiosResponse) => {
                 console.log(response.data);
                 setContract(response.data);

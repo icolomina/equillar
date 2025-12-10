@@ -16,7 +16,6 @@ use App\Application\Contract\Service\Blockchain\ContractWithdrawalApprovalServic
 use App\Application\Contract\Service\Blockchain\CreateContractBalanceMovementService;
 use App\Application\Contract\Service\CreateContractService;
 use App\Application\Contract\Service\CreateContractWithdrawalRequestService;
-use App\Application\Contract\Service\CreateReserveFundContributionService;
 use App\Application\Contract\Service\EditContractService;
 use App\Application\Contract\Service\GetContractBalanceMovementsService;
 use App\Application\Contract\Service\GetContractDocumentService;
@@ -230,20 +229,6 @@ class ContractController extends AbstractController
         $user = $this->getUser();
 
         return $this->json($getContractReserveFundContributionsService->getReserveFundContributions($user));
-    }
-
-    #[Route('/{id}/request-reserve-fund-contribution', name: 'api_post_request_reserve_fund_contribution', methods: ['POST'])]
-    public function requestContractReserveContribution(Contract $contract, #[MapRequestPayload] CreateContractReserveFundContributionDtoInput $createContractReserveFundContributionDtoInput,
-        CreateReserveFundContributionService $createReserveFundContributionService): JsonResponse
-    {
-        $this->denyAccessUnlessGranted(ContractVoter::REQUEST_OPERATION, $contract);
-
-        /**
-         * @var User $user
-         */
-        $user = $this->getUser();
-
-        return $this->json($createReserveFundContributionService->createReserveFundContribution($contract, $createContractReserveFundContributionDtoInput, $user));
     }
 
     #[Route('/reserve-fund-contribution/{id}/check', name: 'api_patch_check_reserve_fund_contribution', methods: ['PATCH'])]

@@ -4,9 +4,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../../hooks/ApiHook";
+import { useApiRoutes } from "../../hooks/ApiRoutesHook";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { UserPortfolio } from "../../model/user";
-import { GetUserPortfolioPath } from "../../services/Api/Investment/ApiRoutes";
 import { Fragment } from "react/jsx-runtime";
 import { Backdrop, Box, Button, Card, CardContent, CardHeader, CircularProgress, Divider, Grid2, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,7 @@ import UserPortfolioResumeData from "./UserPortfolioResumeData";
 import UserPortfolioList from "./UserPortfolioList";
 
 export default function UserPortfolio() {
+    const apiRoutes = useApiRoutes();
 
     const cardStyle = {
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)', 
@@ -41,7 +42,7 @@ export default function UserPortfolio() {
         {
             queryKey: ['user-portfolio'],
             queryFn: async () => {
-                const result: AxiosResponse<UserPortfolio> | AxiosError = await callGet<object, UserPortfolio>(GetUserPortfolioPath, {});
+                const result: AxiosResponse<UserPortfolio> | AxiosError = await callGet<object, UserPortfolio>(apiRoutes.getUserPortfolio, {});
                 if (!axios.isAxiosError(result)) {
                     return result.data;
                 }

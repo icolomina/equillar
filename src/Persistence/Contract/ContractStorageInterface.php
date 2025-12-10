@@ -21,6 +21,8 @@ interface ContractStorageInterface
 
     public function getContractById(string|int $id): ?Contract;
 
+    public function getContractByMuxedAccount(string $muxedAccount): ?Contract;
+
     public function markContractAsInitalized(Contract $contract, string $contractAddress, string $projectAddress, int $returnType, int $returnMonths, int $minPerInvestment): void;
 
     public function markContractAsFundsReached(Contract $contract): void;

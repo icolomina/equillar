@@ -48,7 +48,11 @@ export default function ResumeContractInvestmentsModal({ openResumeInvesmentsMod
                 setResumimg(false);
                 setResumed(true);
             }
-        )
+        ).catch(
+            () => {
+                setResumimg(false);
+                setErrorResuming(true);
+            });
     }
 
     const handleCloseAndNotify = () => {

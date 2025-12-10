@@ -50,8 +50,6 @@ export default function HomeInvestor() {
     return navigate('/app/project/' + projectId + '/invest');
   }
 
-  const theme = useTheme();
-
   if (query.isLoading) {
     return (
       <Fragment>

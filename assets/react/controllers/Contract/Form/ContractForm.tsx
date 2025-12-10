@@ -8,9 +8,9 @@ import { useNavigate } from "react-router-dom";
 import { useApiRoutes } from "../../../hooks/ApiRoutesHook";
 import { useForm } from "react-hook-form";
 import { currenciesForSelector } from "../../../model/form";
-import { ContractOutput, returnTypes, getReturnType } from "../../../model/contract";
+import { ContractOutput, returnTypes } from "../../../model/contract";
 import { useEffect, useState } from "react";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 
 export interface FormValues {
     id?:  string|number;
@@ -126,7 +126,7 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
                         setError(validationErrors[field]['label'], { type: 'server', message: validationErrors[field]['msg'] });
                     });
                 } 
-            })
+            });
         }
 
     return (

@@ -4,7 +4,7 @@
 
 import { Wallet } from "@mui/icons-material"
 import { Box, Divider, Grid2, Typography } from "@mui/material"
-import { FC, Fragment } from "react"
+import { Fragment } from "react"
 
 export interface UserPortfolioResumeDataProps {
     title: string,

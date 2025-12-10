@@ -52,7 +52,6 @@ export default function ViewContract() {
     const [anchorElActions, setAnchorElActions] = useState<null | HTMLElement>(null);
     const openActionsMenu = Boolean(anchorElActions);
 
-    const [contract, setContract] = useState<ContractOutput>(null);
     const [pdfUrl, setPdfUrl] = useState<string>(null);
     const [openPdfModal, setOpenPdfModal] = useState<boolean>(false);
     const [downloadingPdf, setDownloadingPdf] = useState<boolean>(false);
@@ -525,7 +524,7 @@ export default function ViewContract() {
             >
                 <DialogTitle sx={{ padding: '16px 24px', borderBottom: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="h6" component="span" sx={{ fontWeight: 'bold' }}>Project document for: {contract?.label} </Typography>
+                        <Typography variant="h6" component="span" sx={{ fontWeight: 'bold' }}>Project document for: {query.data?.label} </Typography>
                         <IconButton edge="end" color="inherit" onClick={handleClosePdfModal} aria-label="close">
                             <CloseIcon />
                         </IconButton>

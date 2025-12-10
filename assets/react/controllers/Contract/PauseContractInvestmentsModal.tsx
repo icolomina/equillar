@@ -48,7 +48,10 @@ export default function PauseContractInvestmentsModal({ openPauseInvesmentsModal
                 setPausing(false);
                 setPaused(true);
             }
-        )
+        ).catch(() => {
+            setPausing(false);
+            setErrorPausing(true);
+        });
     }
 
     const handleCloseAndNotify = () => {

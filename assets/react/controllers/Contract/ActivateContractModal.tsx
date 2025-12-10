@@ -53,6 +53,8 @@ export default function ActivateContractModal({ openActivateModal, handleModalCl
                 (reason: any) => {
                     console.log(reason);
                     handleCloseAndNotify();
+                    setErrorActivating(true);
+                    setActivating(false);
                 }
             )
         ;

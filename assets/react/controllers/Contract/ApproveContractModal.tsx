@@ -49,7 +49,12 @@ export default function ApproveContractModal({ openApproveModal, handleModalClos
                 setApproving(false);
                 setApproved(true);
             }
-        )
+        ).catch(
+            () => {
+                setErrorApproving(true);
+                setApproving(false);
+            }
+        );
     }
 
     const handleCloseAndNotify = () => {

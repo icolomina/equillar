@@ -48,7 +48,7 @@ export const useContract = () => {
 
         const { address } = await wallet.getAddress();
         const account = await serverRef.current.getAccount(address);
-        const c = new Contract(contract.address)
+        const c = new Contract(contract.address);
         const amountScVal = new ScInt(parseAmount(amount, contract.tokenContract.decimals).toString()).toI128();
         const scAddress = new Address(address).toScVal();
 

@@ -21,7 +21,6 @@ interface ContractReserveFundCheckResult {
 export default function GetReserveFundsContributions() {
 
     const { callGet } = useApi();
-    const { isAdmin } = useAuth();
     const routes = useApiRoutes();
 
     const [selectedContractReserveFundForTrxInfo, setSelectedContractReserveFundForTrxInfo] = useState<ContractReserveFund>(null);

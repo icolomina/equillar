@@ -17,9 +17,7 @@ use App\Entity\Token;
 use App\Entity\User;
 use App\Presentation\Contract\DTO\Input\CreateContractDto;
 use App\Presentation\Contract\DTO\Output\ContractDtoOutput;
-use Soneso\StellarSDK\Account;
 use Soneso\StellarSDK\Crypto\StrKey;
-use Soneso\StellarSDK\MuxedAccount;
 
 class ContractEntityTransformer
 {
@@ -49,7 +47,7 @@ class ContractEntityTransformer
             $contract->getLastPausedAt()?->format(DateFormats::OUTPUT_DATE_FORMAT->value),
             $contract->getLastResumedAt()?->format(DateFormats::OUTPUT_DATE_FORMAT->value),
             $contract->isInitialized(),
-            $contract->getIssuer()->getName(),
+            $contract->getIssuer()->getOrganization()->getName(),
             $contract->getClaimMonths(),
             $contract->getLabel(),
             $contract->isFundsReached(),

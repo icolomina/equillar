@@ -2,17 +2,14 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { useApi } from "../../hooks/ApiHook";
 import { useApiRoutes } from "../../hooks/ApiRoutesHook";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Backdrop, Box, Button, CircularProgress, IconButton, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/AuthHook";
 import { useQuery } from "@tanstack/react-query";
 import { ContractOutput } from "../../model/contract";
-import { MoreVert } from "@mui/icons-material";
-import ApproveContractModal from "../Contract/ApproveContractModal";
 import PageListWrapper from "../Miscelanea/Wrapper/PageListWrapper";
 import { getStatusColor } from "../Miscelanea/Utils/ContractStatus";
 import { formatCurrencyFromValueAndTokenContract } from "../../utils/currency";

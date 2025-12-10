@@ -8,7 +8,7 @@ import { useApiRoutes } from "../../hooks/ApiRoutesHook";
 import { Box, Button, CircularProgress, Divider, Grid2, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
-import { ContractOutput, ContractReturnTypes, returnTypes } from "../../model/contract";
+import { ContractOutput, returnTypes } from "../../model/contract";
 
 interface FormData {
     projectAddress: string,

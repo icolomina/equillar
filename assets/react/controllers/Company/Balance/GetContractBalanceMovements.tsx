@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../../../hooks/ApiHook";
 import { useApiRoutes } from "../../../hooks/ApiRoutesHook";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { ContractBalanceMovement, ContractReserveFund } from "../../../model/contract";
+import { ContractBalanceMovement } from "../../../model/contract";
 import { Fragment } from "react/jsx-runtime";
 import { Backdrop, Box, Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import PageListWrapper from "../../Miscelanea/Wrapper/PageListWrapper";

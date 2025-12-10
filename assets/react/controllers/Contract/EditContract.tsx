@@ -4,7 +4,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { ContractOutput, getReturnType, returnTypes } from "../../model/contract";
+import { ContractOutput, getReturnType } from "../../model/contract";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useApi } from "../../hooks/ApiHook";
 import { useApiRoutes } from "../../hooks/ApiRoutesHook";

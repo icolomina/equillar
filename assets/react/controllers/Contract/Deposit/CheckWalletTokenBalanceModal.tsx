@@ -4,7 +4,7 @@
 
 import { StellarWalletsKit } from "@creit.tech/stellar-wallets-kit";
 import { useQuery } from "@tanstack/react-query"
-import { FC, Fragment, useState } from "react"
+import { Fragment, useState } from "react"
 import { useApi } from "../../../hooks/ApiHook";
 import { ContractOutput } from "../../../model/contract";
 import axios, { AxiosError, AxiosResponse } from "axios";

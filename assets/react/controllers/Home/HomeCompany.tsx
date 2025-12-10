@@ -19,7 +19,6 @@ export default function HomeCompany() {
   const { callGet } = useApi();
   const apiRoutes = useApiRoutes();
   const navigate = useNavigate();
-  const theme = useTheme();
 
   /**
    * Loading current company projects using useQuery hook

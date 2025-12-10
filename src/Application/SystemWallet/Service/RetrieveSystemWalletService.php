@@ -8,9 +8,7 @@ namespace App\Application\SystemWallet\Service;
 use App\Domain\Crypt\CryptedValue;
 use App\Domain\SystemWallet\SystemWalletData;
 use App\Persistence\SystemWallet\SystemWalletStorageInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 
 class RetrieveSystemWalletService
 {
@@ -22,25 +20,20 @@ class RetrieveSystemWalletService
 
     public function retrieve(): SystemWalletData
     {
-        $cache = new FilesystemAdapter();
+        $defaultWallet = $this->systemWalletStorage->getDefaultWallet();
 
-        return $cache->get('system.default_wallet', function (ItemInterface $item): SystemWalletData {
-            $item->expiresAfter(3600);
-            $defaultWallet = $this->systemWalletStorage->getDefaultWallet();
+        /**
+         * @var CryptedValue $cryptedValue
+         */
+        $cryptedValue = $this->serializer->denormalize($defaultWallet->getPrivateKey(), CryptedValue::class);
 
-            /**
-             * @var CryptedValue $cryptedValue
-             */
-            $cryptedValue = $this->serializer->denormalize($defaultWallet->getPrivateKey(), CryptedValue::class);
-
-            return new SystemWalletData(
-                $defaultWallet->getAddress(),
-                $defaultWallet->getBlockchainNetwork()->getBlockchain()->getName(),
-                $defaultWallet->getBlockchainNetwork()->getLabel(),
-                $defaultWallet->getBlockchainNetwork()->getUrl(),
-                $defaultWallet->getBlockchainNetwork()->isTest(),
-                $cryptedValue
-            );
-        });
+        return new SystemWalletData(
+            $defaultWallet->getAddress(),
+            $defaultWallet->getBlockchainNetwork()->getBlockchain()->getName(),
+            $defaultWallet->getBlockchainNetwork()->getLabel(),
+            $defaultWallet->getBlockchainNetwork()->getUrl(),
+            $defaultWallet->getBlockchainNetwork()->isTest(),
+            $cryptedValue
+        );
     }
 }

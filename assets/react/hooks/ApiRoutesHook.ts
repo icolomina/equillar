@@ -13,6 +13,7 @@ export function useApiRoutes() {
         getContracts:           `${apiBase}/contract/get-issuer-contracts`,
         getAvailableContracts:  `${apiBase}/contract/get-available-contracts`,
         createContract:         `${apiBase}/contract/create-contract`,
+        createUserContractInvestment: `${apiBase}/user-contract-investment/create-user-investment`,
         getUserContracts:       `${apiBase}/user-contract-investment/get-user-contracts`,
         getUserPayments:        `${apiBase}/user-contract-payments/get-user-payments`,
         getUserPortfolio:       `${apiBase}/user/get-portfolio`,
@@ -39,7 +40,6 @@ export function useApiRoutes() {
         // Blockchain transaction
         getStellarTrxData:      (hash: string) => `${apiBase}/blockchain/stellar/get-tx-data?hash=${hash}`,
 
-        requestReserveFundContribution: (id: string|number) =>  `${apiBase}/contract/${id}/request-reserve-fund-contribution`,
         checkReserveFundContribution: (id: number|string) => `${apiBase}/contract/reserve-fund-contribution/${id}/check`,
         transferReserveFundContributon: (id: number|string) => `${apiBase}/contract/reserve-fund-contribution/${id}/transfer`,
 

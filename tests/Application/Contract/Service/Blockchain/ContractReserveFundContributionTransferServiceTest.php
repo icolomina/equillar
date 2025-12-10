@@ -144,15 +144,17 @@ class ContractReserveFundContributionTransferServiceTest extends KernelTestCase
 
     private function loadContractReserveFundContribution(): ContractReserveFundContribution
     {
-        $issuer = EntityGenerator::createIssuer();
+        $organization   = EntityGenerator::createOrganization();
+        $issuer = EntityGenerator::createIssuer($organization);
         $token = EntityGenerator::createToken();
         $investor = EntityGenerator::createInvestor();
         $investorWallet = EntityGenerator::createUserWallet($investor);
         $contract = EntityGenerator::createActiveContract($issuer, $token);
-        $contribution = EntityGenerator::createContractReserveFundContribution($investor, $contract);
+        $contribution = EntityGenerator::createContractReserveFundContribution($contract);
         $contribution->setStatus('RECEIVED');
 
         $this->persistor->persistAndFlush([
+            $organization,
             $token,
             $issuer,
             $investor,

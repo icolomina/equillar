@@ -39,10 +39,10 @@ class ContractActivationOperationBuilder
             Address::fromContractId($contract->getToken()->getAddress())->toXdrSCVal(),
             XdrSCVal::forU32((int) $rate),
             XdrSCVal::forU64($days),
-            XdrSCVal::forI128Parts($goalI128->getLo(), $goalI128->getHi()),
+            XdrSCVal::forI128Parts($goalI128->getHi(), $goalI128->getLo()),
             XdrSCVal::forU32($contract->getReturnType()),
             XdrSCVal::forU32($contract->getReturnMonths()),
-            XdrSCVal::forI128Parts($minPerInvestmentI128->getLo(), $minPerInvestmentI128->getHi()),
+            XdrSCVal::forI128Parts($minPerInvestmentI128->getHi(), $minPerInvestmentI128->getLo()),
         ];
 
         $createContractHostFunction = new CreateContractWithConstructorHostFunction(

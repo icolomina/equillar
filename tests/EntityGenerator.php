@@ -10,6 +10,7 @@ use App\Entity\Contract\ContractBalanceMovement;
 use App\Entity\Contract\ContractWithdrawalRequest;
 use App\Entity\Contract\UserContract;
 use App\Entity\Contract\UserContractPayment;
+use App\Entity\Organization;
 use App\Entity\Token;
 use App\Entity\User;
 use App\Entity\UserWallet;
@@ -17,7 +18,17 @@ use Symfony\Component\Uid\Uuid;
 
 class EntityGenerator
 {
-    public static function createIssuer(): User
+    public static function createOrganization(): Organization
+    {
+        $organization = new Organization();
+        $organization->setName('Test Organization');
+        $organization->setIdentifier('ABCDEF123456');
+        $organization->setCreatedAt(new \DateTimeImmutable());
+
+        return $organization;
+    }
+
+    public static function createIssuer(Organization $organization): User
     {
         $issuer = new User();
         $issuer->setCreatedAt(new \DateTimeImmutable());
@@ -25,6 +36,7 @@ class EntityGenerator
         $issuer->setName('The Issuer');
         $issuer->setPassword('123654');
         $issuer->setRoles(['ROLE_COMPANY']);
+        $issuer->setOrganization($organization);
         
         return $issuer;
     }
@@ -86,6 +98,7 @@ class EntityGenerator
         $contract->setRate(6);
         $contract->setShortDescription('A contract');
         $contract->setStatus('APPROVED');
+        $contract->setOrganzation($issuer->getOrganization());
         
         return $contract;
     }
@@ -112,6 +125,7 @@ class EntityGenerator
         $contract->setToken($token);
         $contract->setShortDescription('A contract');
         $contract->setStatus('ACTIVE');
+        $contract->setOrganzation($issuer->getOrganization());
         
         return $contract;
     }
@@ -171,13 +185,12 @@ class EntityGenerator
         return $contractBalanceMovement;
     }
 
-    public static function createContractReserveFundContribution(User $user, Contract $contract): \App\Entity\Contract\ContractReserveFundContribution
+    public static function createContractReserveFundContribution(Contract $contract): \App\Entity\Contract\ContractReserveFundContribution
     {
         $contribution = new \App\Entity\Contract\ContractReserveFundContribution();
         $contribution->setUuid(Uuid::v4());
         $contribution->setAmount(1000.0);
         $contribution->setStatus('CREATED');
-        $contribution->setSourceUser($user);
         $contribution->setContract($contract);
         $contribution->setCreatedAt(new \DateTimeImmutable());
 

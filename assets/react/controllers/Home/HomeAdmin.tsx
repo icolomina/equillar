@@ -4,7 +4,7 @@
 
 import { Fragment, useState } from "react";
 import { useApi } from "../../hooks/ApiHook";
-import { GetContractsPath } from "../../services/Api/Investment/ApiRoutes";
+import { useApiRoutes } from "../../hooks/ApiRoutesHook";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { Backdrop, Box, Button, CircularProgress, IconButton, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +21,7 @@ export default function HomeAdmin() {
 
   const { callGet } = useApi();
   const navigate = useNavigate();
+  const apiRoutes = useApiRoutes();
 
   /**
    * Loading current company projects using useQuery hook
@@ -29,7 +30,7 @@ export default function HomeAdmin() {
     {
       queryKey: ['get-projects'],
       queryFn: async () => {
-        const result: AxiosResponse<ContractOutput[]> | AxiosError = await callGet<object, ContractOutput[]>(GetContractsPath, {});
+        const result: AxiosResponse<ContractOutput[]> | AxiosError = await callGet<object, ContractOutput[]>(apiRoutes.getContracts, {});
         if (!axios.isAxiosError(result)) {
           return result.data;
         }

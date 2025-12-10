@@ -31,3 +31,4 @@ services:
   test.App\Domain\Token\Service\TokenNormalizer: '@App\Domain\Token\Service\TokenNormalizer'
   test.App\Application\Contract\Service\ReceiveReserveFundContributionService: '@App\Application\Contract\Service\ReceiveReserveFundContributionService'
   test.App\Application\Contract\Transformer\ContractReserveFundContributionTransformer: '@App\Application\Contract\Transformer\ContractReserveFundContributionTransformer'
+  test.App\Domain\Contract\Service\ContractMuxedIdGenerator: '@App\Domain\Contract\Service\ContractMuxedIdGenerator'

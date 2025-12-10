@@ -5,9 +5,8 @@
 import { Box, Button, CircularProgress, Modal, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useState } from "react";
 import { useApi } from "../../../hooks/ApiHook";
-import { CreateRequestWithdrawalPath } from "../../../services/Api/Investment/ApiRoutes";
+import { useApiRoutes } from "../../../hooks/ApiRoutesHook";
 import { ContractOutput } from "../../../model/contract";
-import { sprintf } from 'sprintf-js';
 import { formatCurrencyFromValueAndTokenContract } from "../../../utils/currency";
 
 interface WithdrawalModalProps {
@@ -19,6 +18,7 @@ interface WithdrawalModalProps {
 export default function CreateWithdrawalRequestModal(props: WithdrawalModalProps) {
 
     const { callPost } = useApi();
+    const apiRoutes = useApiRoutes();
     const theme = useTheme();
 
     const [requestedAmount, setRequestedAmount] = useState<string>('');
@@ -46,7 +46,7 @@ export default function CreateWithdrawalRequestModal(props: WithdrawalModalProps
         }
 
         setRequestingWithdrawal(true);
-        callPost(sprintf(CreateRequestWithdrawalPath, props.contract.id), { requestedAmount: amount }).then(
+        callPost(apiRoutes.requestWithdrawal(props.contract.id), { requestedAmount: amount }).then(
             () => {
                 setRequestingWithdrawal(false);
                 setSuccessMessage('Withdrawal request successfully submitted. You can view your list of requests through the \'Withdrawal Requests\' option in the side menu');

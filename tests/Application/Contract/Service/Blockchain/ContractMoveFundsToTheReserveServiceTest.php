@@ -167,7 +167,8 @@ class ContractMoveFundsToTheReserveServiceTest extends KernelTestCase
 
     private function loadContractBalanceMovement(): ContractBalanceMovement
     {
-        $issuer         = EntityGenerator::createIssuer();
+        $organization   = EntityGenerator::createOrganization();
+        $issuer         = EntityGenerator::createIssuer($organization);
         $token          = EntityGenerator::createToken();
         $investor       = EntityGenerator::createInvestor();
         $investorWallet = EntityGenerator::createUserWallet($investor);
@@ -175,6 +176,7 @@ class ContractMoveFundsToTheReserveServiceTest extends KernelTestCase
         $contractBalanceMovement = EntityGenerator::createContractBalanceMovement($issuer, $contract);
 
         $this->persistor->persistAndFlush([
+            $organization,
             $token,
             $issuer,
             $investor,

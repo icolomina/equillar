@@ -12,7 +12,6 @@ import { Backdrop, Box, Button, CircularProgress, Paper, Table, TableBody, Table
 import PageListWrapper from "../../Miscelanea/Wrapper/PageListWrapper";
 import { useAuth } from "../../../hooks/AuthHook";
 import { useState } from "react";
-import CheckReserveFundContributionModal from "./CheckReserveFundContributionModal";
 import EditStellarTransactionDataModal from "../../Blockchain/EditStellarTransactionDataModal";
 
 interface ContractReserveFundCheckResult {
@@ -25,8 +24,6 @@ export default function GetReserveFundsContributions() {
     const { isAdmin } = useAuth();
     const routes = useApiRoutes();
 
-    const [selectedReserveFundContribution, setSelectedReserveFundContribution] = useState<ContractReserveFund>(null);
-    const [openModalToCheckReserveFundContribution, setOpenModalToCheckReserveFundContribution] = useState<boolean>(false);
     const [selectedContractReserveFundForTrxInfo, setSelectedContractReserveFundForTrxInfo] = useState<ContractReserveFund>(null);
     const [openTrxInfoModal, setOpenTrxInfoModal] = useState<boolean>(false);
 
@@ -44,17 +41,6 @@ export default function GetReserveFundsContributions() {
             retry: 0,
         }
     );
-
-    const closeCheckReserveFundContributionlModal = () => {
-        setSelectedReserveFundContribution(null);
-        setOpenModalToCheckReserveFundContribution(false);
-        query.refetch();
-    }
-
-    const handleOpenCheckReserveFundContribution = (c: ContractReserveFund) => {
-        setSelectedReserveFundContribution(c);
-        setOpenModalToCheckReserveFundContribution(true);
-    }
 
     const handleOpenTrxInfoModal = (c: ContractReserveFund) => {
         setSelectedContractReserveFundForTrxInfo(c);
@@ -124,9 +110,6 @@ export default function GetReserveFundsContributions() {
                                     <TableCell align="right">{c.receivedAt}</TableCell>
                                     <TableCell align="right">{c.transferredAt}</TableCell>
                                     <TableCell align="right">
-                                        {isAdmin() && (c.status == 'CREATED' || c.status == 'INSUFFICIENT_FUNDS_RECEIVED' ) && <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleOpenCheckReserveFundContribution(c)}>
-                                            Check
-                                        </Button>}
                                         {c.transferredAt && (
                                             <Button
                                                 variant="contained"
@@ -146,14 +129,6 @@ export default function GetReserveFundsContributions() {
                     </Table>
                 </TableContainer>
             </PageListWrapper>
-
-            {selectedReserveFundContribution &&
-                <CheckReserveFundContributionModal
-                    open={openModalToCheckReserveFundContribution}
-                    contractReserveFund={selectedReserveFundContribution}
-                    onClose={closeCheckReserveFundContributionlModal}
-
-                />}
 
             {openTrxInfoModal && selectedContractReserveFundForTrxInfo && (
                 <EditStellarTransactionDataModal

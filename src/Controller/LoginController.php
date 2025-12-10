@@ -28,7 +28,8 @@ class LoginController extends AbstractController
             'token' => $tokenEncoder->encode($user),
             'role' => $user->getRoles()[0],
             'name' => $user->getName(),
-            'role_type' => $user->getUserRoleType(),
+            'organization' => $user->getOrganization()?->getName(),
+            'role_type' => $user->getUserRoleType()
         ]);
     }
 

@@ -17,7 +17,9 @@ use App\Entity\Token;
 use App\Entity\User;
 use App\Presentation\Contract\DTO\Input\CreateContractDto;
 use App\Presentation\Contract\DTO\Output\ContractDtoOutput;
+use Soneso\StellarSDK\Account;
 use Soneso\StellarSDK\Crypto\StrKey;
+use Soneso\StellarSDK\MuxedAccount;
 
 class ContractEntityTransformer
 {
@@ -60,7 +62,8 @@ class ContractEntityTransformer
             $contract->getMinPerInvestment(),
             $returnType,
             $contract->getReturnMonths(),
-            $contract->getProjectAddress()
+            $contract->getProjectAddress(),
+            $contract->getMuxedAccount()
         );
     }
 
@@ -93,6 +96,7 @@ class ContractEntityTransformer
         $contract->setReturnMonths((int) $createContractDto->returnMonths);
         $contract->setReturnType((int) $createContractDto->returnType);
         $contract->setProjectAddress($createContractDto->projectAddress);
+        $contract->setOrganzation($user->getOrganization());
 
         return $contract;
     }
@@ -147,5 +151,11 @@ class ContractEntityTransformer
     public function updateContractAsRejected(Contract $contract): void
     {
         $contract->setStatus(ContractStatus::REJECTED->name);
+    }
+
+    public function updateContractWithMuxedAccount(Contract $contract, string $muxedAccount, int $muxedId): void
+    {
+        $contract->setMuxedAccount($muxedAccount);
+        $contract->setMuxedId($muxedId);
     }
 }

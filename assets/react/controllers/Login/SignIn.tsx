@@ -23,7 +23,8 @@ interface LoginResponse {
   token: string,
   role: string,
   role_type: string,
-  name: string
+  name: string,
+  organization?: string
 }
 
 export default function SignIn() {
@@ -53,6 +54,7 @@ export default function SignIn() {
         localStorage.setItem('role', result.data.role);
         localStorage.setItem('role_type', result.data.role_type);
         localStorage.setItem('name', result.data.name);
+        localStorage.setItem('organization', result.data.organization || '');
         setLoading(false);
         navigate('/app/');
       }

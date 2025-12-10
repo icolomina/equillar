@@ -98,7 +98,8 @@ class GetContractBalanceServiceTest extends KernelTestCase
 
     private function loadContract(): Contract
     {
-        $issuer         = EntityGenerator::createIssuer();
+        $organization   = EntityGenerator::createOrganization();
+        $issuer         = EntityGenerator::createIssuer($organization);
         $token          = EntityGenerator::createToken();
         $investor       = EntityGenerator::createInvestor();
         $investorWallet = EntityGenerator::createUserWallet($investor);
@@ -106,6 +107,7 @@ class GetContractBalanceServiceTest extends KernelTestCase
 
 
         $this->persistor->persistAndFlush([
+            $organization,
             $token,
             $issuer,
             $investor,

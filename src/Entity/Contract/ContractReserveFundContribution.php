@@ -27,10 +27,6 @@ class ContractReserveFundContribution
     #[ORM\Column(length: 50)]
     private ?string $status = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $sourceUser = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $receivedTransactionHash = null;
 
@@ -87,18 +83,6 @@ class ContractReserveFundContribution
     public function setStatus(string $status): static
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getSourceUser(): ?User
-    {
-        return $this->sourceUser;
-    }
-
-    public function setSourceUser(?User $sourceUser): static
-    {
-        $this->sourceUser = $sourceUser;
 
         return $this;
     }

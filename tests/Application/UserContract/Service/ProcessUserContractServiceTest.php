@@ -121,7 +121,8 @@ class ProcessUserContractServiceTest extends KernelTestCase
 
     private function loadContractAndUserContract(): UserContract
     {
-        $issuer         = EntityGenerator::createIssuer();
+        $organization   = EntityGenerator::createOrganization();
+        $issuer         = EntityGenerator::createIssuer($organization);
         $token          = EntityGenerator::createToken();
         $investor       = EntityGenerator::createInvestor();
         $investorWallet = EntityGenerator::createUserWallet($investor);
@@ -129,6 +130,7 @@ class ProcessUserContractServiceTest extends KernelTestCase
         $userContract   = EntityGenerator::createPendingUserContract($contract, $investor, $investorWallet);
 
         $this->persistor->persistAndFlush([
+            $organization,
             $token,
             $issuer,
             $investor,

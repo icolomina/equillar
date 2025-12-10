@@ -8,7 +8,6 @@ import { Box, Button, Card, CardContent, CircularProgress, Divider, Grid2, Linea
 import { useNavigate, useParams } from "react-router-dom";
 import { useApi } from "../../../hooks/ApiHook";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { CreateUserContractInvestmentPath } from "../../../services/Api/Investment/ApiRoutes";
 import { Api } from "@stellar/stellar-sdk/lib/rpc";
 import { ContractHook, SorobanStatus, useContract } from "../../../hooks/ContractHook";
 import { ContractOutput } from "../../../model/contract";
@@ -92,7 +91,7 @@ export default function SendDepositToContract() {
           fromAddress: address.address
         };
 
-        callPost(CreateUserContractInvestmentPath, createUserContractInvestmentDto).then(
+        callPost(routes.createUserContractInvestment, createUserContractInvestmentDto).then(
           (uc: any) => {
             setSendingDeposit(false);
             setOpenSuccessDepositModal(true);

@@ -8,6 +8,7 @@
     "@symfony/webpack-encore": "github:symfony/webpack-encore",
     "@types/sprintf-js": "^1.1.4",
     "@types/webpack-env": "^1.18.8",
+    "baseline-browser-mapping": "^2.9.5",
     "file-loader": "^6.2.0",
     "react": "^18.0",
     "react-dom": "^18.0",

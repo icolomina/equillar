@@ -9,6 +9,7 @@ namespace App\Entity\Contract;
 
 use App\Entity\ContractCode;
 use App\Entity\ContractTransaction;
+use App\Entity\Organization;
 use App\Entity\Token;
 use App\Entity\User;
 use App\Repository\Contract\ContractRepository;
@@ -119,6 +120,16 @@ class Contract
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $lastResumedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'contracts')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Organization $organzation = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $muxedAccount = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $muxedId = null;
 
     public function __construct()
     {
@@ -518,6 +529,42 @@ class Contract
     public function setLastResumedAt(?\DateTimeImmutable $lastResumedAt): static
     {
         $this->lastResumedAt = $lastResumedAt;
+
+        return $this;
+    }
+
+    public function getOrganzation(): ?Organization
+    {
+        return $this->organzation;
+    }
+
+    public function setOrganzation(?Organization $organzation): static
+    {
+        $this->organzation = $organzation;
+
+        return $this;
+    }
+
+    public function getMuxedAccount(): ?string
+    {
+        return $this->muxedAccount;
+    }
+
+    public function setMuxedAccount(?string $muxedAccount): static
+    {
+        $this->muxedAccount = $muxedAccount;
+
+        return $this;
+    }
+
+    public function getMuxedId(): ?int
+    {
+        return $this->muxedId;
+    }
+
+    public function setMuxedId(?int $muxedId): static
+    {
+        $this->muxedId = $muxedId;
 
         return $this;
     }

@@ -7,9 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useApi } from "../../hooks/ApiHook";
-import { sprintf } from 'sprintf-js';
-import { EditContractPath, GetContractDocumentPath } from "../../services/Api/Investment/ApiRoutes";
-import { Backdrop, Box, Button, Card, CardContent, CircularProgress, Dialog, DialogContent, DialogTitle, Divider, Grid2, IconButton, LinearProgress, ListSubheader, Typography } from "@mui/material";
+import { useApiRoutes } from "../../hooks/ApiRoutesHook";
+import { Backdrop, Badge, Box, Button, Card, CardContent, CircularProgress, Dialog, DialogContent, DialogTitle, Divider, Grid2, IconButton, LinearProgress, Menu, MenuItem, Typography } from "@mui/material";
 import { ContractOutput } from "../../model/contract";
 import CloseIcon from '@mui/icons-material/Close';
 import PdfViewer from "../Miscelanea/PdfViewer";
@@ -24,8 +23,8 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useAuth } from "../../hooks/AuthHook";
-import ContractActionIcon from "./Actions/ContractActionIcon";
 import ApproveContractModal from "./ApproveContractModal";
 import ActivateContractModal from "./ActivateContractModal";
 import CreateWithdrawalRequestModal from "../Company/Withdrawal/CreateWithdrawalRequestModal";
@@ -40,6 +39,7 @@ export default function ViewContract() {
     const { callGet, callGetDownloadFile } = useApi();
     const {isAdmin, isCompany} = useAuth();
     const navigate = useNavigate();
+    const apiRoutes = useApiRoutes();
 
     const [openApproveModal, setOpenApproveModal] = useState(false);
     const [openActivationModal, setOpenActivationModal] = useState(false);
@@ -49,6 +49,8 @@ export default function ViewContract() {
     const [openModalToPauseContract, setOpenModalToPauseContract] = useState<boolean>(false);
     const [openModalToResumeContract, setOpenModalToResumeContract] = useState<boolean>(false);
     const [contractSelected, setContractSelected] = useState<ContractOutput | null>(null);
+    const [anchorElActions, setAnchorElActions] = useState<null | HTMLElement>(null);
+    const openActionsMenu = Boolean(anchorElActions);
 
     const [contract, setContract] = useState<ContractOutput>(null);
     const [pdfUrl, setPdfUrl] = useState<string>(null);
@@ -59,7 +61,7 @@ export default function ViewContract() {
         {
             queryKey: ['edit-contract', params.id],
             queryFn: async () => {
-                const result: AxiosResponse<ContractOutput> | AxiosError = await callGet<object, ContractOutput>(sprintf(EditContractPath, params.id), {});
+                const result: AxiosResponse<ContractOutput> | AxiosError = await callGet<object, ContractOutput>(apiRoutes.editContract(params.id), {});
                 if (!axios.isAxiosError(result)) {
                     return result.data;
                 }
@@ -72,7 +74,7 @@ export default function ViewContract() {
 
     const handleReadProjectDocument = () => {
         setDownloadingPdf(true);
-        callGetDownloadFile(sprintf(GetContractDocumentPath, query.data.id), { 'Accept': 'application/pdf' }).then(
+        callGetDownloadFile(apiRoutes.getContractDocument(query.data.id), { 'Accept': 'application/pdf' }).then(
             (result: AxiosResponse | AxiosError) => {
                 if (!axios.isAxiosError(result)) {
                     const pdfBlob = result.data;
@@ -182,6 +184,92 @@ export default function ViewContract() {
         await query.refetch();
     }
 
+    const handleOpenActionsMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElActions(event.currentTarget);
+    };
+
+    const handleCloseActionsMenu = () => {
+        setAnchorElActions(null);
+    };
+
+    const getAvailableActions = () => {
+        const actions = [];
+
+        if (query.data.status !== 'ACTIVE') {
+            actions.push({
+                id: 'edit',
+                label: 'Edit',
+                icon: <EditIcon fontSize="small" />,
+                onClick: () => { handleCloseActionsMenu(); handleEditContract(); }
+            });
+        }
+
+        if (isAdmin() && query.data.status === 'REVIEWING') {
+            actions.push({
+                id: 'approve',
+                label: 'Approve',
+                icon: <PlayCircleFilledIcon fontSize="small" />,
+                onClick: () => { handleCloseActionsMenu(); handleOpenModalForApprove(); }
+            });
+        }
+
+        if (query.data.status === 'APPROVED') {
+            actions.push({
+                id: 'activate',
+                label: 'Activate',
+                icon: <PlayCircleFilledIcon fontSize="small" />,
+                onClick: () => { handleCloseActionsMenu(); handleOpenModalForActivation(); }
+            });
+        }
+
+        if (query.data.status === 'ACTIVE') {
+            actions.push({
+                id: 'pause',
+                label: 'Pause Contract',
+                icon: <CancelIcon fontSize="small" color="warning" />,
+                onClick: () => { handleCloseActionsMenu(); handleOpenModalToPauseContract(); }
+            });
+        }
+
+        if (query.data.status === 'PAUSED') {
+            actions.push({
+                id: 'resume',
+                label: 'Resume Contract',
+                icon: <CancelIcon fontSize="small" color="success" />,
+                onClick: () => { handleCloseActionsMenu(); handleOpenModalToResumeContract(); }
+            });
+        }
+
+        if (isCompany() && query.data.status === 'ACTIVE' && query.data.contractBalance.available > 0) {
+            actions.push({
+                id: 'withdrawal',
+                label: 'Request funds withdrawal',
+                icon: <PriceChangeIcon fontSize="small" />,
+                onClick: () => { handleCloseActionsMenu(); handleOpenModalForRequestWithdrawal(); }
+            });
+        }
+
+        if ((isCompany() || isAdmin()) && query.data.status === 'ACTIVE') {
+            actions.push({
+                id: 'reserve_contribution',
+                label: 'Reserve fund contribution',
+                icon: <AccountBalanceWalletIcon fontSize="small" />,
+                onClick: () => { handleCloseActionsMenu(); handleOpenModalForReserveFundContribution(); }
+            });
+        }
+
+        if ((isCompany() || isAdmin()) && query.data.status === 'ACTIVE' && query.data.contractBalance.available > 0) {
+            actions.push({
+                id: 'move_funds',
+                label: 'Move funds to the reserve',
+                icon: <PaymentsIcon fontSize="small" />,
+                onClick: () => { handleCloseActionsMenu(); handleOpenModalForAvailableToReserveFundMovement(); }
+            });
+        }
+
+        return actions;
+    };
+
     if (query.isLoading) {
         return (
             <Fragment>
@@ -200,14 +288,26 @@ export default function ViewContract() {
         return (
         <Fragment>
             <Box sx={{ flexGrow: 1, p: 4 }}>
-                <Typography variant="h4" gutterBottom sx={{ mb: 2 }}>
-                    Contract details: {query.data.label}
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h4" gutterBottom>
+                        Contract details: {query.data.label}
+                    </Typography>
+                    <Badge badgeContent={getAvailableActions().length} color="primary">
+                        <Button
+                            variant="outlined"
+                            endIcon={<MoreVertIcon />}
+                            onClick={handleOpenActionsMenu}
+                            disabled={getAvailableActions().length === 0}
+                        >
+                            Actions
+                        </Button>
+                    </Badge>
+                </Box>
                 <Divider sx={{ mb: 4 }} />
                 <Grid2 container spacing={4}>
 
                     {/* Contenido principal del contrato */}
-                    <Grid2 size={{ xs: 12, md: 9 }}>
+                    <Grid2 size={12}>
 
                         {/* Tarjeta de información general */}
                         <Card sx={{ mb: 4, borderRadius: 2, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
@@ -390,42 +490,31 @@ export default function ViewContract() {
                             </CardContent>
                         </Card>
                     </Grid2>
-                    <Grid2 size={{ xs: 12, md: 3 }}>
-                        <Card sx={{ height: '100%', borderRadius: 2, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
-                            <CardContent>
-                                <ListSubheader component="div" sx={{ fontWeight: 'bold', fontSize: '1.1rem', backgroundColor: 'transparent' }}>
-                                    Contract Actions
-                                </ListSubheader>
-                                <Grid2 container spacing={2} sx={{ mt: 1 }}>
-                                    { query.data.status !== 'ACTIVE' && <ContractActionIcon iconAction={
-                                        {onClick: handleEditContract, text: 'Edit', icon: <EditIcon color="primary" />, id: 'edit'}
-                                    }></ContractActionIcon> }
-                                    {isAdmin() && query.data.status == 'REVIEWING' && <ContractActionIcon iconAction={
-                                        {onClick: handleOpenModalForApprove, text: 'Approve', icon: <PlayCircleFilledIcon color="primary" />, id: 'approve'}
-                                    }></ContractActionIcon> }
-                                    { query.data.status == 'APPROVED' && <ContractActionIcon iconAction={
-                                        {onClick: handleOpenModalForActivation, text: 'Activate', icon: <PlayCircleFilledIcon color="primary" />, id: 'activate'}
-                                    }></ContractActionIcon> }
-                                    { query.data.status == 'ACTIVE' && <ContractActionIcon iconAction={
-                                        {text: 'Pause Contract', onClick: handleOpenModalToPauseContract, icon: <CancelIcon color="warning" />, id: 'stop'}
-                                    }></ContractActionIcon> }
-                                    { query.data.status == 'PAUSED' && <ContractActionIcon iconAction={
-                                        {text: 'Resume Contract', onClick: handleOpenModalToResumeContract, icon: <CancelIcon color="success" />, id: 'resume'}
-                                    }></ContractActionIcon> }
-                                    { isCompany() && query.data.status == 'ACTIVE' && query.data.contractBalance.available > 0 && <ContractActionIcon iconAction={
-                                        {onClick: handleOpenModalForRequestWithdrawal, text: 'Request funds withdrawal', icon: <PriceChangeIcon color="primary" />, id: 'withdrawal'}
-                                    }></ContractActionIcon> }
-                                    { (isCompany() || isAdmin()) && query.data.status == 'ACTIVE' && <ContractActionIcon iconAction={
-                                        {onClick: handleOpenModalForReserveFundContribution, text: 'Reserve fund contribution', icon: <AccountBalanceWalletIcon color="primary" />, id: 'reserve_contribution'}
-                                    }></ContractActionIcon> }
-                                    { (isCompany() || isAdmin()) && query.data.status == 'ACTIVE' && query.data.contractBalance.available > 0 && <ContractActionIcon iconAction={
-                                        {onClick: handleOpenModalForAvailableToReserveFundMovement, text: 'Move funds to the reserve', icon: <PaymentsIcon color="primary" />, id: 'move funds'}
-                                    }></ContractActionIcon> }
-                                </Grid2>
-                            </CardContent>
-                        </Card>
-                    </Grid2>
                 </Grid2>
+
+                {/* Menú de acciones */}
+                <Menu
+                    anchorEl={anchorElActions}
+                    open={openActionsMenu}
+                    onClose={handleCloseActionsMenu}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                >
+                    {getAvailableActions().map((action) => (
+                        <MenuItem key={action.id} onClick={action.onClick}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                {action.icon}
+                                <Typography>{action.label}</Typography>
+                            </Box>
+                        </MenuItem>
+                    ))}
+                </Menu>
             </Box>
 
             {/* Modal para el visor de PDF (sin cambios, lo puedes mantener tal cual) */}

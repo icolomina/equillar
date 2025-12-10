@@ -48,7 +48,8 @@ export interface ContractOutput {
   returnType: string|null,
   percentageFundsReached: number
   returnMonths: number,
-  projectAddress: string
+  projectAddress: string,
+  muxedAccount: string
 }
 
 export interface ContractWithdrawal {

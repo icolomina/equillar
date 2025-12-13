@@ -127,7 +127,7 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
                     });
                 } 
             });
-        }
+        };
 
     return (
         <Box sx={{ flexGrow: 1, p: 3, maxWidth: 1200, margin: 'auto' }}>

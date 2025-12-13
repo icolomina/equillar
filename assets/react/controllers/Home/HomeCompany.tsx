@@ -5,7 +5,7 @@
 import { Fragment } from "react";
 import { useApi } from "../../hooks/ApiHook";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Backdrop, Box, Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ContractOutput } from "../../model/contract";

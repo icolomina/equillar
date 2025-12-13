@@ -54,7 +54,7 @@ export default function UserPortfolio() {
 
     const handleReviewProjectsToInvest = () => {
         return navigate('/app/home-investor');
-    }
+    };
 
     if (query.isLoading) {
         return (

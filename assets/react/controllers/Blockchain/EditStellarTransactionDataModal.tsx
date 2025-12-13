@@ -7,7 +7,7 @@ import { useApiRoutes } from "../../hooks/ApiRoutesHook";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useApi } from "../../hooks/ApiHook";
 import { StellarTransaction } from "../../model/transaction";
-import { Box, Button, CircularProgress, Divider, List, ListItem, ListItemIcon, ListItemText, Modal, Stack, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, List, ListItem, ListItemIcon, ListItemText, Modal, Typography } from "@mui/material";
 import { StyledModalBox } from "../Theme/Styled/Modal";
 import { Fragment } from "react/jsx-runtime";
 import { useAuth } from "../../hooks/AuthHook";

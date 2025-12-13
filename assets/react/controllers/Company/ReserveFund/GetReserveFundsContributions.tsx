@@ -10,7 +10,6 @@ import { ContractReserveFund } from "../../../model/contract";
 import { Fragment } from "react/jsx-runtime";
 import { Backdrop, Box, Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import PageListWrapper from "../../Miscelanea/Wrapper/PageListWrapper";
-import { useAuth } from "../../../hooks/AuthHook";
 import { useState } from "react";
 import EditStellarTransactionDataModal from "../../Blockchain/EditStellarTransactionDataModal";
 

@@ -5,7 +5,7 @@
 import { useApi } from "../../../hooks/ApiHook";
 import { ContractBalanceMovement } from "../../../model/contract";
 import { useState } from "react";
-import { Box, Button, CircularProgress, Modal, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, CircularProgress, Modal, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useApiRoutes } from "../../../hooks/ApiRoutesHook";
 import { AxiosResponse } from "axios";
 

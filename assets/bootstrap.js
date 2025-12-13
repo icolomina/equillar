@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 import { startStimulusApp } from '@symfony/stimulus-bridge';
-const app = startStimulusApp();
+startStimulusApp();

@@ -15,8 +15,7 @@ import {
   CircularProgress,
   Divider,
   Grid2,
-  Typography,
-  useTheme,
+  Typography
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";

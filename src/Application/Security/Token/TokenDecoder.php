@@ -14,13 +14,13 @@ class TokenDecoder
 {
     public function __construct(
         private readonly DenormalizerInterface $serializer,
-        private readonly string $securityTokenKey,
+        private readonly string $appSecret,
     ) {
     }
 
     public function decode(string $token): TokenPayload
     {
-        $decoded = JWT::decode($token, new Key($this->securityTokenKey, 'HS256'));
+        $decoded = JWT::decode($token, new Key($this->appSecret, 'HS256'));
 
         /**
          * @var TokenPayload $tokenPayload

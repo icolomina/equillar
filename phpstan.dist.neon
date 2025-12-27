@@ -7,7 +7,5 @@ parameters:
         - src/
     ignoreErrors:
         - '#^Call to an undefined method Doctrine\\ORM\\EntityRepository\<#'
-        - '#Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize#'
-        - '#Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:denormalize#'
     excludePaths:
         - src/Entity/*

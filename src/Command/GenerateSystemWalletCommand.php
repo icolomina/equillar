@@ -5,10 +5,8 @@
 // found in the LICENSE file.
 namespace App\Command;
 
-use App\Application\SystemWallet\Transformer\SystemWalletEntityTransformer;
-use App\Domain\Crypt\Service\Encryptor;
+use App\Application\SystemWallet\Service\CreateEncryptedSystemWalletService;
 use App\Persistence\Blockchain\BlockchainNetworkStorageInterface;
-use App\Persistence\PersistorInterface;
 use Soneso\StellarSDK\Crypto\KeyPair;
 use Soneso\StellarSDK\Util\FriendBot;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -23,11 +21,9 @@ use Symfony\Component\HttpKernel\KernelInterface;
 class GenerateSystemWalletCommand
 {
     public function __construct(
-        private readonly Encryptor $encryptor,
         private readonly BlockchainNetworkStorageInterface $blockchainNetworkStorage,
         private readonly KernelInterface $kernel,
-        private readonly SystemWalletEntityTransformer $systemWalletEntityTransformer,
-        private readonly PersistorInterface $persistor,
+        private readonly CreateEncryptedSystemWalletService $createSystemWalletService
     ) {
     }
 
@@ -70,19 +66,11 @@ class GenerateSystemWalletCommand
         }
 
         $io->writeln('Encrypting address secret ....');
-        $cryptedValue = $this->encryptor->encryptMsg($keyPair->getSecretSeed());
-        $systemWallet = $this->systemWalletEntityTransformer->fromBlockchainNetworkAndCrypedValueToEntity($blockchainNetwork, $cryptedValue, $keyPair->getAccountId());
-
-        $io->writeln('Checking encryption before persisting');
-        $decrytedString = $this->encryptor->decryptMsg($cryptedValue->cipher, $cryptedValue->nonce);
-        if ($decrytedString !== $keyPair->getSecretSeed()) {
-            $io->error('Invalid secret encryption ...');
-
-            return Command::FAILURE;
-        }
-
-        $io->writeln('Persisting wallet data...');
-        $this->persistor->persistAndFlush($systemWallet);
+        $systemWallet = $this->createSystemWalletService->create(
+            $blockchainNetwork,
+            $keyPair->getAccountId(),
+            $keyPair->getSecretSeed()
+        );
 
         $io->success('Done !');
 

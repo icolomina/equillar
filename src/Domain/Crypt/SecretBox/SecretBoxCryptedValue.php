@@ -3,13 +3,14 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
-namespace App\Domain\Crypt;
+namespace App\Domain\Crypt\SecretBox;
 
-readonly class CryptedValue
+readonly class SecretBoxCryptedValue
 {
     public function __construct(
         public string $cipher,
         public string $nonce,
+        public string $engine
     ) {
     }
 }

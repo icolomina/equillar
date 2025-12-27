@@ -16,9 +16,9 @@ class UrlSigner
     private UriSigner $uriSigner;
 
     public function __construct(
-        private readonly string $uriSignerKey,
+        private readonly string $appSecret,
     ) {
-        $this->uriSigner = new UriSigner($this->uriSignerKey);
+        $this->uriSigner = new UriSigner($this->appSecret);
     }
 
     public function signUrl(string $url): string

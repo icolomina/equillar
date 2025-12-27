@@ -15,7 +15,7 @@ class TokenEncoder
     public function __construct(
         private readonly TokenPayloadBuilder $tokenPayloadBuilder,
         private readonly NormalizerInterface $serializer,
-        private readonly string $securityTokenKey,
+        private readonly string $appSecret,
     ) {
     }
 
@@ -23,6 +23,6 @@ class TokenEncoder
     {
         $payload = $this->tokenPayloadBuilder->build($user->getUserIdentifier());
 
-        return JWT::encode($this->serializer->normalize($payload), $this->securityTokenKey, 'HS256');
+        return JWT::encode($this->serializer->normalize($payload), $this->appSecret, 'HS256');
     }
 }

@@ -75,6 +75,10 @@ class AeadEncryptor
         }
 
         $context = base64_decode($aeadCryptedValue->context, true);
+        if ($context === false) {
+            throw new \InvalidArgumentException('Invalid base64 input');
+        }
+
         $derivedKey = $this->deriveKeyFromSubkeyId($aeadCryptedValue->subkeyId, $context);
 
         $plain = sodium_crypto_aead_xchacha20poly1305_ietf_decrypt(

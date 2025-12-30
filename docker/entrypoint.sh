@@ -35,8 +35,6 @@ echo -n "$CRYPT_KEY" | php bin/console secrets:set CRYPT_KEY -
 echo -n "$AEAD_CRYPT_KEY" | php bin/console secrets:set AEAD_CRYPT_KEY -
 echo -n "$APP_SECRET" | php bin/console secrets:set APP_SECRET -
 
-cp -r config/secrets/dev config/secrets/test
-
 
 echo "✔️  Required keys generated"
 

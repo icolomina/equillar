@@ -6,6 +6,7 @@
 namespace App\Command;
 
 use App\Blockchain\Stellar\Transaction\GetStellarTransactionDataService;
+use App\Domain\Crypt\Aead\Service\EntitySchemaBuilderLocator;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -17,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class GetTransactionDataCommand
 {
     public function __construct(
-        private readonly GetStellarTransactionDataService $getBlockchainTransactionDataService,
+        private readonly GetStellarTransactionDataService $getBlockchainTransactionDataService
     ) {
     }
 

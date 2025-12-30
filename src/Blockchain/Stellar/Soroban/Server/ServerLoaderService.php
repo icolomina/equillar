@@ -19,12 +19,12 @@ class ServerLoaderService
 
     public function getServer(): SorobanServer
     {
-        $systemWalletData = $this->retrieveSystemWalletService->retrieve();
+        $systemWallet = $this->retrieveSystemWalletService->retrieve();
 
-        $server = new SorobanServer($systemWalletData->url);
+        $server = new SorobanServer($systemWallet->getBlockchainNetwork()->getUrl());
         $healthResponse = $server->getHealth();
         if (GetHealthResponse::HEALTHY != $healthResponse->status) {
-            throw new \RuntimeException(sprintf('Soroban server "%s" is not available', $systemWalletData->url));
+            throw new \RuntimeException(sprintf('Soroban server "%s" is not available', $systemWallet->getBlockchainNetwork()->getUrl()));
         }
 
         return $server;
@@ -32,9 +32,9 @@ class ServerLoaderService
 
     public function getSorobanNetwork(): Network
     {
-        $systemWalletData = $this->retrieveSystemWalletService->retrieve();
+        $systemWallet = $this->retrieveSystemWalletService->retrieve();
 
-        return ($systemWalletData->isTest)
+        return ($systemWallet->getBlockchainNetwork()->isTest())
             ? Network::testnet()
             : Network::public()
         ;
@@ -42,8 +42,7 @@ class ServerLoaderService
 
     public function getSorobanRpcUrl(): string
     {
-        $systemWalletData = $this->retrieveSystemWalletService->retrieve();
-
-        return $systemWalletData->url;
+        $systemWallet = $this->retrieveSystemWalletService->retrieve();
+        return $systemWallet->getBlockchainNetwork()->getUrl();
     }
 }

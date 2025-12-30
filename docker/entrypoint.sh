@@ -27,13 +27,14 @@ echo "✔️  Database loaded"
 # Create required vault secrets
 php bin/console secrets:generate-keys
 
+AEAD_CRYPT_KEY=$(php -r 'echo bin2hex(sodium_crypto_aead_xchacha20poly1305_ietf_keygen());')
 CRYPT_KEY=$(php -r 'echo bin2hex(sodium_crypto_secretbox_keygen());')
-SECURITY_TOKEN_KEY=$(openssl rand -hex 32)
-URI_SIGNER_KEY=$(openssl rand -hex 32)
+APP_SECRET=$(openssl rand -hex 32)
 
 echo -n "$CRYPT_KEY" | php bin/console secrets:set CRYPT_KEY -
-echo -n "$SECURITY_TOKEN_KEY" | php bin/console secrets:set SECURITY_TOKEN_KEY -
-echo -n "$URI_SIGNER_KEY" | php bin/console secrets:set URI_SIGNER_KEY -
+echo -n "$AEAD_CRYPT_KEY" | php bin/console secrets:set AEAD_CRYPT_KEY -
+echo -n "$APP_SECRET" | php bin/console secrets:set APP_SECRET -
+
 
 echo "✔️  Required keys generated"
 

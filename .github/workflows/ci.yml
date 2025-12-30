@@ -62,6 +62,8 @@ jobs:
           echo "POSTGRES_USER=changeme" >> $GITHUB_ENV
           echo "POSTGRES_PASSWORD=changeme" >> $GITHUB_ENV
           echo "DATABASE_URL=postgresql://changeme:changeme@localhost:5497/equillar?serverVersion=16&charset=utf8" >> $GITHUB_ENV
+          echo "CRYPT_KEY=deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef" >> $GITHUB_ENV
+          echo "AEAD_CRYPT_KEY=cafebabecafebabecafebabecafebabecafebabecafebabecafebabecafebabe" >> $GITHUB_ENV
 
       - name: Create database
         run: php bin/console doctrine:database:create --if-not-exists --no-interaction

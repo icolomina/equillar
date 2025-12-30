@@ -18,13 +18,13 @@ class UserWalletEntityTransformer
 
     public function fromUserAndAddressToUserWalletEntity(User $user, string $address): UserWallet
     {
-        $systemWalletData = $this->retrieveSystemWalletService->retrieve();
+        $systemWallet = $this->retrieveSystemWalletService->retrieve();
 
         $userWallet = new UserWallet();
         $userWallet->setUsr($user);
         $userWallet->setAddress($address);
         $userWallet->setCreatedAt(new \DateTimeImmutable());
-        $userWallet->setNetwork($systemWalletData->blockchain.' -- '.$systemWalletData->network);
+        $userWallet->setNetwork($systemWallet->getBlockchainNetwork()->getBlockchain()->getName() . ' -- ' . $systemWallet->getBlockchainNetwork()->getName());
 
         return $userWallet;
     }

@@ -11,7 +11,7 @@ use App\Message\CheckContractBalanceMessage;
 use App\Persistence\Contract\ContractStorageInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler]
+#[AsMessageHandler(sign: true)]
 class CheckContractBalanceMessageHandler
 {
     public function __construct(

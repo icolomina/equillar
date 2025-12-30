@@ -32,3 +32,7 @@ services:
   test.App\Application\Contract\Service\ReceiveReserveFundContributionService: '@App\Application\Contract\Service\ReceiveReserveFundContributionService'
   test.App\Application\Contract\Transformer\ContractReserveFundContributionTransformer: '@App\Application\Contract\Transformer\ContractReserveFundContributionTransformer'
   test.App\Domain\Contract\Service\ContractMuxedIdGenerator: '@App\Domain\Contract\Service\ContractMuxedIdGenerator'
+
+  test.App\Domain\Crypt\SecretBox\Service\Encryptor: '@App\Domain\Crypt\SecretBox\Service\Encryptor'
+  test.App\Domain\Crypt\Aead\Service\AeadEncryptor: '@App\Domain\Crypt\Aead\Service\AeadEncryptor'
+  test.App\Domain\Crypt\Aead\Service\EntityAeadEncryptor: '@App\Domain\Crypt\Aead\Service\EntityAeadEncryptor'  

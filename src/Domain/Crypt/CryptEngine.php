@@ -5,11 +5,13 @@
 
 namespace App\Domain\Crypt;
 
-readonly class CryptedValue
+enum CryptEngine: string
 {
-    public function __construct(
-        public string $cipher,
-        public string $nonce,
-    ) {
+    case AEAD = 'aead';
+    case SECRET_BOX = 'secret_box';
+
+    public static function getDefaultEngine(): self
+    {
+        return self::AEAD;
     }
 }

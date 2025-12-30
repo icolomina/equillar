@@ -196,4 +196,33 @@ class EntityGenerator
 
         return $contribution;
     }
+
+    public static function createSystemWallet(): \App\Entity\SystemWallet
+    {
+        $blockchain = new \App\Entity\Blockchain();
+        $blockchain->setName('Stellar');
+        $blockchain->setLabel('Stellar');
+        $blockchain->setInfoUrl('https://stellar.org');
+        $blockchain->setCreatedAt(new \DateTimeImmutable());
+
+        $blockchainNetwork = new \App\Entity\BlockchainNetwork();
+        $blockchainNetwork->setBlockchain($blockchain);
+        $blockchainNetwork->setName('testnet');
+        $blockchainNetwork->setLabel('Testnet');
+        $blockchainNetwork->setUrl('https://horizon-testnet.stellar.org');
+        $blockchainNetwork->setTest(true);
+        $blockchainNetwork->setCreatedAt(new \DateTimeImmutable());
+
+        $systemWallet = new \App\Entity\SystemWallet();
+        $systemWallet->setAddress('GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+        $systemWallet->setBlockchainNetwork($blockchainNetwork);
+        $systemWallet->setCreatedAt(new \DateTimeImmutable());
+        $systemWallet->setDefaultWallet(true);
+        $systemWallet->setPrivateKey([
+            'ciphertext' => 'encrypted_data',
+            'nonce' => 'random_nonce',
+        ]);
+
+        return $systemWallet;
+    }
 }

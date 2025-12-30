@@ -3,36 +3,42 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
-namespace App\Domain\Crypt\Service;
+namespace App\Domain\Crypt\SecretBox\Service;
 
-use App\Domain\Crypt\CryptedValue;
+use App\Domain\Crypt\CryptEngine;
+use App\Domain\Crypt\CryptKey;
+use App\Domain\Crypt\SecretBox\SecretBoxCryptedValue;
+use App\Domain\Crypt\Service\Vault;
 use Symfony\Component\DependencyInjection\Attribute\Lazy;
 
 #[Lazy]
 class Encryptor
 {
-    private string $key;
+    private CryptKey $key;
+    private string $encriptionKey;
 
     public function __construct(
         #[\SensitiveParameter]
-        private readonly string $cryptKey,
+        private readonly Vault $vault,
     ) {
-        $key = hex2bin($this->cryptKey);
-        if ($key === false || strlen($key) !== SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
+        $this->key = $this->vault->getSbKey();
+        $eKey = hex2bin($this->key->value);
+        if ($eKey === false || strlen($eKey) !== SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
             throw new \InvalidArgumentException('appSecret must be 64 hex chars (32 bytes)');
         }
         
-        $this->key = $key;
+        $this->encriptionKey = $eKey;
     }
 
-    public function encryptMsg(string $value): CryptedValue
+    public function encryptMsg(string $value): SecretBoxCryptedValue
     {
         $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-        $cipher = sodium_crypto_secretbox($value, $nonce, $this->key);
+        $cipher = sodium_crypto_secretbox($value, $nonce, $this->encriptionKey);
 
-        return new CryptedValue(
+        return new SecretBoxCryptedValue(
             base64_encode($cipher),
-            base64_encode($nonce)
+            base64_encode($nonce),
+            CryptEngine::SECRET_BOX->value,
         );
     }
 
@@ -48,7 +54,7 @@ class Encryptor
             throw new \InvalidArgumentException('Invalid nonce length');
         }
 
-        $plain = sodium_crypto_secretbox_open($cipher, $nonce, $this->key);
+        $plain = sodium_crypto_secretbox_open($cipher, $nonce, $this->encriptionKey);
         if ($plain === false) {
             throw new \RuntimeException('Decryption failed');
         }

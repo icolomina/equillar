@@ -55,7 +55,7 @@ RUN chgrp -R www-data /var/www/equillar && chmod -R 775 /var/www/equillar
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install Node.js using NVM
-ENV NODE_VERSION=22.5.1
+ENV NODE_VERSION=24.12.0
 ENV NVM_DIR=/root/.nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
     . "$NVM_DIR/nvm.sh" && \

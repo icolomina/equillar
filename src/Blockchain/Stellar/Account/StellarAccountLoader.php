@@ -6,7 +6,7 @@
 namespace App\Blockchain\Stellar\Account;
 
 use App\Application\SystemWallet\Service\RetrieveSystemWalletService;
-use App\Domain\Crypt\Service\CryptedValueEncryptor;
+use App\Domain\Crypt\Aead\Service\EntityAeadEncryptor;
 use App\Domain\Token\Service\TokenNormalizer;
 use App\Entity\Token;
 use Soneso\StellarSDK\Crypto\KeyPair;
@@ -26,24 +26,24 @@ class StellarAccountLoader
 
     public function __construct(
         private readonly RetrieveSystemWalletService $retrieveSystemWalletService,
-        private readonly CryptedValueEncryptor $cryptedValueEncryptor,
-        private readonly TokenNormalizer $tokenNormalizer
+        private readonly TokenNormalizer $tokenNormalizer,
+        private readonly EntityAeadEncryptor $entityAeadEncryptor
     ) {
         $this->load();
     }
 
     public function load(): void
     {
-        $systemWalletData = $this->retrieveSystemWalletService->retrieve();
-        $secret = $this->cryptedValueEncryptor->getSecret($systemWalletData->cryptedValue);
+        $systemWallet = $this->retrieveSystemWalletService->retrieve();
+        $secret = $this->entityAeadEncryptor->decryptEntity($systemWallet, $systemWallet->getPrivateKey());
 
         $this->keyPair = KeyPair::fromSeed($secret);
-        $this->sdk = ($systemWalletData->isTest)
+        $this->sdk = ($systemWallet->getBlockchainNetwork()->isTest())
             ? StellarSDK::getTestNetInstance()
             : StellarSDK::getPublicNetInstance()
         ;
 
-        $this->network = ($systemWalletData->isTest) ? Network::testnet() : Network::public();
+        $this->network = ($systemWallet->getBlockchainNetwork()->isTest()) ? Network::testnet() : Network::public();
         $this->account = $this->sdk->requestAccount($this->keyPair->getAccountId());
     }
 

@@ -31,7 +31,7 @@ class CreateEncryptedSystemWalletService
             $asDefault
         );
 
-        // 2. Encrypt secret seed
+        // 2. Encrypt secret seedp
         $cryptedValue = $this->entityAeadEncryptor->encryptEntity($systemWallet, $secretSeed);
         $cryptedValueRaw = $this->normalizer->normalize($cryptedValue);
         $systemWallet->setPrivateKey($cryptedValueRaw);

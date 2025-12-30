@@ -1,10 +1,14 @@
 <?php
+// Copyright 2025 The Equillar Authors. All rights reserved.
+// Use of this source code is governed by a license that can be
+// found in the LICENSE file.
 
 namespace App\Domain\Crypt\Aead\Service;
 
 use App\Domain\Crypt\Aead\EntitySchemaBuilderInterface;
 
-class EntitySchemaBuilderCollection {
+class EntitySchemaBuilderCollection 
+{
 
     private array $schemaBuilders = [];
 
@@ -24,7 +28,7 @@ class EntitySchemaBuilderCollection {
 
     public function getSchemaBuilderVersion(string $entity, string $version): ?EntitySchemaBuilderInterface
     {
-        if(!isset($this->schemaBuilders[$entity])) {
+        if (!isset($this->schemaBuilders[$entity])) {
             return null;
         }
 
@@ -33,7 +37,7 @@ class EntitySchemaBuilderCollection {
 
     public function getLatestSchemaVersion(string $entity): ?EntitySchemaBuilderInterface 
     {
-        if(!isset($this->schemaBuilders[$entity])) {
+        if (!isset($this->schemaBuilders[$entity])) {
             return null;
         }
 

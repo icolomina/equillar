@@ -16,6 +16,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import PendingIcon from '@mui/icons-material/Pending';
 import VerifiedIcon from '@mui/icons-material/Verified';
+import BlockIcon from '@mui/icons-material/Block';
 import { formatCurrencyFromValueAndTokenContract } from "../../utils/currency";
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import PaymentsIcon from '@mui/icons-material/Payments';
@@ -32,6 +33,7 @@ import CreateReserveFundContributionModal from "../Company/ReserveFund/CreateRes
 import CreateAvailableToReserveMovementModal from "../Company/Balance/CreateAvailableToReserveMovementModal";
 import PauseContractInvestmentsModal from "./PauseContractInvestmentsModal";
 import ResumeContractInvestmentsModal from "./ResumeContractInvestmentsModal";
+import ReserveFundInstructionsModal from "./ReserveFundInstructionsModal";
 
 export default function ViewContract() {
 
@@ -48,6 +50,7 @@ export default function ViewContract() {
     const [openModalToRequestAvailableToReserveFundMovement, setOpenModalToRequestAvailableToReserveFundMovement] = useState<boolean>(false);
     const [openModalToPauseContract, setOpenModalToPauseContract] = useState<boolean>(false);
     const [openModalToResumeContract, setOpenModalToResumeContract] = useState<boolean>(false);
+    const [openReserveFundInstructionsModal, setOpenReserveFundInstructionsModal] = useState<boolean>(false);
     const [contractSelected, setContractSelected] = useState<ContractOutput | null>(null);
     const [anchorElActions, setAnchorElActions] = useState<null | HTMLElement>(null);
     const openActionsMenu = Boolean(anchorElActions);
@@ -130,6 +133,14 @@ export default function ViewContract() {
     const handleCloseResumeContractModal = () => {
         setContractSelected(null);
         setOpenModalToResumeContract(false);
+    }
+
+    const handleOpenReserveFundInstructions = () => {
+        setOpenReserveFundInstructionsModal(true);
+    }
+
+    const handleCloseReserveFundInstructions = () => {
+        setOpenReserveFundInstructionsModal(false);
     }
 
     const handleOpenModalForApprove = () => {
@@ -341,6 +352,7 @@ export default function ViewContract() {
                                             {query.data.status === 'APPROVED' && (<VerifiedIcon sx={{ color: 'info.main', fontSize: '1.2rem' }} />)}
                                             {query.data.status === 'PAUSED' && (<PauseCircleIcon sx={{ color: 'warning.main', fontSize: '1.2rem' }} />)}
                                             {query.data.status === 'REVIEWING' && (<PendingIcon sx={{ color: 'grey.500', fontSize: '1.2rem' }} />)}
+                                            {query.data.status === 'BLOCKED' && (<BlockIcon sx={{ color: '#ff6f00', fontSize: '1.2rem' }} />)}
                                         </Box>
                                     </Grid2>
                                     <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
@@ -447,6 +459,36 @@ export default function ViewContract() {
                                         <Typography variant="body1" fontWeight="medium">
                                             {formatCurrencyFromValueAndTokenContract(query.data.contractBalance.availableToReserveMovements, query.data.tokenContract)}
                                         </Typography>
+                                    </Grid2>
+
+                                    {/* Reserve fund status */}
+                                    <Grid2 size={12}>
+                                        <Divider sx={{ my: 2 }} />
+                                        <Typography variant="subtitle2" color="textSecondary">Reserve Fund Status</Typography>
+                                        {query.data.requiredReserveFunds && query.data.requiredReserveFunds > 0 ? (
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Typography variant="body1" fontWeight="medium" color="warning.main">
+                                                        ⚠️ The contract requires adding {formatCurrencyFromValueAndTokenContract(query.data.requiredReserveFunds, query.data.tokenContract)} to the reserve fund to ensure investor payments.
+                                                    </Typography>
+                                                </Box>
+                                                <Button 
+                                                    variant="outlined" 
+                                                    color="info" 
+                                                    size="small"
+                                                    onClick={handleOpenReserveFundInstructions}
+                                                    sx={{ mt: 1, alignSelf: 'flex-start' }}
+                                                >
+                                                    How to add funds to reserve
+                                                </Button>
+                                            </Box>
+                                        ) : (
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                                                <Typography variant="body1" fontWeight="medium" color="success.main">
+                                                    ✓ The contract has capacity to serve payments.
+                                                </Typography>
+                                            </Box>
+                                        )}
                                     </Grid2>
                                 </Grid2>
                                 <Divider sx={{ my: 3 }} />
@@ -598,6 +640,12 @@ export default function ViewContract() {
                 contractToResume={contractSelected}
                 handleModalClose={handleCloseResumeContractModal}
                 handleResumingFinished={handleResumeContractFinished}
+            />}
+
+            {openReserveFundInstructionsModal && query.data && <ReserveFundInstructionsModal
+                open={openReserveFundInstructionsModal}
+                onClose={handleCloseReserveFundInstructions}
+                contract={query.data}
             />}
 
         </Fragment>

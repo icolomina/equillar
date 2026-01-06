@@ -64,4 +64,11 @@ class ContractDoctrineStorage extends AbstractDoctrineStorage implements Contrac
         $contract->setStatus(ContractStatus::APPROVED->name);
         $contract->setApprovedAt(new \DateTimeImmutable());
     }
+
+    public function getContractsByStatuses(array $statuses): array
+    {
+        $statusNames = array_map(fn($status) => $status->name, $statuses);
+        
+        return $this->em->getRepository(Contract::class)->findBy(['status' => $statusNames]);
+    }
 }

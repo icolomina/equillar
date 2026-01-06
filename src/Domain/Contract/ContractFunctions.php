@@ -21,7 +21,7 @@ enum ContractFunctions
     case stop_investments;
     case restart_investments;
     case single_withdrawn;
-    case check_reserve;
+    case check_reserve_balance;
     case add_company_transfer;
     case move_funds_to_the_reserve;
 

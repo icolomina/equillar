@@ -43,8 +43,8 @@ class ContractCheckPaymentAvailabilityService
             $contractTransaction = $this->contractTransactionEntityTransformer->fromSuccessfulTransaction(
                 $contractPaymentAvailability->getContract()->getAddress(),
                 ContractNames::INVESTMENT->value,
-                ContractFunctions::check_reserve->name,
-                $trxResult,
+                ContractFunctions::check_reserve_balance->name,
+                [$trxResult],
                 $trxResponse->getTxHash(),
                 $trxResponse->getCreatedAt()
             );
@@ -62,7 +62,7 @@ class ContractCheckPaymentAvailabilityService
             $contractTransaction = $this->contractTransactionEntityTransformer->fromFailedTransaction(
                 $contractPaymentAvailability->getContract()->getAddress(),
                 ContractNames::INVESTMENT->value,
-                ContractFunctions::check_reserve->name,
+                ContractFunctions::check_reserve_balance->name,
                 $ex
             );
 

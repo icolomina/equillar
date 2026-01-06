@@ -32,6 +32,7 @@ class CreateContractWithdrawalRequestService
             $contractRequestWithdrawalDtoInput
         );
 
+
         $this->persistorInterface->persistAndFlush($requestWithdrawal);
 
         /**

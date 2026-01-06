@@ -5,21 +5,15 @@
 // found in the LICENSE file.
 namespace App\Security\Uri;
 
-use Symfony\Component\DependencyInjection\Attribute\Lazy;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-#[Lazy]
 class UrlSigner
 {
-    private UriSigner $uriSigner;
-
     public function __construct(
-        private readonly string $appSecret,
-    ) {
-        $this->uriSigner = new UriSigner($this->appSecret);
-    }
+        private readonly UriSigner $uriSigner
+    ) { }
 
     public function signUrl(string $url): string
     {

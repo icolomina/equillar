@@ -20,6 +20,7 @@ services:
   test.App\Application\Contract\Mapper\GetContractBalanceMapper: '@App\Application\Contract\Mapper\GetContractBalanceMapper'
   test.App\Application\Contract\Transformer\ContractBalanceEntityTransformer: '@App\Application\Contract\Transformer\ContractBalanceEntityTransformer'
   test.App\Application\Contract\Transformer\ContractBalanceMovementTransformer: '@App\Application\Contract\Transformer\ContractBalanceMovementTransformer'
+  test.App\Application\Contract\Transformer\ContractPaymentAvailabilityTransformer: '@App\Application\Contract\Transformer\ContractPaymentAvailabilityTransformer'
 
   test.App\Persistence\Contract\ContractBalanceMovementStorageInterface: '@App\Persistence\Contract\ContractBalanceMovementStorageInterface'
   test.App\Persistence\Contract\ContractBalanceStorageInterface: '@App\Persistence\Contract\ContractBalanceStorageInterface'
@@ -36,3 +37,7 @@ services:
   test.App\Domain\Crypt\SecretBox\Service\Encryptor: '@App\Domain\Crypt\SecretBox\Service\Encryptor'
   test.App\Domain\Crypt\Aead\Service\AeadEncryptor: '@App\Domain\Crypt\Aead\Service\AeadEncryptor'
   test.App\Domain\Crypt\Aead\Service\EntityAeadEncryptor: '@App\Domain\Crypt\Aead\Service\EntityAeadEncryptor'  
+
+  test.App\Persistence\Contract\ContractPaymentAvailabilityStorageInterface: '@App\Persistence\Contract\ContractPaymentAvailabilityStorageInterface'
+
+  test.App\Domain\Utils\Math\I128Handler: '@App\Domain\Utils\Math\I128Handler'

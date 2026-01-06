@@ -18,7 +18,7 @@ class CheckContractPaymentAvailabilityOperationBuilder
         $contract = $contractPaymentAvailability->getContract();
         $invokeContractHostFunction = new InvokeContractHostFunction(
             $contract->getAddress(),
-            ContractFunctions::check_reserve->name
+            ContractFunctions::check_reserve_balance->name
         );
 
         $builder = new InvokeHostFunctionOperationBuilder($invokeContractHostFunction);

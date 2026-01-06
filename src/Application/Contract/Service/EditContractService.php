@@ -8,12 +8,14 @@ namespace App\Application\Contract\Service;
 use App\Application\Contract\Transformer\ContractEntityTransformer;
 use App\Entity\Contract\Contract;
 use App\Persistence\Contract\ContractBalanceStorageInterface;
+use App\Persistence\Contract\ContractPaymentAvailabilityStorageInterface;
 use App\Presentation\Contract\DTO\Output\ContractDtoOutput;
 
 class EditContractService
 {
     public function __construct(
         private readonly ContractBalanceStorageInterface $contractInvestmentBalanceStorage,
+        private readonly ContractPaymentAvailabilityStorageInterface $contractPaymentAvailabilityStorage,
         private readonly ContractEntityTransformer $contractEntityTransformer,
     ) {
     }
@@ -25,11 +27,16 @@ class EditContractService
             : null
         ;
 
-        return $this->contractEntityTransformer->fromEntityToOutputDto($contract, $contractBalance);
+        $lastContractPaymentAvailability = ($contract->isInitialized()) 
+            ? $this->contractPaymentAvailabilityStorage->getLastProcessedForContract($contract) 
+            : null
+        ;
+
+        return $this->contractEntityTransformer->fromEntityToOutputDto($contract, $contractBalance, $lastContractPaymentAvailability);
     }
 
     public function editContractWithoutBalance(Contract $contract): ContractDtoOutput
     {
-        return $this->contractEntityTransformer->fromEntityToOutputDto($contract, null);
+        return $this->contractEntityTransformer->fromEntityToOutputDto($contract, null, null);
     }
 }

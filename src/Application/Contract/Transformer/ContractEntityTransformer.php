@@ -12,6 +12,7 @@ use App\Domain\Contract\Service\ContractImageUrlGenerator;
 use App\Domain\DateFormats;
 use App\Entity\Contract\Contract;
 use App\Entity\Contract\ContractBalance;
+use App\Entity\Contract\ContractPaymentAvailability;
 use App\Entity\ContractTransaction;
 use App\Entity\Token;
 use App\Entity\User;
@@ -28,13 +29,15 @@ class ContractEntityTransformer
     ) {
     }
 
-    public function fromEntityToOutputDto(Contract $contract, ?ContractBalance $contractBalance = null): ContractDtoOutput
+    public function fromEntityToOutputDto(Contract $contract, ?ContractBalance $contractBalance = null, ?ContractPaymentAvailability $contractPaymentAvailability = null): ContractDtoOutput
     {
         $returnType = ContractReturnType::tryFrom($contract->getReturnType())?->getReadableName();
         $contractAddress = ($contract->getAddress()) ? StrKey::encodeContractIdHex($contract->getAddress()) : null;
 
         $contractBalanceDtoOutput = $this->contractBalanceEntityTransformer->fromEntityToOutputDto($contractBalance, $contract, true);
         $tokenContractDtoOutput = $this->tokenEntityTransformer->fromEntityToContractTokenOutputDto($contract->getToken());
+
+        $requiredReserveFunds = $contractPaymentAvailability?->getRequiredFunds() ?? null;
 
         return new ContractDtoOutput(
             (string) $contract->getId(),
@@ -61,7 +64,8 @@ class ContractEntityTransformer
             $returnType,
             $contract->getReturnMonths(),
             $contract->getProjectAddress(),
-            $contract->getMuxedAccount()
+            $contract->getMuxedAccount(),
+            $requiredReserveFunds
         );
     }
 

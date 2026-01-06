@@ -5,8 +5,10 @@
 
 namespace App\Tests;
 
+use App\Domain\Contract\ContractPaymentAvailabilityStatus;
 use App\Entity\Contract\Contract;
 use App\Entity\Contract\ContractBalanceMovement;
+use App\Entity\Contract\ContractPaymentAvailability;
 use App\Entity\Contract\ContractWithdrawalRequest;
 use App\Entity\Contract\UserContract;
 use App\Entity\Contract\UserContractPayment;
@@ -224,5 +226,15 @@ class EntityGenerator
         ]);
 
         return $systemWallet;
+    }
+    
+    public static function createContractPaymentAvailability(Contract $contract): ContractPaymentAvailability
+    {
+        $contractPaymentAvailability = new ContractPaymentAvailability();
+        $contractPaymentAvailability->setContract($contract);
+        $contractPaymentAvailability->setCreatedAt(new \DateTimeImmutable());
+        $contractPaymentAvailability->setStatus(ContractPaymentAvailabilityStatus::PENDING->name);
+
+        return $contractPaymentAvailability;
     }
 }

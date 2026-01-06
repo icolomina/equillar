@@ -35,7 +35,8 @@ readonly class ContractDtoOutput
         public string $returnType,
         public int $returnMonths,
         public string $projectAddress,
-        public ?string $muxedAccount = null
+        public ?string $muxedAccount = null,
+        public ?float $requiredReserveFunds = null
     ) {
     }
 }

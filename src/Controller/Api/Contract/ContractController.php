@@ -33,7 +33,6 @@ use App\Entity\Contract\ContractWithdrawalRequest;
 use App\Entity\User;
 use App\Presentation\Contract\DTO\Input\ContractRequestWithdrawalDtoInput;
 use App\Presentation\Contract\DTO\Input\CreateContractDto;
-use App\Presentation\Contract\DTO\Input\CreateContractReserveFundContributionDtoInput;
 use App\Presentation\Contract\DTO\Input\StopContractInvestmentsDtoInput;
 use App\Presentation\Contract\DTO\Output\GetAddressTokenBalanceOutput;
 use App\Security\Authorization\Voter\Contract\ContractBalanceMovementVoter;

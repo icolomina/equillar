@@ -28,4 +28,6 @@ interface ContractStorageInterface
     public function markContractAsFundsReached(Contract $contract): void;
 
     public function markContractAsApproved(Contract $contract): void;
+
+    public function getContractsByStatuses(array $statuses): array;
 }

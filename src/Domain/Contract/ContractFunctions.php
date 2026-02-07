@@ -18,8 +18,8 @@ enum ContractFunctions
     case invest;
     case process_investor_payment;
     case get_contract_balance;
-    case stop_investments;
-    case restart_investments;
+    case pause;
+    case unpause;
     case single_withdrawn;
     case check_reserve_balance;
     case add_company_transfer;

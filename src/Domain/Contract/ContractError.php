@@ -49,8 +49,7 @@ enum ContractError: int
             self::WouldExceedGoal => 'The investment would exceed the project goal',
             self::GoalAlreadyReached => 'The project goal has already been reached',
             self::AmountToInvestMustBeGreaterThanZero => 'The amount to invest must be greater than zero',
-            self::EnforcedPause => 'The contract is currently paused and cannot perform this operation',
-            default => 'Unknown error',
+            self::EnforcedPause => 'The contract is currently paused and cannot perform this operation'
         };
     }
 

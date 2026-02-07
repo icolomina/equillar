@@ -5,20 +5,32 @@
 
 namespace App\Blockchain\Stellar\Soroban\ScContract\Operation\Builder;
 
+use App\Blockchain\Stellar\Account\StellarAccountLoader;
 use App\Domain\Contract\ContractFunctions;
 use App\Domain\Contract\ContractPauseOrResumeTypes;
 use App\Entity\Contract\Contract;
 use Soneso\StellarSDK\InvokeContractHostFunction;
 use Soneso\StellarSDK\InvokeHostFunctionOperation;
 use Soneso\StellarSDK\InvokeHostFunctionOperationBuilder;
+use Soneso\StellarSDK\Soroban\Address;
 
 class StopOrRestartInvestmentsOperationBuilder
 {
+    public function __construct(
+        private readonly StellarAccountLoader $stellarAccountLoader,
+    ) {
+    }
+
     public function build(Contract $contract, string $type): InvokeHostFunctionOperation
     {
-        $contractFunction = ($type === ContractPauseOrResumeTypes::PAUSE->name) ? ContractFunctions::stop_investments->name : ContractFunctions::restart_investments->name;
+        $contractFunction = ($type === ContractPauseOrResumeTypes::PAUSE->name) 
+            ? ContractFunctions::pause->name 
+            : ContractFunctions::unpause->name
+        ;
 
-        $invokeContractHostFunction = new InvokeContractHostFunction($contract->getAddress(), $contractFunction);
+        $invokeContractHostFunction = new InvokeContractHostFunction($contract->getAddress(), $contractFunction, [
+            Address::fromAccountId($this->stellarAccountLoader->getAccount()->getAccountId())->toXdrSCVal()
+        ]);
         $builder = new InvokeHostFunctionOperationBuilder($invokeContractHostFunction);
 
         return $builder->build();

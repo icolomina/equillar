@@ -37,17 +37,20 @@ class ContractStopOrRestartInvestmentsService
         $lastContractBalance = $this->contractBalanceStorage->getLastBalanceByContract($contract);
         $currentFunds = $lastContractBalance?->getFundsReceived() ?? 0;
 
-        $contractFunction = ($type === ContractPauseOrResumeTypes::PAUSE->name) ? ContractFunctions::stop_investments->name : ContractFunctions::restart_investments->name;
+        $contractFunction = ($type === ContractPauseOrResumeTypes::PAUSE->name) 
+            ? ContractFunctions::pause->name 
+            : ContractFunctions::unpause->name
+        ;
 
         try {
             $transactionResponse = $this->contractStopOrRestartInvestmentsOperation->stopOrRestartInventments($contract, $type);
-            $trxResult = $this->scContractResultBuilder->getResultDataFromTransactionResponse($transactionResponse);
+            $this->scContractResultBuilder->getResultDataFromTransactionResponse($transactionResponse);
 
             $contractTransaction = $this->contractTransactionEntityTransformer->fromSuccessfulTransaction(
                 $contract->getAddress(),
                 ContractNames::INVESTMENT->name,
                 $contractFunction,
-                [$trxResult],
+                [],
                 $transactionResponse->getTxHash(),
                 $transactionResponse->getCreatedAt()
             );

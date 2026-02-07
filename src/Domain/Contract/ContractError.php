@@ -9,40 +9,47 @@ enum ContractError: int
 {
     case AddressInsufficientBalance = 1;
     case ContractInsufficientBalance = 2;
-    case AmountLessOrEqualThan0 = 4;
+    case AmountLessThanMinimum = 5;
+    case InterestRateMustBeGreaterThanZero = 6;
+    case GoalMustBeGreaterThanZero = 7;
+    case UnsupportedReturnType = 8;
+    case ReturnMonthsMustBeGreaterThanZero = 9;
+    case MinPerInvestmentMustBeGreaterThanZero = 10;
     case AddressHasNotInvested = 14;
     case AddressInvestmentIsNotClaimableYet = 15;
     case AddressInvestmentIsFinished = 16;
     case AddressInvestmentNextTransferNotClaimableYet = 17;
-    case WithdrawalUnexpectedSignature = 21;
-    case WithdrawalExpiredSignature = 22;
-    case WithdrawalInvalidAmount = 23;
     case ProjectBalanceInsufficientAmount = 24;
-    case ContractMustBePausedToRestartAgain = 25;
-    case ContractMustBeActiveToBePaused = 26;
-    case ContractMustBeActiveToInvest = 27;
-    case RecipientCannotReceivePayments = 28;
+    case RecipientCannotReceivePayment = 28;
     case InvalidPaymentData = 29;
+    case WouldExceedGoal = 30;
+    case GoalAlreadyReached = 31;
+    case AmountToInvestMustBeGreaterThanZero = 32;
+
+    case EnforcedPause = 1000;  // OpenZeppelin Pausable error
 
     public function getMessage(): string
     {
         return match ($this) {
             self::AddressInsufficientBalance => 'Address has insufficient balance to perform this operation',
             self::ContractInsufficientBalance => 'Contract has insufficient balance to complete this transaction',
-            self::AmountLessOrEqualThan0 => 'Amount must be greater than zero',
+            self::AmountLessThanMinimum => 'Amount is less than the minimum required',
+            self::InterestRateMustBeGreaterThanZero => 'Interest rate must be greater than zero',
+            self::GoalMustBeGreaterThanZero => 'Goal must be greater than zero',
+            self::UnsupportedReturnType => 'The return type specified is not supported',
+            self::ReturnMonthsMustBeGreaterThanZero => 'Return months must be greater than zero',
+            self::MinPerInvestmentMustBeGreaterThanZero => 'Minimum per investment must be greater than zero',
             self::AddressHasNotInvested => 'This address has not made any investment in the project',
             self::AddressInvestmentIsNotClaimableYet => 'Investment is not yet available to be claimed',
             self::AddressInvestmentIsFinished => 'Investment has finished and no more operations can be performed',
             self::AddressInvestmentNextTransferNotClaimableYet => 'Next investment transfer is not yet available to be claimed',
-            self::WithdrawalUnexpectedSignature => 'Withdrawal signature is invalid or does not match the expected one',
-            self::WithdrawalExpiredSignature => 'Withdrawal signature has expired and is no longer valid',
-            self::WithdrawalInvalidAmount => 'Withdrawal amount is invalid',
             self::ProjectBalanceInsufficientAmount => 'Project does not have sufficient balance to perform this operation',
-            self::ContractMustBePausedToRestartAgain => 'Contract must be paused in order to be restarted',
-            self::ContractMustBeActiveToBePaused => 'Contract must be active in order to be paused',
-            self::ContractMustBeActiveToInvest => 'Contract must be active to make investments',
-            self::RecipientCannotReceivePayments => 'The recipient address cannot receive payments in the established contract asset. Maybe the asset trustline has not been created yet.',
+            self::RecipientCannotReceivePayment => 'The recipient address cannot receive payments in the established contract asset. Maybe the asset trustline has not been created yet.',
             self::InvalidPaymentData => 'The payment data provided is invalid',
+            self::WouldExceedGoal => 'The investment would exceed the project goal',
+            self::GoalAlreadyReached => 'The project goal has already been reached',
+            self::AmountToInvestMustBeGreaterThanZero => 'The amount to invest must be greater than zero',
+            self::EnforcedPause => 'The contract is currently paused and cannot perform this operation'
         };
     }
 

@@ -18,7 +18,7 @@ class UserInvestmentTrxResultMapper
         foreach ($trxResult as $key => $value) {
             $result = match ($key) {
                 'accumulated_interests', 'deposited', 'total', 'paid', 'regular_payment','commission' => I128::fromLoAndHi($value->getLo(), $value->getHi())->toPhp($decimals),
-                'claimable_ts' => $value,
+                'claimable_ts', 'token_id' => $value,
                 'last_transfer_ts' => ($value > 0) ? new \DateTimeImmutable(date('Y-m-d H:i:s', $value)) : null,
                 'status' => (UserContractStatus::tryFrom($value) ?? UserContractStatus::UNKNOWN)->name,
                 default => null,
@@ -41,6 +41,7 @@ class UserInvestmentTrxResultMapper
             'paid' => $userContract->setTotalCharged($currentTotalCharged + $value),
             'status' => $userContract->setStatus($value),
             'regular_payment' => $userContract->setRegularPayment($value),
+            'token_id' => $userContract->setTokenId($value),
             default => null,
         };
     }

@@ -9,7 +9,6 @@ use App\Entity\Contract\UserContract;
 use Soneso\StellarSDK\InvokeContractHostFunction;
 use Soneso\StellarSDK\InvokeHostFunctionOperation;
 use Soneso\StellarSDK\InvokeHostFunctionOperationBuilder;
-use Soneso\StellarSDK\Soroban\Address;
 use Soneso\StellarSDK\Xdr\XdrSCVal;
 
 class PayUserContractOperationBuilder
@@ -17,8 +16,7 @@ class PayUserContractOperationBuilder
     public function build(UserContract $userContract): InvokeHostFunctionOperation
     {
         $invokeContractHostFunction = new InvokeContractHostFunction($userContract->getContract()->getAddress(), ContractFunctions::process_investor_payment->name, [
-            Address::fromAccountId($userContract->getUserWallet()->getAddress())->toXdrSCVal(),
-            XdrSCVal::forU64($userContract->getClaimableTs()),
+            XdrSCVal::forU32($userContract->getTokenId()),
         ]);
         $builder = new InvokeHostFunctionOperationBuilder($invokeContractHostFunction);
 

@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class CreateContractDto
@@ -55,6 +56,13 @@ class CreateContractDto
 
         #[NotBlank(message: 'Return months cannot be empty')]
         public readonly string|int $returnMonths,
+
+        #[NotBlank(message: 'Return months cannot be empty')]
+        #[Url(message: 'URI must be a valid URL')]
+        public readonly string $uri,
+
+        #[NotBlank(message: 'Return months cannot be empty')]
+        public readonly string $symbol,
     ) {
     }
 

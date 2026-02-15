@@ -27,6 +27,8 @@ export interface FormValues {
     minPerInvestment: number,
     file?: FileList;
     image?: FileList;
+    uri: string;
+    symbol: string;
 };
 
 interface CreateOrEditContractProps {
@@ -62,7 +64,9 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
             returnMonths: 12,
             minPerInvestment: 10,
             file: undefined as any,
-            image: undefined as any
+            image: undefined as any,
+            uri: "",
+            symbol: ""
         },
     });
 
@@ -99,6 +103,8 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
         formSendData.append('returnMonths', String(formData.returnMonths));
         formSendData.append('returnType', String(formData.returnType));
         formSendData.append('minPerInvestment', String(formData.minPerInvestment));
+        formSendData.append('uri', formData.uri);
+        formSendData.append('symbol', formData.symbol);
 
         if(formData.file?.length > 0){
             formSendData.append('file', formData.file[0]);
@@ -218,6 +224,30 @@ export default function ContractForm({ contract }: CreateOrEditContractProps) {
                                             </option>
                                         ))}
                                     </TextField>
+                                </Grid2>
+                                <Grid2 size={{ xs: 12, md: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        label="URI"
+                                        variant="outlined"
+                                        size="small"
+                                        placeholder="Metadata URI"
+                                        {...register('uri', { required: 'URI cannot be empty' })}
+                                        error={!!errors.uri}
+                                        helperText={errors.uri?.message}
+                                    />
+                                </Grid2>
+                                <Grid2 size={{ xs: 12, md: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        label="Symbol"
+                                        variant="outlined"
+                                        size="small"
+                                        placeholder="Token symbol"
+                                        {...register('symbol', { required: 'Symbol cannot be empty' })}
+                                        error={!!errors.symbol}
+                                        helperText={errors.symbol?.message}
+                                    />
                                 </Grid2>
                             </Grid2>
                             <Typography variant="h5" sx={{ mb: 2, color: 'primary.main' }}>

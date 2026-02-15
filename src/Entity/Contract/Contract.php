@@ -131,6 +131,12 @@ class Contract
     #[ORM\Column(nullable: true)]
     private ?int $muxedId = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $uri = null;
+
+    #[ORM\Column(length: 10)]
+    private ?string $symbol = null;
+
     public function __construct()
     {
         $this->contractBalances = new ArrayCollection();
@@ -565,6 +571,30 @@ class Contract
     public function setMuxedId(?int $muxedId): static
     {
         $this->muxedId = $muxedId;
+
+        return $this;
+    }
+
+    public function getUri(): ?string
+    {
+        return $this->uri;
+    }
+
+    public function setUri(string $uri): static
+    {
+        $this->uri = $uri;
+
+        return $this;
+    }
+
+    public function getSymbol(): ?string
+    {
+        return $this->symbol;
+    }
+
+    public function setSymbol(string $symbol): static
+    {
+        $this->symbol = $symbol;
 
         return $this;
     }

@@ -74,6 +74,9 @@ class UserContract
     #[ORM\Column(nullable: true)]
     private ?float $realDeposited = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $tokenId = null;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
@@ -268,6 +271,18 @@ class UserContract
     public function setRealDeposited(?float $realDeposited): static
     {
         $this->realDeposited = $realDeposited;
+
+        return $this;
+    }
+
+    public function getTokenId(): ?int
+    {
+        return $this->tokenId;
+    }
+
+    public function setTokenId(int $tokenId): static
+    {
+        $this->tokenId = $tokenId;
 
         return $this;
     }

@@ -6,8 +6,7 @@
 namespace App\Blockchain\Stellar\Soroban\ScContract\Operation\Builder;
 
 use App\Blockchain\Stellar\Account\StellarAccountLoader;
-use App\Domain\Token\Service\TokenNormalizer;
-use App\Domain\UserContract\Service\ClaimableDateCalculator;
+use App\Domain\Contract\Service\ContractActivationInvestmentParamsBuilder;
 use App\Entity\Contract\Contract;
 use Soneso\StellarSDK\CreateContractWithConstructorHostFunction;
 use Soneso\StellarSDK\InvokeHostFunctionOperation;
@@ -18,31 +17,23 @@ use Soneso\StellarSDK\Xdr\XdrSCVal;
 class ContractActivationOperationBuilder
 {
     public function __construct(
-        private readonly ClaimableDateCalculator $claimableDateCalculator,
-        private readonly TokenNormalizer $tokenNormalizer,
         private readonly StellarAccountLoader $stellarAccountLoader,
+        private readonly ContractActivationInvestmentParamsBuilder $contractActivationInvestmentParamsBuilder
     ) {
     }
 
     public function build(Contract $contract, string $wasmId): InvokeHostFunctionOperation
     {
-        $claimMonts = $contract->getClaimMonths();
-        $days = $this->claimableDateCalculator->getDaysToClaim($claimMonts);
-        $rate = $contract->getRate() * 100;
-
-        $goalI128 = $this->tokenNormalizer->normalizeTokenValue($contract->getGoal(), $contract->getToken()->getDecimals());
-        $minPerInvestmentI128 = $this->tokenNormalizer->normalizeTokenValue($contract->getMinPerInvestment(), $contract->getToken()->getDecimals());
+        $investmentParams = $this->contractActivationInvestmentParamsBuilder->buildInvestmentParams($contract);
 
         $constructorArgs = [
             Address::fromAccountId($this->stellarAccountLoader->getAccount()->getAccountId())->toXdrSCVal(),
             Address::fromAccountId($contract->getProjectAddress())->toXdrSCVal(),
             Address::fromContractId($contract->getToken()->getAddress())->toXdrSCVal(),
-            XdrSCVal::forU32((int) $rate),
-            XdrSCVal::forU64($days),
-            XdrSCVal::forI128Parts($goalI128->getHi(), $goalI128->getLo()),
-            XdrSCVal::forU32($contract->getReturnType()),
-            XdrSCVal::forU32($contract->getReturnMonths()),
-            XdrSCVal::forI128Parts($minPerInvestmentI128->getHi(), $minPerInvestmentI128->getLo()),
+            XdrSCVal::forString($contract->getUri()),
+            XdrSCVal::forString($contract->getLabel()),
+            XdrSCVal::forString($contract->getSymbol()),
+            $investmentParams,
         ];
 
         $createContractHostFunction = new CreateContractWithConstructorHostFunction(

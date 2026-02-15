@@ -51,6 +51,8 @@ export interface ContractOutput {
   projectAddress: string,
   muxedAccount?: string,
   requiredReserveFunds?: number
+  uri: string,
+  symbol: string
 }
 
 export interface ContractWithdrawal {

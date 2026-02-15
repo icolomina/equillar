@@ -64,6 +64,8 @@ class ContractEntityTransformer
             $returnType,
             $contract->getReturnMonths(),
             $contract->getProjectAddress(),
+            $contract->getUri(),
+            $contract->getSymbol(),
             $contract->getMuxedAccount(),
             $requiredReserveFunds
         );
@@ -99,6 +101,8 @@ class ContractEntityTransformer
         $contract->setReturnType((int) $createContractDto->returnType);
         $contract->setProjectAddress($createContractDto->projectAddress);
         $contract->setOrganzation($user->getOrganization());
+        $contract->setUri($createContractDto->uri);
+        $contract->setSymbol($createContractDto->symbol);
 
         return $contract;
     }

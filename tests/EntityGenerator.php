@@ -101,6 +101,8 @@ class EntityGenerator
         $contract->setShortDescription('A contract');
         $contract->setStatus('APPROVED');
         $contract->setOrganzation($issuer->getOrganization());
+        $contract->setUri('https://example.com');
+        $contract->setSymbol('EXPM');
         
         return $contract;
     }
@@ -128,6 +130,8 @@ class EntityGenerator
         $contract->setShortDescription('A contract');
         $contract->setStatus('ACTIVE');
         $contract->setOrganzation($issuer->getOrganization());
+        $contract->setUri('https://example.com');
+        $contract->setSymbol('EXPM');
         
         return $contract;
     }

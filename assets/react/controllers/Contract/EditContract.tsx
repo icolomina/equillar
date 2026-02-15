@@ -47,7 +47,6 @@ export default function EditContract() {
         );
     }
     else{
-        console.log('Algo pasa', query.data.returnType, getReturnType(query.data.returnType));
         const formValues: FormValues = {
             ...query.data,
             token: query.data.tokenContract.code,
